@@ -32,8 +32,10 @@
     "lint": "eslint . --max-warnings 0",
     "test": "node --experimental-strip-types --test tests/**/*.test.ts",
     "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage --test-coverage-lines=95 --test-coverage-functions=95 --test-coverage-branches=90 --test-coverage-include=\"src/**\" --test-coverage-exclude=\"src/**/*.data.ts\" tests/**/*.test.ts",
+    "check": "npm run typecheck && npm run lint && npm run build && npm run test && npm run test:coverage",
     "extract:names": "node --experimental-strip-types scripts/extract-dvv-names.ts",
-    "generate:matrix": "node --experimental-strip-types scripts/generate-names-matrix.ts"
+    "generate:matrix": "node --experimental-strip-types scripts/generate-names-matrix.ts",
+    "generate:places-matrix": "node --experimental-strip-types scripts/generate-places-matrix.ts"
   },
   "dependencies": {},
   "overrides": {

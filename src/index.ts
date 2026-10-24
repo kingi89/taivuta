@@ -43,8 +43,15 @@ export {
   inflectPerson
 } from './person/inflect-person.ts';
 
+export {
+  detectLocalCase,
+  inflectPlace,
+  type InflectPlaceOptions
+} from './place/inflect-place.ts';
+
 export type {
   GrammaticalCase,
+  LocalCaseType,
   PlaceLocalCase,
   CaseName,
   InflectPersonOptions

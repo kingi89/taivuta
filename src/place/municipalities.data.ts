@@ -1,0 +1,491 @@
+/**
+ * Curated municipal local case data and morphological exceptions.
+ * Based on Finnish municipality toponymic conventions.
+ *
+ * @packageDocumentation
+ */
+
+import type { LocalCaseType } from '../cases/types.ts';
+
+/**
+ * Shape of custom stem overrides for irregular places.
+ */
+export interface PlaceOverride {
+  readonly localCaseType?: LocalCaseType;
+  readonly genitive?: string;
+  readonly partitive?: string;
+  readonly inessive?: string;
+  readonly elative?: string;
+  readonly illative?: string;
+  readonly adessive?: string;
+  readonly ablative?: string;
+  readonly allative?: string;
+  readonly essive?: string;
+  readonly translative?: string;
+}
+
+/**
+ * Closed set of Finnish municipalities that conventionally take external local cases (-lla/-llä),
+ * excluding regular nature suffixes.
+ */
+export const EXTERNAL_CASE_MUNICIPALITIES: ReadonlySet<string> = new Set([
+  'Alavus',
+  'Enontekiö',
+  'Halsua',
+  'Hyvinkää',
+  'Imatra',
+  'Kaavi',
+  'Kangasala',
+  'Kaustinen',
+  'Kauhava',
+  'Keitele',
+  'Kerava',
+  'Kitee',
+  'Koski Tl',
+  'Kuortane',
+  'Laihia',
+  'Lapinlahti',
+  'Lapua',
+  'Lemi',
+  'Leppävirta',
+  'Lohja',
+  'Loimaa',
+  'Loppi',
+  'Luumäki',
+  'Muhos',
+  'Multia',
+  'Nokia',
+  'Parainen',
+  'Pertunmaa',
+  'Pihtipudas',
+  'Posio',
+  'Punkalaidun',
+  'Puolanka',
+  'Pyhtää',
+  'Pyhäntä',
+  'Pälkäne',
+  'Pöytyä',
+  'Ranua',
+  'Rauma',
+  'Rautalampi',
+  'Rovaniemi',
+  'Ruokolahti',
+  'Rusko',
+  'Savitaipale',
+  'Somero',
+  'Sulkava',
+  'Tampere',
+  'Teuva',
+  'Toholampi',
+  'Tyrnävä',
+  'Uurainen',
+  'Vantaa',
+  'Vehmaa',
+  'Vesanto',
+  'Vieremä',
+  'Virrat',
+  'Vöyri',
+  'Ylitornio',
+  'Ypäjä'
+]);
+
+/**
+ * Exceptions to the island suffix rule (-saari/-luoto), which conventionally take
+ * internal local cases (-ssa/-ssä).
+ */
+export const ISLAND_INTERNAL_EXCEPTIONS: ReadonlySet<string> = new Set([
+  'Pietarsaari',
+  'Hailuoto',
+  'Luoto'
+]);
+
+/**
+ * Municipalities and settlements that resist consonant gradation.
+ */
+export const GRADATION_RESISTANT_PLACES: ReadonlySet<string> = new Set([
+  'Asikkala',
+  'Humppila',
+  'Kokkola',
+  'Lempäälä',
+  'Marttila',
+  'Mikkeli',
+  'Naantali',
+  'Nakkila',
+  'Orimattila',
+  'Parikkala',
+  'Pukkila'
+]);
+
+/**
+ * Explicit stem overrides for irregular places, compounds, and administrative entries.
+ */
+export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<string, PlaceOverride>([
+  ['Koski Tl', {
+    localCaseType: 'on',
+    genitive: 'Koski Tl:n',
+    partitive: 'Koski Tl:ää',
+    adessive: 'Koski Tl:llä',
+    allative: 'Koski Tl:lle',
+    illative: 'Koski Tl:ään'
+  }],
+  ['Pedersören kunta', {
+    localCaseType: 'in',
+    genitive: 'Pedersören kunnan',
+    partitive: 'Pedersören kuntaa',
+    inessive: 'Pedersören kunnassa',
+    illative: 'Pedersören kuntaan'
+  }],
+  ['Brändö', {
+    illative: 'Brändöhön'
+  }],
+  ['Föglö', {
+    illative: 'Föglöhön'
+  }],
+  ['Geta', {
+    genitive: 'Getan',
+    partitive: 'Getaa',
+    inessive: 'Getassa',
+    illative: 'Getaan'
+  }],
+  ['Kumlinge', {
+    genitive: 'Kumlingen',
+    partitive: 'Kumlingea',
+    illative: 'Kumlingeen'
+  }],
+  ['Muurame', {
+    genitive: 'Muuramen',
+    partitive: 'Muuramea',
+    illative: 'Muurameen'
+  }],
+  ['Raahe', {
+    genitive: 'Raahen',
+    partitive: 'Raahea',
+    inessive: 'Raahessa',
+    illative: 'Raaheen'
+  }],
+  ['Kirkkonummi', {
+    localCaseType: 'on',
+    adessive: 'Kirkkonummella',
+    genitive: 'Kirkkonummen',
+    partitive: 'Kirkkonummea',
+    allative: 'Kirkkonummelle',
+    illative: 'Kirkkonummelle'
+  }],
+  ['Korsnäs', {
+    inessive: 'Korsnäsissä',
+    genitive: 'Korsnäsin',
+    partitive: 'Korsnäsiä',
+    illative: 'Korsnäsiin'
+  }],
+  ['Enontekiö', {
+    localCaseType: 'on',
+    adessive: 'Enontekiöllä',
+    genitive: 'Enontekiön',
+    partitive: 'Enontekiötä',
+    allative: 'Enontekiölle',
+    illative: 'Enontekiölle'
+  }],
+  ['Keitele', {
+    localCaseType: 'on',
+    adessive: 'Keiteleellä',
+    genitive: 'Keiteleen',
+    partitive: 'Keitelettä',
+    allative: 'Keiteleelle',
+    illative: 'Keiteleelle'
+  }],
+  ['Kuortane', {
+    localCaseType: 'on',
+    adessive: 'Kuortaneella',
+    genitive: 'Kuortaneen',
+    partitive: 'Kuortanetta',
+    allative: 'Kuortaneelle',
+    illative: 'Kuortaneelle'
+  }],
+  ['Lapinlahti', {
+    localCaseType: 'on',
+    adessive: 'Lapinlahdella',
+    genitive: 'Lapinlahden',
+    partitive: 'Lapinlahtea',
+    allative: 'Lapinlahdelle',
+    illative: 'Lapinlahdelle'
+  }],
+  ['Lapua', {
+    localCaseType: 'on',
+    adessive: 'Lapualla',
+    genitive: 'Lapuan',
+    partitive: 'Lapuaa',
+    allative: 'Lapualle',
+    illative: 'Lapualle'
+  }],
+  ['Leppävirta', {
+    localCaseType: 'on',
+    adessive: 'Leppävirralla',
+    genitive: 'Leppävirran',
+    partitive: 'Leppävirtaa',
+    allative: 'Leppävirralle',
+    illative: 'Leppävirralle'
+  }],
+  ['Loppi', {
+    localCaseType: 'on',
+    adessive: 'Lopella',
+    genitive: 'Lopen',
+    partitive: 'Loppea',
+    allative: 'Lopelle',
+    illative: 'Lopelle'
+  }],
+  ['Muhos', {
+    localCaseType: 'on',
+    adessive: 'Muhoksella',
+    genitive: 'Muhoksen',
+    partitive: 'Muhosta',
+    allative: 'Muhokselle',
+    illative: 'Muhokselle'
+  }],
+  ['Multia', {
+    localCaseType: 'on',
+    adessive: 'Multialla',
+    genitive: 'Multian',
+    partitive: 'Multiaa',
+    allative: 'Multialle',
+    illative: 'Multialle'
+  }],
+  ['Pälkäne', {
+    localCaseType: 'on',
+    adessive: 'Pälkäneellä',
+    genitive: 'Pälkäneen',
+    partitive: 'Pälkänettä',
+    allative: 'Pälkäneelle',
+    illative: 'Pälkäneelle'
+  }],
+  ['Ruokolahti', {
+    localCaseType: 'on',
+    adessive: 'Ruokolahdella',
+    genitive: 'Ruokolahden',
+    partitive: 'Ruokolahtea',
+    allative: 'Ruokolahdelle',
+    illative: 'Ruokolahdelle'
+  }],
+  ['Savitaipale', {
+    localCaseType: 'on',
+    adessive: 'Savitaipaleella',
+    genitive: 'Savitaipaleen',
+    partitive: 'Savitaipaletta',
+    allative: 'Savitaipaleelle',
+    illative: 'Savitaipaleelle'
+  }],
+  ['Mänttä-Vilppula', {
+    localCaseType: 'in',
+    genitive: 'Mänttä-Vilppulan',
+    partitive: 'Mänttä-Vilppulaa',
+    inessive: 'Mänttä-Vilppulassa',
+    illative: 'Mänttä-Vilppulaan'
+  }],
+  ['Mäntyharju', {
+    localCaseType: 'on',
+    genitive: 'Mäntyharjun',
+    partitive: 'Mäntyharjua',
+    adessive: 'Mäntyharjulla',
+    allative: 'Mäntyharjulle',
+    illative: 'Mäntyharjulle'
+  }],
+  ['Uusikaupunki', {
+    localCaseType: 'in',
+    genitive: 'Uudenkaupungin',
+    partitive: 'Uuttakaupunkia',
+    inessive: 'Uudessakaupungissa',
+    illative: 'Uuteenkaupunkiin'
+  }],
+  ['Uusikaarlepyy', {
+    localCaseType: 'in',
+    genitive: 'Uudenkaarlepyyn',
+    partitive: 'Uuttakaarlepyytä',
+    inessive: 'Uudessakaarlepyyssä',
+    illative: 'Uuteenkaarlepyyhyn'
+  }],
+  ['Isokyrö', {
+    localCaseType: 'in',
+    genitive: 'Isonkyrön',
+    partitive: 'Isoakyröä',
+    inessive: 'Isossakyrössä',
+    illative: 'Isoonkyröön'
+  }],
+  ['Kangasala', {
+    localCaseType: 'on',
+    genitive: 'Kangasalan',
+    partitive: 'Kangasalaa',
+    adessive: 'Kangasalla',
+    allative: 'Kangasalle',
+    illative: 'Kangasalle'
+  }],
+  ['Alavus', {
+    localCaseType: 'on',
+    genitive: 'Alavuden',
+    partitive: 'Alavutta',
+    adessive: 'Alavudella',
+    allative: 'Alavudelle',
+    illative: 'Alavudelle'
+  }],
+  ['Kaustinen', {
+    localCaseType: 'on',
+    genitive: 'Kaustisen',
+    partitive: 'Kaustista',
+    adessive: 'Kaustisella',
+    allative: 'Kaustiselle',
+    illative: 'Kaustiselle'
+  }],
+  ['Parainen', {
+    localCaseType: 'on',
+    genitive: 'Paraisten',
+    partitive: 'Paraisia',
+    adessive: 'Paraisilla',
+    allative: 'Paraisille',
+    illative: 'Paraisille'
+  }],
+  ['Uurainen', {
+    localCaseType: 'on',
+    genitive: 'Uuraisten',
+    partitive: 'Uuraisia',
+    adessive: 'Uuraisilla',
+    allative: 'Uuraisille',
+    illative: 'Uuraisille'
+  }],
+  ['Pihtipudas', {
+    localCaseType: 'on',
+    genitive: 'Pihtiputaan',
+    partitive: 'Pihtipudasta',
+    adessive: 'Pihtiputaalla',
+    allative: 'Pihtiputaalle',
+    illative: 'Pihtiputaalle'
+  }],
+  ['Punkalaidun', {
+    localCaseType: 'on',
+    genitive: 'Punkalaitumen',
+    partitive: 'Punkalaidunta',
+    adessive: 'Punkalaitumella',
+    allative: 'Punkalaitumelle',
+    illative: 'Punkalaitumelle'
+  }],
+  ['Virrat', {
+    localCaseType: 'on',
+    genitive: 'Virtojen',
+    partitive: 'Virtoja',
+    adessive: 'Virroilla',
+    allative: 'Virroille',
+    illative: 'Virroille'
+  }],
+  ['Rautalampi', {
+    localCaseType: 'on',
+    genitive: 'Rautalammin',
+    partitive: 'Rautalampia',
+    adessive: 'Rautalammilla',
+    allative: 'Rautalammille',
+    illative: 'Rautalammille'
+  }],
+  ['Toholampi', {
+    localCaseType: 'on',
+    genitive: 'Toholammin',
+    partitive: 'Toholampia',
+    adessive: 'Toholammilla',
+    allative: 'Toholammille',
+    illative: 'Toholammille'
+  }],
+  ['Tampere', {
+    localCaseType: 'on',
+    genitive: 'Tampereen',
+    partitive: 'Tamperetta',
+    adessive: 'Tampereella',
+    allative: 'Tampereelle',
+    illative: 'Tampereelle',
+    essive: 'Tampereena'
+  }],
+  ['Kempele', {
+    genitive: 'Kempeleen',
+    partitive: 'Kempelettä',
+    inessive: 'Kempeleessä',
+    illative: 'Kempeleeseen'
+  }],
+  ['Kannus', {
+    genitive: 'Kannuksen',
+    partitive: 'Kannusta',
+    inessive: 'Kannuksessa',
+    illative: 'Kannukseen'
+  }],
+  ['Nurmes', {
+    genitive: 'Nurmeksen',
+    partitive: 'Nurmesta',
+    inessive: 'Nurmeksessa',
+    illative: 'Nurmekseen'
+  }],
+  ['Varkaus', {
+    genitive: 'Varkauden',
+    partitive: 'Varkautta',
+    inessive: 'Varkaudessa',
+    illative: 'Varkauteen'
+  }],
+  ['Huittinen', {
+    genitive: 'Huittisten',
+    partitive: 'Huittisia',
+    inessive: 'Huittisissa',
+    illative: 'Huittisiin'
+  }],
+  ['Ikaalinen', {
+    genitive: 'Ikaalisten',
+    partitive: 'Ikaalisia',
+    inessive: 'Ikaalisissa',
+    illative: 'Ikaalisiin'
+  }],
+  ['Jokioinen', {
+    genitive: 'Jokioisten',
+    partitive: 'Jokioisia',
+    inessive: 'Jokioisissa',
+    illative: 'Jokioisiin'
+  }],
+  ['Joroinen', {
+    genitive: 'Joroisten',
+    partitive: 'Joroisia',
+    inessive: 'Joroisissa',
+    illative: 'Joroisiin'
+  }],
+  ['Kaskinen', {
+    genitive: 'Kaskisten',
+    partitive: 'Kaskisia',
+    inessive: 'Kaskisissa',
+    illative: 'Kaskisiin'
+  }],
+  ['Kauniainen', {
+    genitive: 'Kauniaisten',
+    partitive: 'Kauniaisia',
+    inessive: 'Kauniaisissa',
+    illative: 'Kauniaisiin'
+  }],
+  ['Kuhmoinen', {
+    genitive: 'Kuhmoisten',
+    partitive: 'Kuhmoisia',
+    inessive: 'Kuhmoisissa',
+    illative: 'Kuhmoisiin'
+  }],
+  ['Nousiainen', {
+    genitive: 'Nousiaisten',
+    partitive: 'Nousiaisia',
+    inessive: 'Nousiaisissa',
+    illative: 'Nousiaisiin'
+  }],
+  ['Oulainen', {
+    genitive: 'Oulaisten',
+    partitive: 'Oulaisia',
+    inessive: 'Oulaisissa',
+    illative: 'Oulaisiin'
+  }],
+  ['Pornainen', {
+    genitive: 'Pornaisten',
+    partitive: 'Pornaisia',
+    inessive: 'Pornaisissa',
+    illative: 'Pornaisiin'
+  }],
+  ['Siikainen', {
+    genitive: 'Siikaisten',
+    partitive: 'Siikaisia',
+    inessive: 'Siikaisissa',
+    illative: 'Siikaisiin'
+  }]
+]);

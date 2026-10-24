@@ -21,6 +21,13 @@ export type GrammaticalCase =
   | 'translative'; // -ksi
 
 /**
+ * Classification of local case preference for place names:
+ * - 'in': internal local cases (-ssa/-ssä, -sta/-stä, -seen/-Vn)
+ * - 'on': external local cases (-lla/-llä, -lta/-ltä, -lle)
+ */
+export type LocalCaseType = 'in' | 'on';
+
+/**
  * Contextual and macro cases for place names.
  */
 export type PlaceLocalCase =
