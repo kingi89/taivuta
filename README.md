@@ -31,15 +31,35 @@ When localizing applications into Finnish, inserting proper nouns into templates
 npm install taivuta
 ```
 
-*(Note: Currently in early development — Milestone 1)*
+*(Note: Currently in early development — Milestone 2: Phonology & Consonant Gradation)*
 
 ### Quick Example
 
 ```typescript
-import { getStatus, VERSION } from 'taivuta';
+import {
+  getVowelHarmony,
+  harmonize,
+  weakenConsonants,
+  analyzeStem
+} from 'taivuta';
 
-console.log(VERSION); // "0.1.0"
-console.log(getStatus()); // { name: "taivuta", version: "0.1.0", ready: true }
+// Vowel harmony
+getVowelHarmony('Turku');       // "back"
+getVowelHarmony('Helsinki');    // "front"
+getVowelHarmony('Marja-Liisa'); // "front" (governed by "Liisa")
+
+// Suffix harmonization
+harmonize('ssa', 'Turku');      // "ssa" -> Turussa
+harmonize('ssa', 'Helsinki');   // "ssä" -> Helsingissä
+
+// Consonant gradation (astevaihtelu)
+weakenConsonants('Pekka');      // "Peka" (Pekan)
+weakenConsonants('Hanko');      // "Hango" (Hangossa)
+
+// Nominal stem analysis
+analyzeStem('Virtanen');        // { stem: "Virtase", isNen: true, ... }
+analyzeStem('Tuomas');          // { stem: "Tuomakse", isSStem: true, ... }
+analyzeStem('John');            // { stem: "John", linkingVowel: "i", ... }
 ```
 
 ---

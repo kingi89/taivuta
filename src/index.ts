@@ -28,3 +28,13 @@ export function getStatus(): { name: string; version: string; ready: boolean } {
     ready: true
   };
 }
+
+export {
+  getVowelHarmony,
+  harmonize,
+  weakenConsonants,
+  analyzeStem,
+  type VowelHarmony,
+  type GradationOptions,
+  type AnalyzedStem
+} from './morphology/index.ts';
