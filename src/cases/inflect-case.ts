@@ -10,6 +10,7 @@
 import { analyzeStem, type AnalyzedStem } from '../morphology/stem.ts';
 import { weakenConsonants } from '../morphology/gradation.ts';
 import { harmonize } from '../morphology/vowels.ts';
+import { matchNatureNounSurname, inflectNatureNounSurname } from '../morphology/nature-nouns.ts';
 import type { GrammaticalCase, InflectPersonOptions } from './types.ts';
 
 /**
@@ -30,7 +31,8 @@ function buildGenitive(analyzed: AnalyzedStem, options: InflectPersonOptions): s
   }
 
   const isGiven = options.role !== 'surname';
-  const shouldWeaken = options.gradation !== false;
+  const isLaSurname = options.role === 'surname' && /(?:la|lä)$/i.test(analyzed.stem);
+  const shouldWeaken = options.gradation !== false && !isLaSurname;
   const weakStem = shouldWeaken ? weakenConsonants(analyzed.stem, { doubleOnly: isGiven }) : analyzed.stem;
   return weakStem + 'n';
 }
@@ -61,6 +63,12 @@ function buildPartitive(analyzed: AnalyzedStem): string {
     const separator = analyzed.needsApostrophe ? "'" : '';
     const suffix = harmonize('a', analyzed.nominative);
     return analyzed.stem + separator + (analyzed.needsApostrophe ? 'ta' : analyzed.linkingVowel + suffix);
+  }
+
+  // Disyllabic nouns in -io / -iö take -ta / -tä (Kotus: Kallio -> Kalliota, Vainio -> Vainiota)
+  if (/(?:io|iö)$/i.test(analyzed.stem)) {
+    const suffix = harmonize('ta', analyzed.nominative);
+    return analyzed.stem + suffix;
   }
 
   // Vowel stems use strong grade in partitive (Pekkaa, Mattia, Villeä, Kerttua)
@@ -108,6 +116,19 @@ const CASE_SUFFIXES: Record<string, string> = {
   translative: 'ksi'
 };
 
+function resolveStandardStem(
+  analyzed: AnalyzedStem,
+  isEssive: boolean,
+  options: InflectPersonOptions
+): string {
+  const isGiven = options.role !== 'surname';
+  const isLaSurname = options.role === 'surname' && /(?:la|lä)$/i.test(analyzed.stem);
+  if (isEssive || isLaSurname || options.gradation === false) {
+    return analyzed.stem;
+  }
+  return weakenConsonants(analyzed.stem, { doubleOnly: isGiven });
+}
+
 /**
  * Builds standard local, essive, or translative case forms.
  *
@@ -137,11 +158,8 @@ function buildStandardCase(
     return analyzed.stem + separator + (analyzed.needsApostrophe ? '' : analyzed.linkingVowel) + suffix;
   }
 
-  // Essive (-na/-nä) uses strong stem (Pekkana, Mattina). Local cases use weak stem (Pekassa, Matissa).
   const isEssive = caseName === 'essive';
-  const isGiven = options.role !== 'surname';
-  const shouldWeaken = options.gradation !== false && !isEssive;
-  const stem = shouldWeaken ? weakenConsonants(analyzed.stem, { doubleOnly: isGiven }) : analyzed.stem;
+  const stem = resolveStandardStem(analyzed, isEssive, options);
   return stem + suffix;
 }
 
@@ -171,6 +189,14 @@ export function composeCase(
 
   if (caseName === 'nominative') {
     return word;
+  }
+
+  // Ancient nature noun surnames (Niemi, Koski, Mäki, Saari, Salmi, Nurmi, Lahti, Laine)
+  if (options.role === 'surname') {
+    const nature = matchNatureNounSurname(word);
+    if (nature) {
+      return inflectNatureNounSurname(word, caseName, nature);
+    }
   }
 
   const analyzed = analyzeStem(word, options);

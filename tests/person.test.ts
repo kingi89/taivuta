@@ -220,6 +220,64 @@ describe('Irregular & Edge Cases', () => {
     assert.equal(inflectPerson('Tony', 'allative'), 'Tonylle');
   });
 
+  it('inflects traditional Finnish surnames according to Kotus guidelines', () => {
+    // Surnames in -e (Laine -> Laineen, Lainetta, Laineella)
+    assert.equal(inflectPerson('Laine', 'genitive', { role: 'surname' }), 'Laineen');
+    assert.equal(inflectPerson('Laine', 'partitive', { role: 'surname' }), 'Lainetta');
+    assert.equal(inflectPerson('Laine', 'adessive', { role: 'surname' }), 'Laineella');
+    assert.equal(inflectPerson('Laine', 'illative', { role: 'surname' }), 'Laineeseen');
+
+    // Ancient nature noun surnames in -i (Niemi, Nurmi, Saari, Salmi, Lahti, Koski, Mäki)
+    assert.equal(inflectPerson('Niemi', 'genitive', { role: 'surname' }), 'Niemen');
+    assert.equal(inflectPerson('Niemi', 'partitive', { role: 'surname' }), 'Niemeä');
+    assert.equal(inflectPerson('Niemi', 'adessive', { role: 'surname' }), 'Niemellä');
+
+    assert.equal(inflectPerson('Nurmi', 'genitive', { role: 'surname' }), 'Nurmen');
+    assert.equal(inflectPerson('Nurmi', 'partitive', { role: 'surname' }), 'Nurmea');
+    assert.equal(inflectPerson('Nurmi', 'adessive', { role: 'surname' }), 'Nurmella');
+
+    assert.equal(inflectPerson('Saari', 'genitive', { role: 'surname' }), 'Saaren');
+    assert.equal(inflectPerson('Saari', 'partitive', { role: 'surname' }), 'Saarta');
+    assert.equal(inflectPerson('Saari', 'adessive', { role: 'surname' }), 'Saarella');
+
+    assert.equal(inflectPerson('Salmi', 'genitive', { role: 'surname' }), 'Salmen');
+    assert.equal(inflectPerson('Salmi', 'partitive', { role: 'surname' }), 'Salmea');
+    assert.equal(inflectPerson('Salmi', 'adessive', { role: 'surname' }), 'Salmella');
+
+    assert.equal(inflectPerson('Lahti', 'genitive', { role: 'surname' }), 'Lahden');
+    assert.equal(inflectPerson('Lahti', 'partitive', { role: 'surname' }), 'Lahtea');
+    assert.equal(inflectPerson('Lahti', 'adessive', { role: 'surname' }), 'Lahdella');
+
+    assert.equal(inflectPerson('Koski', 'genitive', { role: 'surname' }), 'Kosken');
+    assert.equal(inflectPerson('Koski', 'partitive', { role: 'surname' }), 'Koskea');
+    assert.equal(inflectPerson('Koski', 'adessive', { role: 'surname' }), 'Koskella');
+
+    assert.equal(inflectPerson('Mäki', 'genitive', { role: 'surname' }), 'Mäen');
+    assert.equal(inflectPerson('Mäki', 'partitive', { role: 'surname' }), 'Mäkeä');
+    assert.equal(inflectPerson('Mäki', 'adessive', { role: 'surname' }), 'Mäellä');
+
+    // Meri: first name (Merin, Merillä) vs surname (Meren, Merellä)
+    assert.equal(inflectPerson('Meri', 'genitive', { role: 'givenName' }), 'Merin');
+    assert.equal(inflectPerson('Meri', 'genitive', { role: 'surname' }), 'Meren');
+    assert.equal(inflectPerson('Meri', 'adessive', { role: 'surname' }), 'Merellä');
+
+    // Surnames in -la/-lä resist consonant gradation (Mattila, Anttila, Peltola, Heikkilä, Seppälä, Rantala, Mikkola)
+    assert.equal(inflectPerson('Mattila', 'genitive', { role: 'surname' }), 'Mattilan');
+    assert.equal(inflectPerson('Mattila', 'adessive', { role: 'surname' }), 'Mattilalla');
+    assert.equal(inflectPerson('Anttila', 'genitive', { role: 'surname' }), 'Anttilan');
+    assert.equal(inflectPerson('Peltola', 'genitive', { role: 'surname' }), 'Peltolan');
+    assert.equal(inflectPerson('Heikkilä', 'genitive', { role: 'surname' }), 'Heikkilän');
+    assert.equal(inflectPerson('Seppälä', 'genitive', { role: 'surname' }), 'Seppälän');
+    assert.equal(inflectPerson('Rantala', 'genitive', { role: 'surname' }), 'Rantalan');
+    assert.equal(inflectPerson('Mikkola', 'genitive', { role: 'surname' }), 'Mikkolan');
+
+    // Surnames in -io/-iö take -ta/-tä in partitive (Kallio, Vainio)
+    assert.equal(inflectPerson('Kallio', 'partitive', { role: 'surname' }), 'Kalliota');
+    assert.equal(inflectPerson('Kallio', 'genitive', { role: 'surname' }), 'Kallion');
+    assert.equal(inflectPerson('Vainio', 'partitive', { role: 'surname' }), 'Vainiota');
+    assert.equal(inflectPerson('Vainio', 'genitive', { role: 'surname' }), 'Vainion');
+  });
+
   it('handles empty input gracefully', () => {
     assert.equal(inflectPerson('', 'genitive'), '');
     assert.equal(inflectPerson('   ', 'partitive'), '');
