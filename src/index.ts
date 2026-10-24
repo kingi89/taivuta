@@ -38,3 +38,14 @@ export {
   type GradationOptions,
   type AnalyzedStem
 } from './morphology/index.ts';
+
+export {
+  inflectPerson
+} from './person/inflect-person.ts';
+
+export type {
+  GrammaticalCase,
+  PlaceLocalCase,
+  CaseName,
+  InflectPersonOptions
+} from './cases/types.ts';

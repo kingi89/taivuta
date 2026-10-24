@@ -37,7 +37,47 @@ export interface AnalyzedStem {
 }
 
 const VOWEL_REGEX = /[aeiouyäö]/i;
-const SILENT_ENDINGS = /(?:eaux|oux|aux|e|t|x|s)$/i;
+const FRENCH_SILENT_SUFFIXES = /(?:eaux|oux|aux)$/i;
+
+/**
+ * Traditional Finnish and biblical given names taking the -kse s-stem declension
+ * (e.g. Tuomas -> Tuomaksen, Markus -> Markuksen).
+ * Other names ending in -s (e.g. English James, Charles, Jones, Thomas) take the regular
+ * consonant linking vowel -i- (Jamesin, Charlesin).
+ */
+const FINNISH_S_STEM_NAMES = new Set([
+  'tuomas',
+  'matias',
+  'elias',
+  'joonas',
+  'topias',
+  'andreas',
+  'vilpas',
+  'markus',
+  'julius',
+  'justus',
+  'magnus',
+  'johannes',
+  'aleksis',
+  'petrus',
+  'paulus',
+  'linus',
+  'jeesus',
+  'kristus'
+]);
+
+/**
+ * Well-known foreign names ending in silent consonants in Finnish orthography.
+ */
+const SILENT_FINAL_NAMES = new Set([
+  'dumas',
+  'camus',
+  'descartes',
+  'monet',
+  'manet',
+  'degas',
+  'renoir'
+]);
 
 /**
  * Checks if a name ending in a consonant likely has a silent final letter.
@@ -46,12 +86,16 @@ const SILENT_ENDINGS = /(?:eaux|oux|aux|e|t|x|s)$/i;
  * @returns True if the ending is conventionally silent in Finnish orthography.
  */
 function hasSilentEnding(name: string): boolean {
-  // Common French/foreign silent endings (e.g. Bordeaux, Dumas, Monet)
-  return SILENT_ENDINGS.test(name) && !VOWEL_REGEX.test(name.slice(-1));
+  const lower = name.toLowerCase();
+  if (SILENT_FINAL_NAMES.has(lower)) {
+    return true;
+  }
+  return FRENCH_SILENT_SUFFIXES.test(name);
 }
 
 /**
- * Analyzes s-stem suffixes (-nen, -as, -us, -os, -es) and produces the appropriate inflecting stem.
+ * Analyzes s-stem suffixes (-nen, and recognized Finnish -as/-us/-es names)
+ * and produces the appropriate inflecting stem.
  *
  * @param name - The input proper noun.
  * @returns Partial stem data if matched, or undefined.
@@ -63,6 +107,11 @@ function matchSStem(name: string): { stem: string; isNen: boolean; isSStem: bool
       isNen: true,
       isSStem: false
     };
+  }
+
+  const lower = name.toLowerCase();
+  if (!FINNISH_S_STEM_NAMES.has(lower)) {
+    return undefined;
   }
 
   // -as / -äs (Tuomas -> Tuomakse, Matias -> Matiakse)

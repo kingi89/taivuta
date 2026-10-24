@@ -31,35 +31,34 @@ When localizing applications into Finnish, inserting proper nouns into templates
 npm install taivuta
 ```
 
-*(Note: Currently in early development — Milestone 2: Phonology & Consonant Gradation)*
+*(Note: Currently in early development — Milestone 3: Person Name Inflection)*
 
 ### Quick Example
 
 ```typescript
-import {
-  getVowelHarmony,
-  harmonize,
-  weakenConsonants,
-  analyzeStem
-} from 'taivuta';
+import { inflectPerson } from 'taivuta';
 
-// Vowel harmony
-getVowelHarmony('Turku');       // "back"
-getVowelHarmony('Helsinki');    // "front"
-getVowelHarmony('Marja-Liisa'); // "front" (governed by "Liisa")
+// Given names with consonant gradation
+inflectPerson('Erkki', 'genitive');            // "Erkin" -> "Tänään on Erkin syntymäpäivä"
+inflectPerson('Matti', 'genitive');            // "Matin"
+inflectPerson('Ville', 'adessive');            // "Villellä"
+inflectPerson('Tuomas', 'illative');           // "Tuomakseen"
+inflectPerson('Kerttu', 'allative');           // "Kertulle"
 
-// Suffix harmonization
-harmonize('ssa', 'Turku');      // "ssa" -> Turussa
-harmonize('ssa', 'Helsinki');   // "ssä" -> Helsingissä
+// Surnames
+inflectPerson('Virtanen', 'genitive');          // "Virtasen"
+inflectPerson('Mäkinen', 'partitive');         // "Mäkistä"
 
-// Consonant gradation (astevaihtelu)
-weakenConsonants('Pekka');      // "Peka" (Pekan)
-weakenConsonants('Hanko');      // "Hango" (Hangossa)
+// Multi-word full names (inflects surname)
+inflectPerson('Matti Virtanen', 'genitive');   // "Matti Virtasen"
 
-// Nominal stem analysis
-analyzeStem('Virtanen');        // { stem: "Virtase", isNen: true, ... }
-analyzeStem('Tuomas');          // { stem: "Tuomakse", isSStem: true, ... }
-analyzeStem('John');            // { stem: "John", linkingVowel: "i", ... }
+// Hyphenated compound names
+inflectPerson('Marja-Liisa', 'adessive');      // "Marja-Liisalla"
+
+// Foreign names
+inflectPerson('John', 'allative');             // "Johnille"
+inflectPerson('Alice', 'genitive');            // "Alicen"
+inflectPerson('Bordeaux', 'inessive');         // "Bordeaux'ssa"
 ```
 
 ---
