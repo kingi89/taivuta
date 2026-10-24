@@ -40,6 +40,23 @@ The personal name benchmark (`tests/fixtures/dvv-top-names.json`) is derived fro
 
 ---
 
+## 2. Inflection Matrix Generator (`generate:matrix`)
+
+To review the library's inflections across all cases for top DVV names, generate a CSV inflection matrix:
+
+```bash
+npm run generate:matrix
+```
+
+By default, this writes `data/names-matrix.csv` containing 600 names (500 given names + 100 surnames) inflected across all 11 grammatical cases (`nominative`, `genitive`, `partitive`, `inessive`, `elative`, `illative`, `adessive`, `ablative`, `allative`, `essive`, `translative`).
+
+You can also specify a custom output path:
+```bash
+npm run generate:matrix -- --output path/to/matrix.csv
+```
+
+---
+
 ## License & Attribution
 
 All derived datasets must be attributed in accordance with the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license. See [ATTRIBUTION.md](../ATTRIBUTION.md) for details.

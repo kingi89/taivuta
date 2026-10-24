@@ -32,7 +32,8 @@
     "lint": "eslint . --max-warnings 0",
     "test": "node --experimental-strip-types --test tests/**/*.test.ts",
     "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage --test-coverage-lines=95 --test-coverage-functions=95 --test-coverage-branches=90 --test-coverage-include=\"src/**\" --test-coverage-exclude=\"src/**/*.data.ts\" tests/**/*.test.ts",
-    "extract:names": "node --experimental-strip-types scripts/extract-dvv-names.ts"
+    "extract:names": "node --experimental-strip-types scripts/extract-dvv-names.ts",
+    "generate:matrix": "node --experimental-strip-types scripts/generate-names-matrix.ts"
   },
   "dependencies": {},
   "overrides": {

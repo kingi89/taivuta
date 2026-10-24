@@ -6,3 +6,5 @@ coverage/
 AGENTS.md
 data/names/*.xlsx
 !data/names/.gitkeep
+data/*.csv
+
