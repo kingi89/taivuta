@@ -1,0 +1,47 @@
+{
+  "name": "taivuta",
+  "version": "0.1.0",
+  "description": "Finnish proper noun inflection and local case detection library",
+  "keywords": [
+    "finnish",
+    "inflection",
+    "taivutus",
+    "nlp",
+    "localization",
+    "names",
+    "places"
+  ],
+  "license": "BSD-3-Clause",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "test": "node --experimental-strip-types --test tests/**/*.test.ts",
+    "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage --test-coverage-lines=95 --test-coverage-functions=95 --test-coverage-branches=90 --test-coverage-include=\"src/**\" --test-coverage-exclude=\"src/**/*.data.ts\" tests/**/*.test.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/node": "^22.7.5",
+    "@typescript-eslint/eslint-plugin": "^8.9.0",
+    "@typescript-eslint/parser": "^8.9.0",
+    "eslint": "^9.13.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.9.0"
+  }
+}
