@@ -42,12 +42,17 @@ function weakenGeminates(stem: string): string {
     return stem;
   }
 
-  return stem
+  let result = stem
     .replace(/kk([aeiouyäö])/gi, 'k$1')
     .replace(/pp([aeiouyäö])/gi, 'p$1')
     .replace(/tt([aeiouyäö])/gi, 't$1')
     .replace(/gg([aeiouyäö])/gi, 'g$1')
     .replace(/bb([aeiouyäö])/gi, 'b$1');
+
+  // ht -> hd gradation applies across native given names and surnames (Kotus: Ahti -> Ahdin, Lehto -> Lehdon)
+  result = result.replace(/([aeiouyäö])ht([aeiouyäö])$/i, '$1hd$2');
+
+  return result;
 }
 
 /**

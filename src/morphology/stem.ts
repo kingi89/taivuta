@@ -18,6 +18,8 @@
  * @packageDocumentation
  */
 
+import type { InflectPersonOptions } from '../cases/types.ts';
+
 /**
  * Result of analyzing a nominal stem.
  */
@@ -62,12 +64,19 @@ const FINNISH_S_STEM_NAMES = new Set([
   'petrus',
   'paulus',
   'linus',
+  'niklas',
+  'rasmus',
+  'aatos',
+  'luukas',
+  'aulis',
+  'eelis',
+  'iiris',
   'jeesus',
   'kristus'
 ]);
 
 /**
- * Well-known foreign names ending in silent consonants in Finnish orthography.
+ * Well-known names ending in silent consonants or vocalic diphthongs (e.g. Kaj [kai]).
  */
 const SILENT_FINAL_NAMES = new Set([
   'dumas',
@@ -76,7 +85,10 @@ const SILENT_FINAL_NAMES = new Set([
   'monet',
   'manet',
   'degas',
-  'renoir'
+  'renoir',
+  'kaj',
+  'maj',
+  'guy'
 ]);
 
 /**
@@ -94,28 +106,47 @@ function hasSilentEnding(name: string): boolean {
 }
 
 /**
- * Analyzes s-stem suffixes (-nen, and recognized Finnish -as/-us/-es names)
- * and produces the appropriate inflecting stem.
+ * Extracts Finnish -nen surname stem (-nen -> -se).
  *
  * @param name - The input proper noun.
- * @returns Partial stem data if matched, or undefined.
+ * @returns Stem object if -nen matched, otherwise undefined.
  */
-function matchSStem(name: string): { stem: string; isNen: boolean; isSStem: boolean } | undefined {
+function matchNen(name: string): { stem: string; isNen: boolean; isSStem: boolean } | undefined {
   if (name.endsWith('nen') || name.endsWith('Nen')) {
+    const suffix = name.endsWith('nen') ? 'se' : 'Se';
     return {
-      stem: name.slice(0, -3) + (name.endsWith('nen') ? 'se' : 'Se'),
+      stem: name.slice(0, -3) + suffix,
       isNen: true,
       isSStem: false
     };
   }
+  return undefined;
+}
 
-  const lower = name.toLowerCase();
-  if (!FINNISH_S_STEM_NAMES.has(lower)) {
+/**
+ * Analyzes s-stem suffixes (recognized Finnish -as/-us/-es/-is names)
+ * and produces the appropriate inflecting stem.
+ *
+ * @param name - The input proper noun.
+ * @param options - Person inflection options.
+ * @returns Partial stem data if matched, or undefined.
+ */
+function matchSStem(
+  name: string,
+  options?: InflectPersonOptions
+): { stem: string; isNen: boolean; isSStem: boolean } | undefined {
+  if (options?.sStem === false || name.length <= 3) {
     return undefined;
   }
 
-  // -as / -äs (Tuomas -> Tuomakse, Matias -> Matiakse)
-  if (/[aä]s$/i.test(name) && name.length > 3) {
+  const lower = name.toLowerCase();
+  const isCandidate = options?.sStem === true || FINNISH_S_STEM_NAMES.has(lower);
+  if (!isCandidate) {
+    return undefined;
+  }
+
+  // -as / -äs (Tuomas -> Tuomakse, Matias -> Matiakse, Niklas -> Niklakse, Lucas -> Lucakse)
+  if (/[aä]s$/i.test(name)) {
     const vowel = name[name.length - 2];
     return {
       stem: name.slice(0, -2) + vowel + 'kse',
@@ -124,8 +155,8 @@ function matchSStem(name: string): { stem: string; isNen: boolean; isSStem: bool
     };
   }
 
-  // -us / -ys, -os, -es (Markus -> Markukse, Johannes -> Johannekse)
-  if (/[uyoe]s$/i.test(name) && name.length > 3) {
+  // -us / -ys, -os, -es, -is (Markus -> Markukse, Aatos -> Aatokse, Aulis -> Aulikse, Eelis -> Eelikse)
+  if (/[uyoei]s$/i.test(name)) {
     return {
       stem: name.slice(0, -1) + 'kse',
       isNen: false,
@@ -136,10 +167,25 @@ function matchSStem(name: string): { stem: string; isNen: boolean; isSStem: bool
   return undefined;
 }
 
+function makeStem(
+  data: { stem: string; isNen?: boolean; isSStem?: boolean },
+  nominative: string
+): AnalyzedStem {
+  return {
+    stem: data.stem,
+    isNen: data.isNen ?? false,
+    isSStem: data.isSStem ?? false,
+    linkingVowel: '',
+    needsApostrophe: false,
+    nominative
+  };
+}
+
 /**
  * Analyzes a proper noun and extracts its base inflecting stem and orthographic properties.
  *
  * @param name - The nominative form of the proper noun (e.g. "Virtanen", "Tuomas", "John", "Bordeaux").
+ * @param options - Optional configuration options (e.g. sStem override).
  * @returns AnalyzedStem object containing the stem and metadata.
  *
  * @example
@@ -150,52 +196,35 @@ function matchSStem(name: string): { stem: string; isNen: boolean; isSStem: bool
  * analyzeStem("Bordeaux"); // { stem: "Bordeaux", linkingVowel: "i", needsApostrophe: true, ... }
  * ```
  */
-export function analyzeStem(name: string): AnalyzedStem {
+export function analyzeStem(name: string, options?: InflectPersonOptions): AnalyzedStem {
   const trimmed = name.trim();
   if (!trimmed) {
-    return {
-      stem: '',
-      isNen: false,
-      isSStem: false,
-      linkingVowel: '',
-      needsApostrophe: false,
-      nominative: ''
-    };
+    return makeStem({ stem: '' }, '');
   }
 
-  const sStem = matchSStem(trimmed);
+  const nen = matchNen(trimmed);
+  if (nen) {
+    return makeStem(nen, trimmed);
+  }
+
+  const sStem = matchSStem(trimmed, options);
   if (sStem) {
-    return {
-      stem: sStem.stem,
-      isNen: sStem.isNen,
-      isSStem: sStem.isSStem,
-      linkingVowel: '',
-      needsApostrophe: false,
-      nominative: trimmed
-    };
+    return makeStem(sStem, trimmed);
   }
 
   // If the word ends in a vowel, suffixes attach directly without a linking vowel
   const lastChar = trimmed[trimmed.length - 1] ?? '';
   if (VOWEL_REGEX.test(lastChar)) {
-    return {
-      stem: trimmed,
-      isNen: false,
-      isSStem: false,
-      linkingVowel: '',
-      needsApostrophe: false,
-      nominative: trimmed
-    };
+    return makeStem({ stem: trimmed }, trimmed);
   }
 
   // Consonant-ending names take an epenthetic 'i' linking vowel in Finnish
-  const needsApos = hasSilentEnding(trimmed);
   return {
     stem: trimmed,
     isNen: false,
     isSStem: false,
     linkingVowel: 'i',
-    needsApostrophe: needsApos,
+    needsApostrophe: hasSilentEnding(trimmed),
     nominative: trimmed
   };
 }

@@ -159,6 +159,62 @@ describe('Irregular & Edge Cases', () => {
     assert.equal(inflectPerson('Aleksis', 'partitive'), 'Aleksista');
   });
 
+  it('inflects s-stem names and supports sStem overrides', () => {
+    // Default Finnish s-stems
+    assert.equal(inflectPerson('Niklas', 'genitive'), 'Niklaksen');
+    assert.equal(inflectPerson('Rasmus', 'genitive'), 'Rasmuksen');
+    assert.equal(inflectPerson('Aatos', 'genitive'), 'Aatoksen');
+    assert.equal(inflectPerson('Luukas', 'genitive'), 'Luukaksen');
+    assert.equal(inflectPerson('Aulis', 'genitive'), 'Auliksen');
+    assert.equal(inflectPerson('Eelis', 'genitive'), 'Eeliksen');
+    assert.equal(inflectPerson('Julius', 'genitive'), 'Juliuksen');
+    assert.equal(inflectPerson('Iiris', 'genitive'), 'Iiriksen');
+
+    // Default foreign names ending in -s
+    assert.equal(inflectPerson('Lucas', 'genitive'), 'Lucasin');
+    assert.equal(inflectPerson('Lukas', 'genitive'), 'Lukasin');
+    assert.equal(inflectPerson('Jonas', 'genitive'), 'Jonasin');
+    assert.equal(inflectPerson('Thomas', 'genitive'), 'Thomasin');
+    assert.equal(inflectPerson('Tomas', 'genitive'), 'Tomasin');
+
+    // Overrides
+    assert.equal(inflectPerson('Niklas', 'genitive', { sStem: false }), 'Niklasin');
+    assert.equal(inflectPerson('Lucas', 'genitive', { sStem: true }), 'Lucaksen');
+    assert.equal(inflectPerson('Lukas', 'genitive', { sStem: true }), 'Lukaksen');
+  });
+
+  it('inflects native Finnish names with ht -> hd gradation (e.g. Ahti)', () => {
+    assert.equal(inflectPerson('Ahti', 'nominative'), 'Ahti');
+    assert.equal(inflectPerson('Ahti', 'genitive'), 'Ahdin');
+    assert.equal(inflectPerson('Ahti', 'partitive'), 'Ahtia');
+    assert.equal(inflectPerson('Ahti', 'inessive'), 'Ahdissa');
+    assert.equal(inflectPerson('Ahti', 'illative'), 'Ahtiin');
+    assert.equal(inflectPerson('Ahti', 'adessive'), 'Ahdilla');
+    assert.equal(inflectPerson('Ahti', 'allative'), 'Ahdille');
+    assert.equal(inflectPerson('Ahti', 'essive'), 'Ahtina');
+  });
+
+  it('inflects names ending in vocalic j with an apostrophe (e.g. Kaj)', () => {
+    assert.equal(inflectPerson('Kaj', 'genitive'), "Kaj'n");
+    assert.equal(inflectPerson('Kaj', 'partitive'), "Kaj'ta");
+    assert.equal(inflectPerson('Kaj', 'inessive'), "Kaj'ssa");
+    assert.equal(inflectPerson('Kaj', 'illative'), "Kaj'hin");
+    assert.equal(inflectPerson('Kaj', 'adessive'), "Kaj'lla");
+  });
+
+  it('inflects proper nouns with non-standard base words correctly', () => {
+    // Veli (proper noun) inflects as Velin, not as common noun 'veli' (veljen)
+    assert.equal(inflectPerson('Veli', 'genitive'), 'Velin');
+    assert.equal(inflectPerson('Veli', 'allative'), 'Velille');
+    assert.equal(inflectPerson('Veli', 'partitive'), 'Veliä');
+
+    // Tony: ends in 'y' pronounced as /i/, harmonizes with preceding 'o' (back vowel)
+    assert.equal(inflectPerson('Tony', 'genitive'), 'Tonyn');
+    assert.equal(inflectPerson('Tony', 'partitive'), 'Tonya');
+    assert.equal(inflectPerson('Tony', 'ablative'), 'Tonylta');
+    assert.equal(inflectPerson('Tony', 'allative'), 'Tonylle');
+  });
+
   it('handles empty input gracefully', () => {
     assert.equal(inflectPerson('', 'genitive'), '');
     assert.equal(inflectPerson('   ', 'partitive'), '');

@@ -80,7 +80,10 @@ function buildIllative(analyzed: AnalyzedStem): string {
 
   if (analyzed.linkingVowel) {
     if (analyzed.needsApostrophe) {
-      const suffix = harmonize('hon', analyzed.nominative);
+      // Kotus: Names ending in vocalic j (Kaj, Maj) take -hin (Kaj'hin)
+      const suffix = analyzed.nominative.toLowerCase().endsWith('j')
+        ? 'hin'
+        : harmonize('hon', analyzed.nominative);
       return analyzed.stem + "'" + suffix;
     }
     return analyzed.stem + 'iin';
@@ -168,7 +171,7 @@ export function composeCase(
     return word;
   }
 
-  const analyzed = analyzeStem(word);
+  const analyzed = analyzeStem(word, options);
 
   if (caseName === 'genitive') {
     return buildGenitive(analyzed, options);
