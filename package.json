@@ -34,6 +34,9 @@
     "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage --test-coverage-lines=95 --test-coverage-functions=95 --test-coverage-branches=90 --test-coverage-include=\"src/**\" --test-coverage-exclude=\"src/**/*.data.ts\" tests/**/*.test.ts"
   },
   "dependencies": {},
+  "overrides": {
+    "esbuild": ">=0.28.1"
+  },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
     "@types/node": "^22.7.5",
