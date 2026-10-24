@@ -30,7 +30,8 @@ function buildGenitive(analyzed: AnalyzedStem, options: InflectPersonOptions): s
   }
 
   const isGiven = options.role !== 'surname';
-  const weakStem = weakenConsonants(analyzed.stem, { doubleOnly: isGiven });
+  const shouldWeaken = options.gradation !== false;
+  const weakStem = shouldWeaken ? weakenConsonants(analyzed.stem, { doubleOnly: isGiven }) : analyzed.stem;
   return weakStem + 'n';
 }
 
@@ -139,7 +140,8 @@ function buildStandardCase(
   // Essive (-na/-nä) uses strong stem (Pekkana, Mattina). Local cases use weak stem (Pekassa, Matissa).
   const isEssive = caseName === 'essive';
   const isGiven = options.role !== 'surname';
-  const stem = isEssive ? analyzed.stem : weakenConsonants(analyzed.stem, { doubleOnly: isGiven });
+  const shouldWeaken = options.gradation !== false && !isEssive;
+  const stem = shouldWeaken ? weakenConsonants(analyzed.stem, { doubleOnly: isGiven }) : analyzed.stem;
   return stem + suffix;
 }
 

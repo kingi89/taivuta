@@ -157,6 +157,11 @@ describe('Irregular & Edge Cases', () => {
     assert.equal(inflectPerson('Sampo', 'partitive'), 'Sampoa');
     assert.equal(inflectPerson('Aleksis', 'genitive'), 'Aleksiksen');
     assert.equal(inflectPerson('Aleksis', 'partitive'), 'Aleksista');
+    assert.equal(inflectPerson('Satu', 'genitive'), 'Sadun');
+    assert.equal(inflectPerson('Satu', 'adessive'), 'Sadulla');
+    assert.equal(inflectPerson('Satu', 'partitive'), 'Satua');
+    assert.equal(inflectPerson('Satu', 'genitive', { gradation: false }), 'Satun');
+    assert.equal(inflectPerson('Satu', 'adessive', { gradation: false }), 'Satulla');
   });
 
   it('inflects s-stem names and supports sStem overrides', () => {

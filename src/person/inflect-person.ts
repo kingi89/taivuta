@@ -42,6 +42,19 @@ const IRREGULAR_NAMES: Record<string, Record<string, string>> = {
     allative: 'Aleksikselle',
     essive: 'Aleksiksena',
     translative: 'Aleksikseksi'
+  },
+  // Kotus: Satu inflects with t -> d gradation (Satu : Sadun), but ungradated (Satun) is accepted via { gradation: false }
+  Satu: {
+    genitive: 'Sadun',
+    partitive: 'Satua',
+    inessive: 'Sadussa',
+    elative: 'Sadusta',
+    illative: 'Satuun',
+    adessive: 'Sadulla',
+    ablative: 'Sadulta',
+    allative: 'Sadulle',
+    essive: 'Satuna',
+    translative: 'Saduksi'
   }
 };
 
@@ -58,7 +71,8 @@ function inflectSingleName(
   targetCase: GrammaticalCase,
   options: InflectPersonOptions
 ): string {
-  const irregular = IRREGULAR_NAMES[token]?.[targetCase];
+  const allowGradation = options.gradation !== false;
+  const irregular = allowGradation ? IRREGULAR_NAMES[token]?.[targetCase] : undefined;
   if (irregular) {
     return irregular;
   }

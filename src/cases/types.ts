@@ -51,4 +51,10 @@ export interface InflectPersonOptions {
    * - `undefined`: Automatically determined by Finnish vs foreign name heuristics.
    */
   readonly sStem?: boolean;
+  /**
+   * Explicitly control whether consonant gradation applies.
+   * - `false`: Prevents consonant weakening (e.g. `Satu` -> `Satun`, `Matti` -> `Mattin`).
+   * - `true` / `undefined`: Applies standard Finnish consonant gradation rules.
+   */
+  readonly gradation?: boolean;
 }
