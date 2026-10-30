@@ -212,15 +212,15 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Hartola",
-    "localCase": "Harrolassa",
+    "localCase": "Hartolassa",
     "localCaseType": "in",
-    "genitive": "Harrolan"
+    "genitive": "Hartolan"
   },
   {
     "name": "Hattula",
-    "localCase": "Hatulassa",
+    "localCase": "Hattulassa",
     "localCaseType": "in",
-    "genitive": "Hatulan"
+    "genitive": "Hattulan"
   },
   {
     "name": "Hausjärvi",
@@ -295,9 +295,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Hämeenkyrö",
-    "localCase": "Hämeengyrössä",
+    "localCase": "Hämeenkyrössä",
     "localCaseType": "in",
-    "genitive": "Hämeengyrön"
+    "genitive": "Hämeenkyrön"
   },
   {
     "name": "Hämeenlinna",
@@ -384,9 +384,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Janakkala",
-    "localCase": "Janakalassa",
+    "localCase": "Janakkalassa",
     "localCaseType": "in",
-    "genitive": "Janakalan"
+    "genitive": "Janakkalan"
   },
   {
     "name": "Joensuu",
@@ -542,9 +542,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Karkkila",
-    "localCase": "Karkilassa",
+    "localCase": "Karkkilassa",
     "localCaseType": "in",
-    "genitive": "Karkilan"
+    "genitive": "Karkkilan"
   },
   {
     "name": "Karstula",
@@ -680,9 +680,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Kittilä",
-    "localCase": "Kitilässä",
+    "localCase": "Kittilässä",
     "localCaseType": "in",
-    "genitive": "Kitilän"
+    "genitive": "Kittilän"
   },
   {
     "name": "Kiuruvesi",
@@ -730,9 +730,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Kontiolahti",
-    "localCase": "Konniolahdissa",
+    "localCase": "Kontiolahdissa",
     "localCaseType": "in",
-    "genitive": "Konniolahdin"
+    "genitive": "Kontiolahdin"
   },
   {
     "name": "Korsnäs",
@@ -764,9 +764,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Kristiinankaupunki",
-    "localCase": "Kristiinangaupungissa",
+    "localCase": "Kristiinankaupungissa",
     "localCaseType": "in",
-    "genitive": "Kristiinangaupungin"
+    "genitive": "Kristiinankaupungin"
   },
   {
     "name": "Kruunupyy",
@@ -901,9 +901,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Lappeenranta",
-    "localCase": "Lapeenrannassa",
+    "localCase": "Lappeenrannassa",
     "localCaseType": "in",
-    "genitive": "Lapeenrannan"
+    "genitive": "Lappeenrannan"
   },
   {
     "name": "Lapua",
@@ -1086,9 +1086,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Miehikkälä",
-    "localCase": "Miehikälässä",
+    "localCase": "Miehikkälässä",
     "localCaseType": "in",
-    "genitive": "Miehikälän"
+    "genitive": "Miehikkälän"
   },
   {
     "name": "Mikkeli",
@@ -1282,9 +1282,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Paltamo",
-    "localCase": "Pallamossa",
+    "localCase": "Paltamossa",
     "localCaseType": "in",
-    "genitive": "Pallamon"
+    "genitive": "Paltamon"
   },
   {
     "name": "Parainen",
@@ -1374,9 +1374,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Pirkkala",
-    "localCase": "Pirkalassa",
+    "localCase": "Pirkkalassa",
     "localCaseType": "in",
-    "genitive": "Pirkalan"
+    "genitive": "Pirkkalan"
   },
   {
     "name": "Polvijärvi",
@@ -1621,9 +1621,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Rääkkylä",
-    "localCase": "Rääkylässä",
+    "localCase": "Rääkkylässä",
     "localCaseType": "in",
-    "genitive": "Rääkylän"
+    "genitive": "Rääkkylän"
   },
   {
     "name": "Saarijärvi",
@@ -1744,15 +1744,15 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Siuntio",
-    "localCase": "Siunniossa",
+    "localCase": "Siuntiossa",
     "localCaseType": "in",
-    "genitive": "Siunnion"
+    "genitive": "Siuntion"
   },
   {
     "name": "Sodankylä",
-    "localCase": "Sodangylässa",
+    "localCase": "Sodankylässa",
     "localCaseType": "in",
-    "genitive": "Sodangylän"
+    "genitive": "Sodankylän"
   },
   {
     "name": "Soini",
@@ -1783,9 +1783,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Sottunga",
-    "localCase": "Sotungassa",
+    "localCase": "Sottungassa",
     "localCaseType": "in",
-    "genitive": "Sotungan"
+    "genitive": "Sottungan"
   },
   {
     "name": "Sulkava",
@@ -2073,9 +2073,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Vimpeli",
-    "localCase": "Vimmelissä",
+    "localCase": "Vimpelissä",
     "localCaseType": "in",
-    "genitive": "Vimmelin"
+    "genitive": "Vimpelin"
   },
   {
     "name": "Virolahti",

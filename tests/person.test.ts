@@ -88,6 +88,33 @@ describe('Hyphenated Compound Names', () => {
   });
 });
 
+describe('Polysyllabic Names & Compound Stems (Gradation Anchoring)', () => {
+  it('preserves consonant clusters in non-final syllables for given names', () => {
+    // Given names with double consonants or clusters in non-final syllables must not weaken
+    assert.equal(inflectPerson('Kerttuli', 'genitive'), 'Kerttulin');
+    assert.equal(inflectPerson('Kerttuli', 'adessive'), 'Kerttulilla');
+    assert.equal(inflectPerson('Minttumaari', 'genitive'), 'Minttumaarin');
+    assert.equal(inflectPerson('Minttumaari', 'adessive'), 'Minttumaarilla');
+    assert.equal(inflectPerson('Pirkkoliisa', 'genitive'), 'Pirkkoliisan');
+    assert.equal(inflectPerson('Antti-Pekka', 'genitive'), 'Antti-Pekan');
+    assert.equal(inflectPerson('Pentti-Oskari', 'genitive'), 'Pentti-Oskarin');
+    assert.equal(inflectPerson('Kyllikki', 'genitive'), 'Kyllikin');
+    // Note: Compound names like Kastehelmi inflect by tradition as Kotus 7 (Kastehelmen),
+    // whereas Helmi as a female given name is Kotus 5 (Helmin), and as a surname is Kotus 7 (Helmen).
+    // Due to personal preference variation, compound given names with old nominal roots are cataloged for future paradigms.
+  });
+
+  it('restricts consonant gradation strictly to the stem-final syllable in compound surnames', () => {
+    // Clusters in initial components must remain intact while stem-final syllable gradates
+    assert.equal(inflectPerson('Kultaranta', 'genitive', { role: 'surname' }), 'Kultarannan');
+    assert.equal(inflectPerson('Kultaranta', 'adessive', { role: 'surname' }), 'Kultarannalla');
+    assert.equal(inflectPerson('Keltakumpu', 'genitive', { role: 'surname' }), 'Keltakummun');
+    assert.equal(inflectPerson('Keltakumpu', 'adessive', { role: 'surname' }), 'Keltakummulla');
+    assert.equal(inflectPerson('Kallioranta', 'genitive', { role: 'surname' }), 'Kalliorannan');
+    assert.equal(inflectPerson('Kukkapää', 'genitive', { role: 'surname' }), 'Kukkapään');
+  });
+});
+
 describe('Foreign Person Names', () => {
   it('attaches vocalic linking i to foreign consonant-final names', () => {
     assert.equal(inflectPerson('John', 'genitive'), 'Johnin');

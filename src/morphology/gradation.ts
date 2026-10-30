@@ -43,11 +43,11 @@ function weakenGeminates(stem: string): string {
   }
 
   let result = stem
-    .replace(/kk([aeiouyäö])/gi, 'k$1')
-    .replace(/pp([aeiouyäö])/gi, 'p$1')
-    .replace(/tt([aeiouyäö])/gi, 't$1')
-    .replace(/gg([aeiouyäö])/gi, 'g$1')
-    .replace(/bb([aeiouyäö])/gi, 'b$1');
+    .replace(/kk([aeiouyäö])$/i, 'k$1')
+    .replace(/pp([aeiouyäö])$/i, 'p$1')
+    .replace(/tt([aeiouyäö])$/i, 't$1')
+    .replace(/gg([aeiouyäö])$/i, 'g$1')
+    .replace(/bb([aeiouyäö])$/i, 'b$1');
 
   // ht -> hd gradation applies across native given names and surnames (Kotus: Ahti -> Ahdin, Lehto -> Lehdon)
   result = result.replace(/([aeiouyäö])ht([aeiouyäö])$/i, '$1hd$2');
@@ -56,11 +56,13 @@ function weakenGeminates(stem: string): string {
 }
 
 /**
- * Applies qualitative gradation to nasal/liquid clusters and single stops.
+ * Applies qualitative gradation to nasal/liquid clusters and single stops at the stem-final syllable boundary.
  *
  * Kotus: Qualitative gradation occurs in place names and certain traditional stems
  * (e.g. Hanko -> Hangon, Sampo -> Sammon, Lieto -> Liedon, Turku -> Turun).
- * Note: Single stop weakening (t -> d, k -> loss) only applies to original single stops,
+ * Note: Consonant gradation strictly applies to the onset of the final syllable of the stem.
+ * Earlier syllables in polysyllabic words (e.g. Tampere, Lempäälä, Helsinki) never grade across intervening syllables.
+ * Single stop weakening (t -> d, k -> loss) only applies to original single stops,
  * never to single stops resulting from geminate reduction (tt -> t, kk -> k).
  *
  * @param stem - The noun stem ending in a vowel.
@@ -73,20 +75,20 @@ function weakenQualitative(stem: string, original: string): string {
   // Clusters with geminate stops (nkk, mpp, ltt, rtt, ntt) only weaken to single stop
   // (e.g. Antti -> Antin, Kerttu -> Kertun, Pankki -> Pankin). Qualitative gradation
   // applies only when the cluster was originally a single stop (Hanko -> Hangon, Parta -> Parran).
-  if (!/nkk[aeiouyäö]/i.test(original)) {
-    result = result.replace(/([aeiouyäö])nk([aeiouyäö])/gi, '$1ng$2');
+  if (!/nkk[aeiouyäö]$/i.test(original)) {
+    result = result.replace(/([aeiouyäö])nk([aeiouyäö])$/i, '$1ng$2');
   }
-  if (!/mpp[aeiouyäö]/i.test(original)) {
-    result = result.replace(/([aeiouyäö])mp([aeiouyäö])/gi, '$1mm$2');
+  if (!/mpp[aeiouyäö]$/i.test(original)) {
+    result = result.replace(/([aeiouyäö])mp([aeiouyäö])$/i, '$1mm$2');
   }
-  if (!/ltt[aeiouyäö]/i.test(original)) {
-    result = result.replace(/([aeiouyäö])lt([aeiouyäö])/gi, '$1ll$2');
+  if (!/ltt[aeiouyäö]$/i.test(original)) {
+    result = result.replace(/([aeiouyäö])lt([aeiouyäö])$/i, '$1ll$2');
   }
-  if (!/rtt[aeiouyäö]/i.test(original)) {
-    result = result.replace(/([aeiouyäö])rt([aeiouyäö])/gi, '$1rr$2');
+  if (!/rtt[aeiouyäö]$/i.test(original)) {
+    result = result.replace(/([aeiouyäö])rt([aeiouyäö])$/i, '$1rr$2');
   }
-  if (!/ntt[aeiouyäö]/i.test(original)) {
-    result = result.replace(/([aeiouyäö])nt([aeiouyäö])/gi, '$1nn$2');
+  if (!/ntt[aeiouyäö]$/i.test(original)) {
+    result = result.replace(/([aeiouyäö])nt([aeiouyäö])$/i, '$1nn$2');
   }
 
   // Single t -> d between vowels only if the original did not have a geminate tt

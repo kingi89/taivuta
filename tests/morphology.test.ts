@@ -92,6 +92,15 @@ describe('Consonant Gradation (weakenConsonants)', () => {
     assert.equal(weakenConsonants('Parta'), 'Parra');
   });
 
+  it('restricts consonant gradation to the stem-final syllable and preserves earlier syllables', () => {
+    // Trisyllabic stems must not have their antepenultimate or earlier syllables weakened
+    assert.equal(weakenConsonants('Tampere'), 'Tampere');
+    assert.equal(weakenConsonants('Lempäälä'), 'Lempäälä');
+    assert.equal(weakenConsonants('Kangasala'), 'Kangasala');
+    assert.equal(weakenConsonants('Helsinki'), 'Helsingi'); // only nk in final syllable weakens
+    assert.equal(weakenConsonants('Kankaanpää'), 'Kankaanpää');
+  });
+
   it('resists qualitative gradation when doubleOnly is specified', () => {
     assert.equal(weakenConsonants('Aki', { doubleOnly: true }), 'Aki');
     assert.equal(weakenConsonants('Riku', { doubleOnly: true }), 'Riku');
