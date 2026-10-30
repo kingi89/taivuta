@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { GrammaticalCase, LocalCaseType } from '../cases/types.ts';
+import type { CaseName, GrammaticalCase, LocalCaseType } from '../cases/types.ts';
 import { harmonize } from '../morphology/vowels.ts';
 import { weakenConsonants } from '../morphology/gradation.ts';
 import {
@@ -225,52 +225,78 @@ function inflectLongVowelPlace(place: string, targetCase: GrammaticalCase): stri
   return end ? `${place}${end}` : place;
 }
 
+function resolveLocalCaseTarget(
+  place: string,
+  targetCase: CaseName,
+  options: InflectPlaceOptions
+): GrammaticalCase {
+  if (targetCase !== 'local' && targetCase !== 'localFrom' && targetCase !== 'localTo') {
+    return targetCase;
+  }
+
+  const localType = options.localCase ?? detectLocalCase(place);
+  if (targetCase === 'local') {
+    return localType === 'on' ? 'adessive' : 'inessive';
+  }
+  if (targetCase === 'localFrom') {
+    return localType === 'on' ? 'ablative' : 'elative';
+  }
+  return localType === 'on' ? 'allative' : 'illative';
+}
+
 /**
- * Inflects a Finnish place name into the specified grammatical case.
+ * Inflects a Finnish place name into the specified grammatical case or contextual local case.
+ *
+ * Supported contextual local cases:
+ * - `'local'` (missä): resolves to inessive (-ssa/-ssä) or adessive (-lla/-llä)
+ * - `'localFrom'` (mistä): resolves to elative (-sta/-stä) or ablative (-lta/-ltä)
+ * - `'localTo'` (mihin): resolves to illative (-Vn/-seen/-iin) or allative (-lle)
  *
  * @param place - The place name to inflect (e.g. "Helsinki", "Tampere", "Kuortane").
- * @param targetCase - The target grammatical case (e.g. "genitive", "inessive", "adessive").
+ * @param targetCase - The target case name (e.g. "genitive", "inessive", "local", "localTo").
  * @param options - Optional configuration options.
  * @returns The inflected place name string.
  *
  * @example
  * ```ts
- * inflectPlace("Helsinki", "inessive"); // "Helsingissä"
- * inflectPlace("Tampere", "adessive");  // "Tampereella"
- * inflectPlace("Kauniainen", "genitive"); // "Kauniaisten"
+ * inflectPlace("Helsinki", "local");    // "Helsingissä"
+ * inflectPlace("Tampere", "local");     // "Tampereella"
+ * inflectPlace("Tampere", "localTo");   // "Tampereelle"
+ * inflectPlace("Helsinki", "localTo");  // "Helsinkiin"
  * ```
  */
 export function inflectPlace(
   place: string,
-  targetCase: GrammaticalCase,
+  targetCase: CaseName,
   options: InflectPlaceOptions = {}
 ): string {
   if (!place) {
     return '';
   }
-  void options;
 
-  if (targetCase === 'nominative') {
+  const resolvedCase = resolveLocalCaseTarget(place, targetCase, options);
+
+  if (resolvedCase === 'nominative') {
     return place;
   }
 
   const override = IRREGULAR_PLACES.get(place);
-  if (override && override[targetCase]) {
-    return override[targetCase]!;
+  if (override && override[resolvedCase]) {
+    return override[resolvedCase]!;
   }
 
   const natureForms = resolveNatureSuffix(place);
   if (natureForms) {
-    return inflectNaturePlace(natureForms, targetCase);
+    return inflectNaturePlace(natureForms, resolvedCase);
   }
 
   if (/[bcdfghjklmnpqrstvwxz]$/i.test(place)) {
-    return inflectConsonantPlace(place, targetCase);
+    return inflectConsonantPlace(place, resolvedCase);
   }
 
   if (/(?:aa|ää|oo|öö|uu|yy|ii|ee)$/i.test(place)) {
-    return inflectLongVowelPlace(place, targetCase);
+    return inflectLongVowelPlace(place, resolvedCase);
   }
 
-  return inflectStandardPlace(place, targetCase);
+  return inflectStandardPlace(place, resolvedCase);
 }

@@ -143,5 +143,24 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflectPlace('Finström', 'allative'), 'Finströmille');
     assert.equal(inflectPlace('Finström', 'essive'), 'Finströminä');
     assert.equal(inflectPlace('Finström', 'translative'), 'Finströmiksi');
+    // Contextual macro local cases (local, localFrom, localTo)
+    assert.equal(inflectPlace('Helsinki', 'local'), 'Helsingissä');
+    assert.equal(inflectPlace('Helsinki', 'localFrom'), 'Helsingistä');
+    assert.equal(inflectPlace('Helsinki', 'localTo'), 'Helsinkiin');
+    assert.equal(inflectPlace('Tampere', 'local'), 'Tampereella');
+    assert.equal(inflectPlace('Tampere', 'localFrom'), 'Tampereelta');
+    assert.equal(inflectPlace('Tampere', 'localTo'), 'Tampereelle');
+    assert.equal(inflectPlace('Kirkkonummi', 'localTo'), 'Kirkkonummelle');
+    assert.equal(inflectPlace('Kuortane', 'localTo'), 'Kuortaneelle');
+
+    // Grammatical illative distinction for external-case place
+    assert.equal(inflectPlace('Tampere', 'illative'), 'Tampereeseen');
+    assert.equal(inflectPlace('Kuortane', 'illative'), 'Kuortaneeseen');
+
+    // Explicit override via options
+    assert.equal(inflectPlace('Helsinki', 'local', { localCase: 'on' }), 'Helsingillä');
+    assert.equal(inflectPlace('Helsinki', 'localTo', { localCase: 'on' }), 'Helsingille');
+    assert.equal(inflectPlace('Tampere', 'local', { localCase: 'in' }), 'Tampereessa');
+    assert.equal(inflectPlace('Tampere', 'localTo', { localCase: 'in' }), 'Tampereeseen');
   });
 });
