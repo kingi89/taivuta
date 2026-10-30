@@ -75,6 +75,19 @@ inflectPerson('Bordeaux', 'inessive');         // "Bordeaux'ssa"
 
 ---
 
+## Interactive Demo
+
+You can explore the interactive inflection playground and template sandbox locally:
+
+```bash
+# Start the demo web server
+npm run demo
+```
+
+Then open `http://localhost:3000` in your browser.
+
+---
+
 ## Development
 
 ```bash

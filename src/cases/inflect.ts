@@ -26,11 +26,21 @@ function isContextualLocalCase(targetCase: CaseName): boolean {
   return targetCase === 'local' || targetCase === 'localFrom' || targetCase === 'localTo';
 }
 
+/**
+ * Detects whether a proper noun represents a recognized place name or person name.
+ *
+ * @param name - The proper noun to inspect.
+ * @returns 'place' if matched against known municipalities, exceptions, or toponymic suffixes; otherwise 'person'.
+ */
+export function detectEntityRole(name: string): 'person' | 'place' {
+  return isKnownPlace(name) ? 'place' : 'person';
+}
+
 function resolveEntityRole(name: string, explicitRole?: 'person' | 'place' | 'auto'): 'person' | 'place' {
   if (explicitRole === 'person' || explicitRole === 'place') {
     return explicitRole;
   }
-  return isKnownPlace(name) ? 'place' : 'person';
+  return detectEntityRole(name);
 }
 
 /**

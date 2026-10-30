@@ -50,7 +50,8 @@ export {
 } from './place/inflect-place.ts';
 
 export {
-  inflect
+  inflect,
+  detectEntityRole
 } from './cases/inflect.ts';
 
 export {
