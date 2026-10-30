@@ -669,8 +669,7 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
     "localCase": "Kirkkonummella",
     "localCaseType": "on",
     "genitive": "Kirkkonummen",
-    "partitive": "Kirkkonummea",
-    "illative": "Kirkkonummelle"
+    "partitive": "Kirkkonummea"
   },
   {
     "name": "Kitee",
@@ -808,8 +807,7 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
     "localCase": "Kuortaneella",
     "localCaseType": "on",
     "genitive": "Kuortaneen",
-    "partitive": "Kuortanetta",
-    "illative": "Kuortaneelle"
+    "partitive": "Kuortanetta"
   },
   {
     "name": "Kurikka",
@@ -912,8 +910,7 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
     "localCase": "Lapualla",
     "localCaseType": "on",
     "genitive": "Lapuan",
-    "partitive": "Lapuaa",
-    "illative": "Lapualle"
+    "partitive": "Lapuaa"
   },
   {
     "name": "Laukaa",
@@ -1057,9 +1054,7 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
     "name": "Maarianhamina",
     "localCase": "Maarianhaminassa",
     "localCaseType": "in",
-    "genitive": "Maarianhaminan",
-    "partitive": "Maarianhaminaa",
-    "illative": "Maarianhaminaan"
+    "genitive": "Maarianhaminan"
   },
   {
     "name": "Marttila",
@@ -1115,8 +1110,7 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
     "localCase": "Multialla",
     "localCaseType": "on",
     "genitive": "Multian",
-    "partitive": "Multiaa",
-    "illative": "Multialle"
+    "partitive": "Multiaa"
   },
   {
     "name": "Muonio",
@@ -1173,8 +1167,7 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
     "localCase": "Mäntyharjulla",
     "localCaseType": "on",
     "genitive": "Mäntyharjun",
-    "partitive": "Mäntyharjua",
-    "illative": "Mäntyharjulle"
+    "partitive": "Mäntyharjua"
   },
   {
     "name": "Naantali",
