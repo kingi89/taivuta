@@ -8,14 +8,20 @@
  */
 
 import type { CaseName, GrammaticalCase, LocalCaseType } from '../cases/types.ts';
-import { harmonize } from '../morphology/vowels.ts';
-import { weakenConsonants } from '../morphology/gradation.ts';
 import {
   EXTERNAL_CASE_MUNICIPALITIES,
   ISLAND_INTERNAL_EXCEPTIONS,
-  GRADATION_RESISTANT_PLACES,
   IRREGULAR_PLACES
 } from './municipalities.data.ts';
+import {
+  needsColon,
+  inflectColonWord,
+  getCompoundPrefixMatch,
+  inflectIslandGroup,
+  inflectNenPlace,
+  inflectMacronPlace
+} from './special-places.ts';
+import { dispatchStemInflection } from './stem-places.ts';
 
 /**
  * Options controlling place name inflection.
@@ -32,9 +38,9 @@ export interface InflectPlaceOptions {
 /**
  * Common toponymic settlement and landscape suffixes.
  */
-export const TOPONYM_SUFFIX_REGEX = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|niemi|vaara|harju|kangas|suo|lampi|nummi|kylä|linna|lahti)$/i;
+export const TOPONYM_SUFFIX_REGEX = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|saaret|niemi|vaara|harju|kangas|suo|lampi|nummi|kylä|linna|lahti|maa)$/i;
 
-const NATURE_EXTERNAL_SUFFIXES = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|niemi|vaara|harju|kangas|suo|lampi|nummi)$/i;
+const NATURE_EXTERNAL_SUFFIXES = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|saaret|niemi|vaara|harju|kangas|suo|lampi|nummi)$/i;
 
 /**
  * Detects whether a Finnish place name conventionally takes internal local cases
@@ -67,6 +73,14 @@ export function detectLocalCase(place: string): LocalCaseType {
 
   if (ISLAND_INTERNAL_EXCEPTIONS.has(place)) {
     return 'in';
+  }
+
+  if (place.toLowerCase().endsWith('saaret')) {
+    return 'on';
+  }
+
+  if (place.startsWith('Uusi-') || place.startsWith('Iso-')) {
+    return detectLocalCase(place.slice(place.indexOf('-') + 1));
   }
 
   if (NATURE_EXTERNAL_SUFFIXES.test(place)) {
@@ -153,81 +167,22 @@ function inflectNaturePlace(forms: SuffixForms, targetCase: GrammaticalCase): st
   return end ? `${stem}${end}` : weakStem;
 }
 
-function resolveStandardPartitive(place: string): string {
-  if (/(?:io|iö)$/i.test(place)) {
-    return harmonize('ta', place);
+function resolveSpecialPlace(place: string, targetCase: GrammaticalCase): string | null {
+  if (needsColon(place)) {
+    return inflectColonWord(place, targetCase);
   }
-  if (place.endsWith('e') && !/(?:ee)$/i.test(place)) {
-    return harmonize('tta', place);
+  const islandGroup = inflectIslandGroup(place, targetCase);
+  if (islandGroup) {
+    return islandGroup;
   }
-  return harmonize('a', place);
-}
-
-function inflectStandardPlace(place: string, targetCase: GrammaticalCase): string {
-  const resists = GRADATION_RESISTANT_PLACES.has(place);
-  const weakStem = resists ? place : weakenConsonants(place);
-  const strongStem = place;
-  const isEPlace = place.endsWith('e') && !/(?:ee)$/i.test(place);
-
-  if (targetCase === 'genitive') return isEPlace ? `${place}en` : `${weakStem}n`;
-  if (targetCase === 'illative') return isEPlace ? `${place}eseen` : `${place}${place.slice(-1)}n`;
-  if (targetCase === 'partitive') return `${place}${resolveStandardPartitive(place)}`;
-
-  const endings: Record<string, string> = {
-    inessive: harmonize('ssa', place),
-    elative: harmonize('sta', place),
-    adessive: harmonize('lla', place),
-    ablative: harmonize('lta', place),
-    allative: 'lle',
-    essive: harmonize('na', place),
-    translative: 'ksi'
-  };
-
-  const end = endings[targetCase];
-  const stem = targetCase === 'essive' ? strongStem : weakStem;
-  return end ? `${stem}${end}` : place;
-}
-
-function inflectConsonantPlace(place: string, targetCase: GrammaticalCase): string {
-  const stem = `${place}i`;
-  if (targetCase === 'genitive') return `${stem}n`;
-  if (targetCase === 'illative') return `${stem}in`;
-  if (targetCase === 'partitive') return `${stem}${harmonize('a', place)}`;
-
-  const endings: Record<string, string> = {
-    inessive: harmonize('ssa', place),
-    elative: harmonize('sta', place),
-    adessive: harmonize('lla', place),
-    ablative: harmonize('lta', place),
-    allative: 'lle',
-    essive: harmonize('na', place),
-    translative: 'ksi'
-  };
-
-  const end = endings[targetCase];
-  return end ? `${stem}${end}` : place;
-}
-
-function inflectLongVowelPlace(place: string, targetCase: GrammaticalCase): string {
-  if (targetCase === 'genitive') return `${place}n`;
-  if (targetCase === 'partitive') return `${place}${harmonize('ta', place)}`;
-  if (targetCase === 'illative') {
-    const illEnd = place === 'Ii' ? 'hin' : 'seen';
-    return `${place}${illEnd}`;
+  const macron = inflectMacronPlace(place, targetCase);
+  if (macron) {
+    return macron;
   }
-
-  const endings: Record<string, string> = {
-    inessive: harmonize('ssa', place),
-    elative: harmonize('sta', place),
-    adessive: harmonize('lla', place),
-    ablative: harmonize('lta', place),
-    allative: 'lle',
-    essive: harmonize('na', place),
-    translative: 'ksi'
-  };
-
-  const end = endings[targetCase];
-  return end ? `${place}${end}` : place;
+  if (place.endsWith('nen')) {
+    return inflectNenPlace(place, targetCase);
+  }
+  return null;
 }
 
 function resolveLocalCaseTarget(
@@ -280,7 +235,6 @@ export function inflectPlace(
   }
 
   const resolvedCase = resolveLocalCaseTarget(place, targetCase, options);
-
   if (resolvedCase === 'nominative') {
     return place;
   }
@@ -290,18 +244,20 @@ export function inflectPlace(
     return override[resolvedCase]!;
   }
 
+  const compound = getCompoundPrefixMatch(place, resolvedCase);
+  if (compound) {
+    return `${compound.prefix}${inflectPlace(compound.remainder, resolvedCase, options)}`;
+  }
+
+  const special = resolveSpecialPlace(place, resolvedCase);
+  if (special) {
+    return special;
+  }
+
   const natureForms = resolveNatureSuffix(place);
   if (natureForms) {
     return inflectNaturePlace(natureForms, resolvedCase);
   }
 
-  if (/[bcdfghjklmnpqrstvwxz]$/i.test(place)) {
-    return inflectConsonantPlace(place, resolvedCase);
-  }
-
-  if (/(?:aa|ää|oo|öö|uu|yy|ii|ee)$/i.test(place)) {
-    return inflectLongVowelPlace(place, resolvedCase);
-  }
-
-  return inflectStandardPlace(place, resolvedCase);
+  return dispatchStemInflection(place, resolvedCase);
 }

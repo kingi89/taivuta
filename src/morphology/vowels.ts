@@ -16,8 +16,41 @@
  */
 export type VowelHarmony = 'front' | 'back';
 
-const BACK_VOWELS = new Set(['a', 'o', 'u', 'A', 'O', 'U']);
-const FRONT_VOWELS = new Set(['ä', 'ö', 'y', 'Ä', 'Ö', 'Y']);
+/**
+ * Finnish back vowels: a, o, u.
+ * Accented variants with macrons, acutes, graves, and tildes retain back tongue position.
+ */
+const BACK_VOWELS = new Set([
+  'a', 'o', 'u',
+  'á', 'à', 'â', 'ã', 'ā',
+  'ó', 'ò', 'ô', 'õ', 'ō',
+  'ú', 'ù', 'û', 'ū',
+  'A', 'O', 'U',
+  'Á', 'À', 'Â', 'Ã', 'Ā',
+  'Ó', 'Ò', 'Ô', 'Õ', 'Ō',
+  'Ú', 'Ù', 'Û', 'Ū'
+]);
+
+/**
+ * Finnish front vowels: ä, ö, y, plus Scandinavian/Germanic front vowels: ü, ø, æ.
+ * (Note: e and i are neutral vowels in Finnish, not front triggers when back vowels exist).
+ */
+const FRONT_VOWELS = new Set([
+  'ä', 'ö', 'y', 'ü', 'ø', 'æ',
+  'Ä', 'Ö', 'Y', 'Ü', 'Ø', 'Æ'
+]);
+
+/**
+ * Letters whose individual spoken names in Finnish contain back vowels:
+ * - A (/aa/), H (/hoo/), K (/koo/), O (/oo/), Q (/kuu/), U (/uu/), Z (/tseta/), Å (/oo/)
+ * When used as vowel-less abbreviations (e.g. HJK, Tl), the final letter's spoken name governs:
+ * - Suffix with -lla/-ssa: A, H, K, O, Q, U, Z, Å
+ * - Suffix with -llä/-ssä: B, C, D, E, F, G, I, J, L, M, N, P, R, S, T, V, W, X, Y, Ä, Ö
+ */
+const BACK_SPOKEN_LETTER_NAMES = new Set([
+  'a', 'h', 'k', 'o', 'q', 'u', 'z', 'å',
+  'A', 'H', 'K', 'O', 'Q', 'U', 'Z', 'Å'
+]);
 
 /**
  * Extracts the relevant final segment of a word for vowel harmony determination.
@@ -32,6 +65,27 @@ function getLastComponent(word: string): string {
   return segments[segments.length - 1] ?? trimmed;
 }
 
+function scanVowels(component: string): 'back' | 'front' | null {
+  let hasBack = false;
+  let hasFront = false;
+  let hasAring = false;
+
+  for (const char of component) {
+    if (BACK_VOWELS.has(char)) {
+      hasBack = true;
+    } else if (FRONT_VOWELS.has(char)) {
+      hasFront = true;
+    } else if (char === 'å' || char === 'Å') {
+      hasAring = true;
+    }
+  }
+
+  if (hasBack) return 'back';
+  if (hasFront) return 'front';
+  if (hasAring) return 'back';
+  return null;
+}
+
 /**
  * Determines whether a word requires front vowel harmony ('ä', 'ö', 'y')
  * or back vowel harmony ('a', 'o', 'u') in its case suffixes.
@@ -40,7 +94,9 @@ function getLastComponent(word: string): string {
  * 1. For compound names (hyphen or space separated), the last component governs.
  * 2. If the component contains any back vowel (a, o, u), it takes back harmony.
  * 3. If it contains front vowels (ä, ö, y) and no back vowels, it takes front harmony.
- * 4. If it contains only neutral vowels (e, i), Finnish defaults to front harmony (e.g. "Helsingissä", "Villellä").
+ * 4. Swedish å behaves as back vowel /o/ unless combined with front vowels (e.g. Vårdö -> Vårdössä).
+ * 5. If it contains only neutral vowels (e, i), Finnish defaults to front harmony (e.g. "Helsingissä", "Villellä").
+ * 6. For vowel-less acronyms, the spoken name of the final letter determines harmony.
  *
  * @param word - The word or name to evaluate.
  * @returns 'front' or 'back' vowel harmony.
@@ -54,23 +110,16 @@ function getLastComponent(word: string): string {
  */
 export function getVowelHarmony(word: string): VowelHarmony {
   const component = getLastComponent(word);
-
-  let hasBack = false;
-  let hasFront = false;
-
-  for (const char of component) {
-    if (BACK_VOWELS.has(char)) {
-      hasBack = true;
-    } else if (FRONT_VOWELS.has(char)) {
-      hasFront = true;
-    }
+  const scanned = scanVowels(component);
+  if (scanned) {
+    return scanned;
   }
 
-  if (hasBack) {
+  // For acronyms/abbreviations without vowels, the spoken name of the final letter determines harmony:
+  // A, H, K, O, Q, U, Z, Å take back vowel harmony (e.g. HJK:ssa, HZ:lla).
+  const lastChar = component[component.length - 1] ?? '';
+  if (BACK_SPOKEN_LETTER_NAMES.has(lastChar)) {
     return 'back';
-  }
-  if (hasFront) {
-    return 'front';
   }
 
   // Words with only neutral vowels (e, i) take front vowel harmony in Finnish.

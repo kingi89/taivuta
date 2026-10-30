@@ -125,6 +125,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Koski Tl:n',
     partitive: 'Koski Tl:ää',
     adessive: 'Koski Tl:llä',
+    ablative: 'Koski Tl:ltä',
     allative: 'Koski Tl:lle',
     illative: 'Koski Tl:ään'
   }],
@@ -321,6 +322,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Paraisten',
     partitive: 'Paraisia',
     adessive: 'Paraisilla',
+    ablative: 'Paraisilta',
     allative: 'Paraisille'
   }],
   ['Uurainen', {
@@ -328,6 +330,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Uuraisten',
     partitive: 'Uuraisia',
     adessive: 'Uuraisilla',
+    ablative: 'Uuraisilta',
     allative: 'Uuraisille'
   }],
   ['Pihtipudas', {
@@ -405,66 +408,77 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Huittisten',
     partitive: 'Huittisia',
     inessive: 'Huittisissa',
+    elative: 'Huittisista',
     illative: 'Huittisiin'
   }],
   ['Ikaalinen', {
     genitive: 'Ikaalisten',
     partitive: 'Ikaalisia',
     inessive: 'Ikaalisissa',
+    elative: 'Ikaalisista',
     illative: 'Ikaalisiin'
   }],
   ['Jokioinen', {
     genitive: 'Jokioisten',
     partitive: 'Jokioisia',
     inessive: 'Jokioisissa',
+    elative: 'Jokioisista',
     illative: 'Jokioisiin'
   }],
   ['Joroinen', {
     genitive: 'Joroisten',
     partitive: 'Joroisia',
     inessive: 'Joroisissa',
+    elative: 'Joroisista',
     illative: 'Joroisiin'
   }],
   ['Kaskinen', {
     genitive: 'Kaskisten',
     partitive: 'Kaskisia',
     inessive: 'Kaskisissa',
+    elative: 'Kaskisista',
     illative: 'Kaskisiin'
   }],
   ['Kauniainen', {
     genitive: 'Kauniaisten',
     partitive: 'Kauniaisia',
     inessive: 'Kauniaisissa',
+    elative: 'Kauniaisista',
     illative: 'Kauniaisiin'
   }],
   ['Kuhmoinen', {
     genitive: 'Kuhmoisten',
     partitive: 'Kuhmoisia',
     inessive: 'Kuhmoisissa',
+    elative: 'Kuhmoisista',
     illative: 'Kuhmoisiin'
   }],
   ['Nousiainen', {
     genitive: 'Nousiaisten',
     partitive: 'Nousiaisia',
     inessive: 'Nousiaisissa',
+    elative: 'Nousiaisista',
     illative: 'Nousiaisiin'
   }],
   ['Oulainen', {
     genitive: 'Oulaisten',
     partitive: 'Oulaisia',
     inessive: 'Oulaisissa',
+    elative: 'Oulaisista',
     illative: 'Oulaisiin'
   }],
   ['Pornainen', {
     genitive: 'Pornaisten',
     partitive: 'Pornaisia',
     inessive: 'Pornaisissa',
+    elative: 'Pornaisista',
     illative: 'Pornaisiin'
   }],
   ['Siikainen', {
     genitive: 'Siikaisten',
     partitive: 'Siikaisia',
     inessive: 'Siikaisissa',
+    elative: 'Siikaisista',
     illative: 'Siikaisiin'
   }]
 ]);

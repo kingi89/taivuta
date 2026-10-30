@@ -9,6 +9,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { MUNICIPALITY_TEST_CASES } from './fixtures/municipalities.fixture.ts';
 import { detectLocalCase, inflectPlace } from '../src/place/inflect-place.ts';
+import { inflect, inflectPerson } from '../src/index.ts';
 
 describe('Official Finnish Municipalities Benchmark (100% Accuracy on 308 Municipalities)', () => {
   it('achieves 100% accuracy on local case selection (in vs. on) for all 308 municipalities', () => {
@@ -162,5 +163,89 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflectPlace('Helsinki', 'localTo', { localCase: 'on' }), 'Helsingille');
     assert.equal(inflectPlace('Tampere', 'local', { localCase: 'in' }), 'Tampereessa');
     assert.equal(inflectPlace('Tampere', 'localTo', { localCase: 'in' }), 'Tampereeseen');
+  });
+
+  it('inflects specialized toponyms, exonyms, abbreviations, and foreign names accurately', () => {
+    // 1. Surnames/places in -nen with local and grammatical cases
+    assert.equal(inflectPlace('Virtanen', 'local'), 'Virtasessa');
+    assert.equal(inflectPlace('Virtanen', 'localFrom'), 'Virtasesta');
+    assert.equal(inflectPlace('Virtanen', 'localTo'), 'Virtaseen');
+    assert.equal(inflectPlace('Virtanen', 'genitive'), 'Virtasen');
+    assert.equal(inflectPlace('Virtanen', 'partitive'), 'Virtasta');
+    assert.equal(inflectPlace('Virtanen', 'illative'), 'Virtaseen');
+    assert.equal(inflectPlace('Virtanen', 'adessive'), 'Virtasella');
+    assert.equal(inflectPlace('Virtanen', 'ablative'), 'Virtaselta');
+    assert.equal(inflectPlace('Virtanen', 'allative'), 'Virtaselle');
+    assert.equal(inflectPlace('Virtanen', 'essive'), 'Virtasena');
+    assert.equal(inflectPlace('Virtanen', 'translative'), 'Virtaseksi');
+    assert.equal(inflect('Virtanen', 'local'), 'Virtasessa');
+
+    // 2. Plural -inen municipalities
+    assert.equal(inflectPlace('Kauniainen', 'localFrom'), 'Kauniaisista');
+    assert.equal(inflectPlace('Huittinen', 'localFrom'), 'Huittisista');
+    assert.equal(inflectPlace('Parainen', 'localFrom'), 'Paraisilta');
+    assert.equal(inflectPlace('Uurainen', 'localFrom'), 'Uuraisilta');
+
+    // 3. Vowel-less abbreviations (Koski Tl, HJK) requiring colon separation
+    assert.equal(inflectPlace('Koski Tl', 'local'), 'Koski Tl:llä');
+    assert.equal(inflectPlace('Koski Tl', 'localFrom'), 'Koski Tl:ltä');
+    assert.equal(inflectPlace('Koski Tl', 'localTo'), 'Koski Tl:lle');
+    assert.equal(inflectPlace('Koski Tl', 'genitive'), 'Koski Tl:n');
+    assert.equal(inflectPlace('Koski Tl', 'partitive'), 'Koski Tl:ää');
+    assert.equal(inflectPlace('Koski Tl', 'illative'), 'Koski Tl:ään');
+    assert.equal(inflectPlace('Koski Tl', 'inessive'), 'Koski Tl:ssä');
+    assert.equal(inflectPlace('Koski Tl', 'elative'), 'Koski Tl:stä');
+    assert.equal(inflectPlace('Koski Tl', 'essive'), 'Koski Tl:nä');
+    assert.equal(inflectPlace('Koski Tl', 'translative'), 'Koski Tl:ksi');
+    assert.equal(inflectPlace('HJK', 'local'), 'HJK:ssa');
+    assert.equal(inflectPlace('VR', 'adessive'), 'VR:llä');
+    assert.equal(inflectPlace('HZ', 'adessive'), 'HZ:lla');
+    assert.equal(inflect('Koski Tl', 'localFrom'), 'Koski Tl:ltä');
+
+    // 4. Non-alphanumeric and non-Latin endings
+    assert.equal(inflectPlace('Studio_', 'local'), 'Studio_:ssa');
+    assert.equal(inflectPlace('Agent007', 'allative'), 'Agent007:lle');
+    assert.equal(inflectPlace('Agent007', 'localTo'), 'Agent007:iin');
+    assert.equal(inflectPlace('朧', 'local'), '朧:ssä');
+    assert.equal(inflectPerson('Agent007', 'genitive'), 'Agent007:n');
+    assert.equal(inflectPerson('Agent007', 'partitive'), 'Agent007:a');
+    assert.equal(inflectPerson('Agent007', 'illative'), 'Agent007:iin');
+    assert.equal(inflectPerson('Agent007', 'adessive'), 'Agent007:lla');
+
+    // 5. Exonyms and compound places
+    assert.equal(inflectPlace('Uusi-Seelanti', 'local'), 'Uudessa-Seelannissa');
+    assert.equal(inflectPlace('Uusi-Seelanti', 'localFrom'), 'Uudesta-Seelannista');
+    assert.equal(inflectPlace('Uusi-Seelanti', 'localTo'), 'Uuteen-Seelantiin');
+    assert.equal(inflectPlace('Iso-Britannia', 'local'), 'Isossa-Britanniassa');
+    assert.equal(inflectPlace('Iso-Britannia', 'localFrom'), 'Isosta-Britanniasta');
+    assert.equal(inflectPlace('Iso-Britannia', 'localTo'), 'Isoon-Britanniaan');
+    assert.equal(inflectPlace('Thaimaa', 'local'), 'Thaimaassa');
+    assert.equal(inflectPlace('Thaimaa', 'localTo'), 'Thaimaahan');
+    assert.equal(inflectPlace('Kanariansaaret', 'local'), 'Kanariansaarilla');
+    assert.equal(inflectPlace('Kanariansaaret', 'localFrom'), 'Kanariansaarilta');
+    assert.equal(inflectPlace('Kanariansaaret', 'localTo'), 'Kanariansaarille');
+    assert.equal(inflectPlace('Kanariansaaret', 'genitive'), 'Kanariansaarten');
+    assert.equal(inflectPlace('Kanariansaaret', 'partitive'), 'Kanariansaaria');
+    assert.equal(inflectPlace('Kanariansaaret', 'illative'), 'Kanariansaariin');
+    assert.equal(inflectPlace('Kanariansaaret', 'inessive'), 'Kanariansaarissa');
+    assert.equal(inflectPlace('Kanariansaaret', 'elative'), 'Kanariansaarista');
+    assert.equal(inflectPlace('Kanariansaaret', 'essive'), 'Kanariansaarina');
+    assert.equal(inflectPlace('Kanariansaaret', 'translative'), 'Kanariansaariksi');
+    assert.equal(inflect('Uusi-Seelanti', 'local'), 'Uudessa-Seelannissa');
+    assert.equal(inflect('Kanariansaaret', 'local'), 'Kanariansaarilla');
+
+    // 6. Accented tail characters and macrons (Hokkaidō)
+    assert.equal(inflectPlace('Hokkaidō', 'local'), 'Hokkaidōssa');
+    assert.equal(inflectPlace('Hokkaidō', 'localFrom'), 'Hokkaidōsta');
+    assert.equal(inflectPlace('Hokkaidō', 'localTo'), 'Hokkaidōhon');
+    assert.equal(inflectPlace('Hokkaidō', 'partitive'), 'Hokkaidōta');
+    assert.equal(inflectPlace('Hokkaidō', 'genitive'), 'Hokkaidōn');
+    assert.equal(inflectPlace('Hokkaidō', 'adessive'), 'Hokkaidōlla');
+    assert.equal(inflectPlace('Hokkaidō', 'ablative'), 'Hokkaidōlta');
+    assert.equal(inflectPlace('Hokkaidō', 'allative'), 'Hokkaidōlle');
+    assert.equal(inflectPlace('Hokkaidō', 'essive'), 'Hokkaidōna');
+    assert.equal(inflectPlace('Hokkaidō', 'translative'), 'Hokkaidōksi');
+    assert.equal(inflectPlace('Åland', 'local'), 'Ålandissa');
+    assert.equal(inflect('Hokkaidō', 'local'), 'Hokkaidōssa');
   });
 });

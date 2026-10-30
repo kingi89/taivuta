@@ -11,6 +11,7 @@ import { analyzeStem, type AnalyzedStem } from '../morphology/stem.ts';
 import { weakenConsonants } from '../morphology/gradation.ts';
 import { harmonize } from '../morphology/vowels.ts';
 import { matchNatureNounSurname, inflectNatureNounSurname } from '../morphology/nature-nouns.ts';
+import { needsColon, inflectColonWord } from '../place/special-places.ts';
 import type { GrammaticalCase, InflectPersonOptions } from './types.ts';
 
 /**
@@ -189,6 +190,10 @@ export function composeCase(
 
   if (caseName === 'nominative') {
     return word;
+  }
+
+  if (needsColon(word)) {
+    return inflectColonWord(word, caseName);
   }
 
   // Ancient nature noun surnames (Niemi, Koski, Mäki, Saari, Salmi, Nurmi, Lahti, Laine)
