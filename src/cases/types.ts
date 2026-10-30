@@ -65,3 +65,29 @@ export interface InflectPersonOptions {
    */
   readonly gradation?: boolean;
 }
+
+/**
+ * Options controlling unified nominal inflection.
+ */
+export interface InflectOptions {
+  /**
+   * The semantic entity type of the proper noun:
+   * - 'person': Person name (given name, surname, compound).
+   * - 'place': Toponym / geographic place name.
+   * - 'auto': Detects based on place dictionary, toponymic suffixes, or default nominal rules.
+   */
+  readonly role?: 'person' | 'place' | 'auto';
+  /**
+   * Explicit local case override for places ('in' or 'on').
+   */
+  readonly localCase?: LocalCaseType;
+  /**
+   * Explicitly control whether consonant gradation applies.
+   */
+  readonly gradation?: boolean;
+  /**
+   * Force or disable s-stem declension for person names.
+   */
+  readonly sStem?: boolean;
+}
+

@@ -29,6 +29,11 @@ export interface InflectPlaceOptions {
   readonly localCase?: LocalCaseType;
 }
 
+/**
+ * Common toponymic settlement and landscape suffixes.
+ */
+export const TOPONYM_SUFFIX_REGEX = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|niemi|vaara|harju|kangas|suo|lampi|nummi|kylä|linna|lahti)$/i;
+
 const NATURE_EXTERNAL_SUFFIXES = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|niemi|vaara|harju|kangas|suo|lampi|nummi)$/i;
 
 /**

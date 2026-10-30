@@ -49,10 +49,22 @@ export {
   type InflectPlaceOptions
 } from './place/inflect-place.ts';
 
+export {
+  inflect
+} from './cases/inflect.ts';
+
+export {
+  format,
+  t,
+  type FormatValues,
+  type TaggedTemplateArg
+} from './template/format.ts';
+
 export type {
   GrammaticalCase,
   LocalCaseType,
   PlaceLocalCase,
   CaseName,
-  InflectPersonOptions
+  InflectPersonOptions,
+  InflectOptions
 } from './cases/types.ts';

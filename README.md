@@ -18,7 +18,7 @@ When localizing applications into Finnish, inserting proper nouns into templates
 - **Zero Runtime Dependencies**: Published package contains zero external dependencies and maintains a small bundle footprint (<25 kB).
 - **Place Name Inflection & Local Case Detection**: Automatically determines whether a place uses internal local cases (*Turussa*) or external local cases (*Tampereella*) with 100% accuracy on all 309 Finnish municipalities.
 - **Person Name Inflection**: Handles consonant gradation (*k/p/t*), vowel harmony, and suffix classes for Finnish and foreign given names and surnames.
-- **Template Engine**: Formats strings using expressive syntax (e.g. `{$name|genitive|person}`) or tagged template literals.
+- **Template Engine**: Formats strings using expressive syntax (`{$name:case[:role]}`) or tagged template literals (`t`).
 - **Dual Module Output**: First-class ESM (`.mjs`) and CommonJS (`.cjs`) builds with complete TypeScript declarations.
 
 ---
@@ -36,28 +36,40 @@ npm install taivuta
 ### Quick Example
 
 ```typescript
-import { inflectPerson } from 'taivuta';
+import { inflect, inflectPlace, inflectPerson, format, t } from 'taivuta';
 
-// Given names with consonant gradation
-inflectPerson('Erkki', 'genitive');            // "Erkin" -> "Tänään on Erkin syntymäpäivä"
+// 1. Unified Inflection API
+inflect('Erkki', 'genitive');                  // "Erkin"
+inflect('Virtanen', 'partitive');              // "Virtasta"
+inflect('Tampere', 'local');                   // "Tampereella"
+inflect('Helsinki', 'localTo');                // "Helsinkiin"
+
+// 2. String Template Formatting
+format('Tänään on {$user:genitive} syntymäpäivä!', { user: 'Erkki' });
+// "Tänään on Erkin syntymäpäivä!"
+
+format('Tervetuloa {$city:localTo}!', { city: 'Tampere' });
+// "Tervetuloa Tampereelle!"
+
+format('Tervetuloa {$city:localTo}!', { city: 'Helsinki' });
+// "Tervetuloa Helsinkiin!"
+
+// 3. Tagged Template Literals
+const user = 'Liisa';
+const city = 'Rovaniemi';
+t`Onnea ${[user, 'genitive']} päivänä! Terveisiä ${[city, 'localFrom']}!`;
+// "Onnea Liisan päivänä! Terveisiä Rovaniemeltä!"
+
+// 4. Place Names & 100% Municipality Accuracy
+inflectPlace('Turku', 'local');                // "Turussa"
+inflectPlace('Tampere', 'local');              // "Tampereella"
+inflectPlace('Tampere', 'localTo');            // "Tampereelle"
+inflectPlace('Kauniainen', 'genitive');        // "Kauniaisten"
+
+// 5. Person Names & Morphological Roles
 inflectPerson('Matti', 'genitive');            // "Matin"
-inflectPerson('Ville', 'adessive');            // "Villellä"
 inflectPerson('Tuomas', 'illative');           // "Tuomakseen"
-inflectPerson('Kerttu', 'allative');           // "Kertulle"
-
-// Surnames
-inflectPerson('Virtanen', 'genitive');          // "Virtasen"
-inflectPerson('Mäkinen', 'partitive');         // "Mäkistä"
-
-// Multi-word full names (inflects surname)
-inflectPerson('Matti Virtanen', 'genitive');   // "Matti Virtasen"
-
-// Hyphenated compound names
-inflectPerson('Marja-Liisa', 'adessive');      // "Marja-Liisalla"
-
-// Foreign names
 inflectPerson('John', 'allative');             // "Johnille"
-inflectPerson('Alice', 'genitive');            // "Alicen"
 inflectPerson('Bordeaux', 'inessive');         // "Bordeaux'ssa"
 ```
 
