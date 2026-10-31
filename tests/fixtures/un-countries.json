@@ -38,6 +38,7 @@
   {"name":"Espanja","localCase":"Espanjassa","localFrom":"Espanjasta","localTo":"Espanjaan","genitive":"Espanjan","localCaseType":"in"},
   {"name":"Eswatini","localCase":"Eswatinissa","localFrom":"Eswatinista","localTo":"Eswatiniin","genitive":"Eswatinin","localCaseType":"in"},
   {"name":"Etelä-Afrikka","localCase":"Etelä-Afrikassa","localFrom":"Etelä-Afrikasta","localTo":"Etelä-Afrikkaan","genitive":"Etelä-Afrikan","localCaseType":"in"},
+  {"name":"Etelä-Korea","localCase":"Etelä-Koreassa","localFrom":"Etelä-Koreasta","localTo":"Etelä-Koreaan","genitive":"Etelä-Korean","localCaseType":"in"},
   {"name":"Etelä-Sudan","localCase":"Etelä-Sudanissa","localFrom":"Etelä-Sudanista","localTo":"Etelä-Sudaniin","genitive":"Etelä-Sudanin","localCaseType":"in"},
   {"name":"Etiopia","localCase":"Etiopiassa","localFrom":"Etiopiasta","localTo":"Etiopiaan","genitive":"Etiopian","localCaseType":"in"},
   {"name":"Fidži","localCase":"Fidžillä","localFrom":"Fidžiltä","localTo":"Fidžille","genitive":"Fidžin","localCaseType":"on"},
@@ -165,6 +166,7 @@
   {"name":"Sveitsi","localCase":"Sveitsissä","localFrom":"Sveitsistä","localTo":"Sveitsiin","genitive":"Sveitsin","localCaseType":"in"},
   {"name":"Syyria","localCase":"Syyriassa","localFrom":"Syyriasta","localTo":"Syyriaan","genitive":"Syyrian","localCaseType":"in"},
   {"name":"Tadžikistan","localCase":"Tadžikistanissa","localFrom":"Tadžikistanista","localTo":"Tadžikistaniin","genitive":"Tadžikistanin","localCaseType":"in"},
+  {"name":"Taiwan","localCase":"Taiwanissa","localFrom":"Taiwanista","localTo":"Taiwaniin","genitive":"Taiwanin","localCaseType":"in"},
   {"name":"Tansania","localCase":"Tansaniassa","localFrom":"Tansaniasta","localTo":"Tansaniaan","genitive":"Tansanian","localCaseType":"in"},
   {"name":"Tanska","localCase":"Tanskassa","localFrom":"Tanskasta","localTo":"Tanskaan","genitive":"Tanskan","localCaseType":"in"},
   {"name":"Thaimaa","localCase":"Thaimaassa","localFrom":"Thaimaasta","localTo":"Thaimaahan","genitive":"Thaimaan","localCaseType":"in"},
@@ -191,6 +193,7 @@
   {"name":"Vietnam","localCase":"Vietnamissa","localFrom":"Vietnamista","localTo":"Vietnamiin","genitive":"Vietnamin","localCaseType":"in"},
   {"name":"Viro","localCase":"Virossa","localFrom":"Virosta","localTo":"Viroon","genitive":"Viron","localCaseType":"in"},
   {"name":"Yhdysvallat","localCase":"Yhdysvalloissa","localFrom":"Yhdysvalloista","localTo":"Yhdysvaltoihin","genitive":"Yhdysvaltojen","localCaseType":"in"},
+  {"name":"Yhdistyneet arabiemiirikunnat","localCase":"Yhdistyneissä arabiemiirikunnissa","localFrom":"Yhdistyneistä arabiemiirikunnista","localTo":"Yhdistyneisiin arabiemiirikuntiin","genitive":"Yhdistyneiden arabiemiirikuntien","localCaseType":"in"},
   {"name":"Yhdistynyt kuningaskunta","localCase":"Yhdistyneessä kuningaskunnassa","localFrom":"Yhdistyneestä kuningaskunnasta","localTo":"Yhdistyneeseen kuningaskuntaan","genitive":"Yhdistyneen kuningaskunnan","localCaseType":"in"},
-  {"name":"Zimbabwe","localCase":"Zimbabwessa","localFrom":"Zimbabwesta","localTo":"Zimbabwean","genitive":"Zimbabwen","localCaseType":"in"}
+  {"name":"Zimbabwe","localCase":"Zimbabwessa","localFrom":"Zimbabwesta","localTo":"Zimbabween","genitive":"Zimbabwen","localCaseType":"in"}
 ]

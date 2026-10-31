@@ -111,15 +111,18 @@ export function getCompoundPrefixMatch(
   place: string,
   targetCase: GrammaticalCase
 ): { prefix: string; remainder: string } | null {
-  for (const prefix of ['Uusi-', 'Iso-']) {
-    if (place.startsWith(prefix)) {
-      const inflectedPrefix = COMPOUND_PREFIX_DECLENSIONS[prefix]?.[targetCase];
-      if (inflectedPrefix) {
-        return { prefix: inflectedPrefix, remainder: place.slice(prefix.length) };
-      }
-    }
+  const match = place.match(/^(.*?\b)(Uusi-|Iso-)(.*)$/);
+  if (!match) {
+    return null;
   }
-  return null;
+  const pre = match[1] ?? '';
+  const prefix = match[2] ?? '';
+  const remainder = match[3] ?? '';
+  const inflectedPrefix = COMPOUND_PREFIX_DECLENSIONS[prefix]?.[targetCase];
+  if (!inflectedPrefix) {
+    return null;
+  }
+  return { prefix: `${pre}${inflectedPrefix}`, remainder };
 }
 
 /**

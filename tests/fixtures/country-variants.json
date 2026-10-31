@@ -1,4 +1,5 @@
 [
+  {"name":"Arabiemiirikunnat","localCase":"Arabiemiirikunnissa","localFrom":"Arabiemiirikunnista","localTo":"Arabiemiirikuntiin","genitive":"Arabiemiirikuntien","localCaseType":"in"},
   {"name":"Bosnia-Hertsegovina","localCase":"Bosnia-Hertsegovinassa","localFrom":"Bosnia-Hertsegovinasta","localTo":"Bosnia-Hertsegovinaan","genitive":"Bosnia-Hertsegovinan","localCaseType":"in"},
   {"name":"Eesti","localCase":"Eestissä","localFrom":"Eestistä","localTo":"Eestiin","genitive":"Eestin","localCaseType":"in"},
   {"name":"Iso-Britannia","localCase":"Isossa-Britanniassa","localFrom":"Isosta-Britanniasta","localTo":"Isoon-Britanniaan","genitive":"Ison-Britannian","localCaseType":"in"},

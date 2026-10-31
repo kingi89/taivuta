@@ -66,6 +66,11 @@ function getLastComponent(word: string): string {
 }
 
 function scanVowels(component: string): 'back' | 'front' | null {
+  // Foreign names ending in German diphthong -stein pronounced /ai/ (e.g. Liechtenstein) take back harmony
+  if (component.toLowerCase().endsWith('stein')) {
+    return 'back';
+  }
+
   let hasBack = false;
   let hasFront = false;
   let hasAring = false;

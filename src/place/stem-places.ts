@@ -13,9 +13,6 @@ function resolveStandardPartitive(place: string): string {
   if (/(?:io|iö)$/i.test(place)) {
     return harmonize('ta', place);
   }
-  if (place.endsWith('e') && !/(?:ee)$/i.test(place)) {
-    return harmonize('tta', place);
-  }
   return harmonize('a', place);
 }
 
@@ -30,10 +27,16 @@ export function inflectStandardPlace(place: string, targetCase: GrammaticalCase)
   const resists = GRADATION_RESISTANT_PLACES.has(place);
   const weakStem = resists ? place : weakenConsonants(place);
   const strongStem = place;
-  const isEPlace = place.endsWith('e') && !/(?:ee)$/i.test(place);
 
-  if (targetCase === 'genitive') return isEPlace ? `${place}en` : `${weakStem}n`;
-  if (targetCase === 'illative') return isEPlace ? `${place}eseen` : `${place}${place.slice(-1)}n`;
+  if (targetCase === 'genitive') return `${weakStem}n`;
+  if (targetCase === 'illative') {
+    if (/(?:ei|ay|uy|au)$/i.test(place)) {
+      const last = place.slice(-1);
+      const v = last === 'y' ? 'i' : last;
+      return `${place}h${v}n`;
+    }
+    return `${place}${place.slice(-1)}n`;
+  }
   if (targetCase === 'partitive') return `${place}${resolveStandardPartitive(place)}`;
 
   const endings: Record<string, string> = {

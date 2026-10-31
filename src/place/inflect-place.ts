@@ -21,6 +21,12 @@ import {
   inflectNenPlace,
   inflectMacronPlace
 } from './special-places.ts';
+import {
+  inflectPluralMaat,
+  inflectPluralVallat,
+  inflectPluralIslandArchipelago,
+  inflectStateCompound
+} from './state-places.ts';
 import { dispatchStemInflection } from './stem-places.ts';
 
 /**
@@ -38,9 +44,47 @@ export interface InflectPlaceOptions {
 /**
  * Common toponymic settlement and landscape suffixes.
  */
-export const TOPONYM_SUFFIX_REGEX = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|saaret|niemi|vaara|harju|kangas|suo|lampi|nummi|kylä|linna|lahti|maa)$/i;
+export const TOPONYM_SUFFIX_REGEX = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|saaret|niemi|vaara|harju|kangas|suo|lampi|nummi|kylä|linna|lahti|maa|rannikko)$/i;
 
-const NATURE_EXTERNAL_SUFFIXES = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|saaret|niemi|vaara|harju|kangas|suo|lampi|nummi)$/i;
+const NATURE_EXTERNAL_SUFFIXES = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|saaret|niemi|vaara|harju|kangas|suo|lampi|nummi|rannikko)$/i;
+
+const EXTERNAL_CASE_COUNTRIES: ReadonlySet<string> = new Set([
+  'bahama',
+  'barbados',
+  'dominica',
+  'fidzi',
+  'grenada',
+  'kap verde',
+  'kiribati',
+  'malta',
+  'nauru',
+  'palau',
+  'saint lucia',
+  'samoa',
+  'sao tome ja principe',
+  'tonga',
+  'tuvalu',
+  'vanuatu',
+  'venäjä',
+  'valko-venäjä'
+]);
+
+/**
+ * Normalizes foreign diacritics in toponyms for robust matching,
+ * while strictly preserving Finnish phonemic vowels (ä, ö, å).
+ */
+function normalizeForeignAccents(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[áàâãā]/g, 'a')
+    .replace(/[éèêëē]/g, 'e')
+    .replace(/[íìîïī]/g, 'i')
+    .replace(/[óòôõō]/g, 'o')
+    .replace(/[úùûū]/g, 'u')
+    .replace(/ž/g, 'z')
+    .replace(/š/g, 's')
+    .replace(/č/g, 'c');
+}
 
 /**
  * Detects whether a Finnish place name conventionally takes internal local cases
@@ -57,6 +101,15 @@ const NATURE_EXTERNAL_SUFFIXES = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|sa
  * detectLocalCase("Alajärvi"); // "on" (Alajärvellä)
  * ```
  */
+function hasExternalLocalCase(place: string): boolean {
+  const normalized = normalizeForeignAccents(place);
+  return (
+    normalized.endsWith('saaret') ||
+    EXTERNAL_CASE_COUNTRIES.has(normalized) ||
+    /(?:iinit|iivit|ellit|orit)$/i.test(place)
+  );
+}
+
 export function detectLocalCase(place: string): LocalCaseType {
   if (!place) {
     return 'in';
@@ -67,16 +120,12 @@ export function detectLocalCase(place: string): LocalCaseType {
     return override.localCaseType;
   }
 
-  if (EXTERNAL_CASE_MUNICIPALITIES.has(place)) {
+  if (EXTERNAL_CASE_MUNICIPALITIES.has(place) || hasExternalLocalCase(place)) {
     return 'on';
   }
 
   if (ISLAND_INTERNAL_EXCEPTIONS.has(place)) {
     return 'in';
-  }
-
-  if (place.toLowerCase().endsWith('saaret')) {
-    return 'on';
   }
 
   if (place.startsWith('Uusi-') || place.startsWith('Iso-')) {
@@ -171,7 +220,21 @@ function resolveSpecialPlace(place: string, targetCase: GrammaticalCase): string
   if (needsColon(place)) {
     return inflectColonWord(place, targetCase);
   }
-  const islandGroup = inflectIslandGroup(place, targetCase);
+  const state = inflectStateCompound(place, targetCase);
+  if (state) {
+    return state;
+  }
+  const maat = inflectPluralMaat(place, targetCase);
+  if (maat) {
+    return maat;
+  }
+  const vallat = inflectPluralVallat(place, targetCase);
+  if (vallat) {
+    return vallat;
+  }
+  const islandGroup =
+    inflectIslandGroup(place, targetCase) ??
+    inflectPluralIslandArchipelago(place, targetCase);
   if (islandGroup) {
     return islandGroup;
   }

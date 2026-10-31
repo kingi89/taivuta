@@ -104,22 +104,53 @@ export const ISLAND_INTERNAL_EXCEPTIONS: ReadonlySet<string> = new Set([
  */
 export const GRADATION_RESISTANT_PLACES: ReadonlySet<string> = new Set([
   'Asikkala',
+  'Djibouti',
+  'Haiti',
   'Humppila',
+  'Kiribati',
   'Kokkola',
   'Lempäälä',
+  'Malta',
   'Marttila',
   'Mikkeli',
   'Naantali',
   'Nakkila',
   'Orimattila',
   'Parikkala',
-  'Pukkila'
+  'Pukkila',
+  'Sri Lanka',
+  'Vanuatu'
 ]);
 
 /**
  * Explicit stem overrides for irregular places, compounds, and administrative entries.
  */
 export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<string, PlaceOverride>([
+  ['Suomi', {
+    localCaseType: 'in',
+    genitive: 'Suomen',
+    partitive: 'Suomea',
+    inessive: 'Suomessa',
+    elative: 'Suomesta',
+    illative: 'Suomeen'
+  }],
+  ['Kypros', {
+    localCaseType: 'in',
+    genitive: 'Kyproksen',
+    partitive: 'Kyprosta',
+    inessive: 'Kyproksessa',
+    elative: 'Kyproksesta',
+    illative: 'Kyprokseen'
+  }],
+  ['Mauritius', {
+    localCaseType: 'on',
+    genitive: 'Mauritiuksen',
+    partitive: 'Mauritiusta',
+    adessive: 'Mauritiuksella',
+    ablative: 'Mauritiukselta',
+    allative: 'Mauritiukselle',
+    illative: 'Mauritiukselle'
+  }],
   ['Koski Tl', {
     localCaseType: 'on',
     genitive: 'Koski Tl:n',
@@ -189,14 +220,16 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     adessive: 'Keiteleellä',
     genitive: 'Keiteleen',
     partitive: 'Keitelettä',
-    allative: 'Keiteleelle'
+    allative: 'Keiteleelle',
+    illative: 'Keiteleeseen'
   }],
   ['Kuortane', {
     localCaseType: 'on',
     adessive: 'Kuortaneella',
     genitive: 'Kuortaneen',
     partitive: 'Kuortanetta',
-    allative: 'Kuortaneelle'
+    allative: 'Kuortaneelle',
+    illative: 'Kuortaneeseen'
   }],
   ['Lapinlahti', {
     localCaseType: 'on',
@@ -245,7 +278,8 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     adessive: 'Pälkäneellä',
     genitive: 'Pälkäneen',
     partitive: 'Pälkänettä',
-    allative: 'Pälkäneelle'
+    allative: 'Pälkäneelle',
+    illative: 'Pälkäneeseen'
   }],
   ['Ruokolahti', {
     localCaseType: 'on',
@@ -259,7 +293,8 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     adessive: 'Savitaipaleella',
     genitive: 'Savitaipaleen',
     partitive: 'Savitaipaletta',
-    allative: 'Savitaipaleelle'
+    allative: 'Savitaipaleelle',
+    illative: 'Savitaipaleeseen'
   }],
   ['Mänttä-Vilppula', {
     localCaseType: 'in',
