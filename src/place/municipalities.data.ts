@@ -126,6 +126,14 @@ export const GRADATION_RESISTANT_PLACES: ReadonlySet<string> = new Set([
  * Explicit stem overrides for irregular places, compounds, and administrative entries.
  */
 export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<string, PlaceOverride>([
+  ['Ahvenanmaa', {
+    localCaseType: 'on',
+    adessive: 'Ahvenanmaalla',
+    ablative: 'Ahvenanmaalta',
+    allative: 'Ahvenanmaalle',
+    genitive: 'Ahvenanmaan',
+    partitive: 'Ahvenanmaata'
+  }],
   ['Suomi', {
     localCaseType: 'in',
     genitive: 'Suomen',
@@ -387,7 +395,10 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Virtojen',
     partitive: 'Virtoja',
     adessive: 'Virroilla',
-    allative: 'Virroille'
+    ablative: 'Virroilta',
+    allative: 'Virroille',
+    elative: 'Virroilta',
+    illative: 'Virtoihin'
   }],
   ['Rautalampi', {
     localCaseType: 'on',

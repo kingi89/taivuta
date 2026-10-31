@@ -272,6 +272,22 @@ function main(): void {
       continue;
     }
 
+    if (lower.endsWith('lahti')) {
+      const base = clean.slice(0, -5);
+      const isCap = (clean[0] ?? '').toUpperCase() === clean[0];
+      const weak = base ? `${base}lahde` : isCap ? 'Lahde' : 'lahde';
+      const strong = base ? `${base}lahte` : isCap ? 'Lahte' : 'lahte';
+      testCases.push({
+        name,
+        localCase: `${weak}ssa`,
+        localCaseType: 'in',
+        genitive: `${weak}n`,
+        partitive: `${strong}a`,
+        illative: `${strong}en`
+      });
+      continue;
+    }
+
     if (/(?:vaara|harju|kangas|suo)$/i.test(clean)) {
       const adSuffix = harmonize('lla', clean);
       const weak = weakenConsonants(clean);

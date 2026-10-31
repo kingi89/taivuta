@@ -247,5 +247,21 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflectPlace('Hokkaidō', 'translative'), 'Hokkaidōksi');
     assert.equal(inflectPlace('Åland', 'local'), 'Ålandissa');
     assert.equal(inflect('Hokkaidō', 'local'), 'Hokkaidōssa');
+    assert.equal(inflect('Hokkaidō', 'genitive'), 'Hokkaidōn');
+
+    // 7. Long vowel partitives, nature suffixes, and island provinces
+    assert.equal(inflectPlace('Lontoo', 'partitive'), 'Lontoota');
+    assert.equal(inflectPlace('Lahti', 'local'), 'Lahdessa');
+    assert.equal(inflectPlace('Lahti', 'localFrom'), 'Lahdesta');
+    assert.equal(inflectPlace('Lahti', 'localTo'), 'Lahteen');
+    assert.equal(inflectPlace('Lahti', 'genitive'), 'Lahden');
+    assert.equal(inflectPlace('Lahti', 'partitive'), 'Lahtea');
+    assert.equal(inflectPlace('Virrat', 'local'), 'Virroilla');
+    assert.equal(inflectPlace('Virrat', 'localFrom'), 'Virroilta');
+    assert.equal(inflectPlace('Virrat', 'localTo'), 'Virroille');
+    assert.equal(inflectPlace('Ahvenanmaa', 'local'), 'Ahvenanmaalla');
+    assert.equal(inflectPlace('Ahvenanmaa', 'localFrom'), 'Ahvenanmaalta');
+    assert.equal(inflectPlace('Ahvenanmaa', 'localTo'), 'Ahvenanmaalle');
+    assert.equal(inflectPlace('Ahvenanmaa', 'genitive'), 'Ahvenanmaan');
   });
 });

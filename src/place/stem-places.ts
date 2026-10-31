@@ -10,7 +10,8 @@ import { weakenConsonants } from '../morphology/gradation.ts';
 import { GRADATION_RESISTANT_PLACES } from './municipalities.data.ts';
 
 function resolveStandardPartitive(place: string): string {
-  if (/(?:io|iö)$/i.test(place)) {
+  // Geminate long vowels (e.g. Lontoo -> Lontoota, Espoo -> Espoota) and -io/-iö take -ta/-tä
+  if (/(?:([aeiouyäö])\1|io|iö)$/i.test(place)) {
     return harmonize('ta', place);
   }
   return harmonize('a', place);

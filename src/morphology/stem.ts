@@ -38,7 +38,7 @@ export interface AnalyzedStem {
   readonly nominative: string;
 }
 
-const VOWEL_REGEX = /[aeiouyäö]/i;
+const VOWEL_REGEX = /[aeiouyäöåáéíóúàèìòùâêîôûãõäöüÿøæœōūāēī]/i;
 const FRENCH_SILENT_SUFFIXES = /(?:eaux|oux|aux)$/i;
 
 /**

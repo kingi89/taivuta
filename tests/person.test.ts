@@ -123,6 +123,12 @@ describe('Foreign Person Names', () => {
     assert.equal(inflectPerson('Erik', 'allative'), 'Erikille');
     assert.equal(inflectPerson('James', 'genitive'), 'Jamesin');
     assert.equal(inflectPerson('Charles', 'genitive'), 'Charlesin');
+
+    // Foreign names ending in accented vowels or macrons attach endings directly
+    assert.equal(inflectPerson('José', 'genitive'), 'Josén');
+    assert.equal(inflectPerson('José', 'partitive'), 'Joséa');
+    assert.equal(inflectPerson('André', 'genitive'), 'Andrén');
+    assert.equal(inflectPerson('Pelé', 'genitive'), 'Pelén');
   });
 
   it('handles names ending in silent consonants with an apostrophe', () => {

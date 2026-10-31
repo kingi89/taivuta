@@ -49,6 +49,7 @@ export const TOPONYM_SUFFIX_REGEX = /(?:järvi|joki|mäki|vesi|koski|salmi|saari
 const NATURE_EXTERNAL_SUFFIXES = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|saaret|niemi|vaara|harju|kangas|suo|lampi|nummi|rannikko)$/i;
 
 const EXTERNAL_CASE_COUNTRIES: ReadonlySet<string> = new Set([
+  'ahvenanmaa',
   'bahama',
   'barbados',
   'dominica',
@@ -147,39 +148,42 @@ interface SuffixForms {
   suffixHarmony: 'front' | 'back';
 }
 
+interface NatureSuffixRule {
+  readonly suffix: string;
+  readonly weak: string;
+  readonly strong: string;
+  readonly partitive: string;
+  readonly illative: string;
+  readonly harmony: 'front' | 'back';
+}
+
+const NATURE_SUFFIX_RULES: readonly NatureSuffixRule[] = [
+  { suffix: 'järvi', weak: 'järve', strong: 'järve', partitive: 'järveä', illative: 'järveen', harmony: 'front' },
+  { suffix: 'joki', weak: 'joe', strong: 'joke', partitive: 'jokea', illative: 'jokeen', harmony: 'back' },
+  { suffix: 'mäki', weak: 'mäe', strong: 'mäke', partitive: 'mäkeä', illative: 'mäkeen', harmony: 'front' },
+  { suffix: 'vesi', weak: 'vede', strong: 'vete', partitive: 'vettä', illative: 'veteen', harmony: 'front' },
+  { suffix: 'saari', weak: 'saare', strong: 'saare', partitive: 'saarta', illative: 'saareen', harmony: 'back' },
+  { suffix: 'koski', weak: 'koske', strong: 'koske', partitive: 'koskea', illative: 'koskeen', harmony: 'back' },
+  { suffix: 'salmi', weak: 'salme', strong: 'salme', partitive: 'salmea', illative: 'salmeen', harmony: 'back' },
+  { suffix: 'niemi', weak: 'nieme', strong: 'nieme', partitive: 'niemeä', illative: 'niemeen', harmony: 'front' },
+  { suffix: 'lahti', weak: 'lahde', strong: 'lahte', partitive: 'lahtea', illative: 'lahteen', harmony: 'back' }
+];
+
 function resolveNatureSuffix(place: string): SuffixForms | null {
   const lower = place.toLowerCase();
-  if (lower.endsWith('järvi')) {
-    const b = place.slice(0, -5);
-    return { weakStem: `${b}järve`, strongStem: `${b}järve`, partitive: `${b}järveä`, illative: `${b}järveen`, suffixHarmony: 'front' };
-  }
-  if (lower.endsWith('joki')) {
-    const b = place.slice(0, -4);
-    return { weakStem: `${b}joe`, strongStem: `${b}joke`, partitive: `${b}jokea`, illative: `${b}jokeen`, suffixHarmony: 'back' };
-  }
-  if (lower.endsWith('mäki')) {
-    const b = place.slice(0, -4);
-    return { weakStem: `${b}mäe`, strongStem: `${b}mäke`, partitive: `${b}mäkeä`, illative: `${b}mäkeen`, suffixHarmony: 'front' };
-  }
-  if (lower.endsWith('vesi')) {
-    const b = place.slice(0, -4);
-    return { weakStem: `${b}vede`, strongStem: `${b}vete`, partitive: `${b}vettä`, illative: `${b}veteen`, suffixHarmony: 'front' };
-  }
-  if (lower.endsWith('saari')) {
-    const b = place.slice(0, -5);
-    return { weakStem: `${b}saare`, strongStem: `${b}saare`, partitive: `${b}saarta`, illative: `${b}saareen`, suffixHarmony: 'back' };
-  }
-  if (lower.endsWith('koski')) {
-    const b = place.slice(0, -5);
-    return { weakStem: `${b}koske`, strongStem: `${b}koske`, partitive: `${b}koskea`, illative: `${b}koskeen`, suffixHarmony: 'back' };
-  }
-  if (lower.endsWith('salmi')) {
-    const b = place.slice(0, -5);
-    return { weakStem: `${b}salme`, strongStem: `${b}salme`, partitive: `${b}salmea`, illative: `${b}salmeen`, suffixHarmony: 'back' };
-  }
-  if (lower.endsWith('niemi')) {
-    const b = place.slice(0, -5);
-    return { weakStem: `${b}nieme`, strongStem: `${b}nieme`, partitive: `${b}niemeä`, illative: `${b}niemeen`, suffixHarmony: 'front' };
+  for (const rule of NATURE_SUFFIX_RULES) {
+    if (lower.endsWith(rule.suffix)) {
+      const base = place.slice(0, -rule.suffix.length);
+      const isCap = !base && place[0] === place[0]?.toUpperCase();
+      const cap = (s: string): string => (isCap ? (s[0]?.toUpperCase() ?? '') + s.slice(1) : s);
+      return {
+        weakStem: base ? `${base}${rule.weak}` : cap(rule.weak),
+        strongStem: base ? `${base}${rule.strong}` : cap(rule.strong),
+        partitive: base ? `${base}${rule.partitive}` : cap(rule.partitive),
+        illative: base ? `${base}${rule.illative}` : cap(rule.illative),
+        suffixHarmony: rule.harmony
+      };
+    }
   }
   return null;
 }

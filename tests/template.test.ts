@@ -7,13 +7,27 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { format, t } from '../src/template/format.ts';
-import { inflect } from '../src/cases/inflect.ts';
+import { inflect, detectEntityRole } from '../src/cases/inflect.ts';
 
 describe('Unified inflect() Function', () => {
   it('inflects person names accurately with explicit or auto role', () => {
     assert.equal(inflect('Matti', 'genitive', { role: 'person' }), 'Matin');
     assert.equal(inflect('Virtanen', 'partitive', { role: 'person' }), 'Virtasta');
     assert.equal(inflect('Matti', 'genitive'), 'Matin');
+  });
+
+  it('accurately detects entity roles for compound countries and personal names', () => {
+    assert.equal(detectEntityRole('Uusi-Seelanti'), 'place');
+    assert.equal(detectEntityRole('Iso-Britannia'), 'place');
+    assert.equal(detectEntityRole('Venäjä'), 'place');
+    assert.equal(detectEntityRole('Ahvenanmaa'), 'place');
+    assert.equal(detectEntityRole('Helsinki'), 'place');
+    assert.equal(detectEntityRole('Thaimaa'), 'place');
+    assert.equal(detectEntityRole('Lahti'), 'place');
+    assert.equal(detectEntityRole('Virrat'), 'place');
+    assert.equal(detectEntityRole('Matti'), 'person');
+    assert.equal(detectEntityRole('Virtanen'), 'person');
+    assert.equal(detectEntityRole('Pekka'), 'person');
   });
 
   it('inflects place names accurately with explicit or auto role', () => {

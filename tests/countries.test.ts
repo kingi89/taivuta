@@ -114,6 +114,70 @@ describe('UN Member States & Country Toponyms Benchmark', () => {
       'Yhdistyneiden arabiemiirikuntien'
     );
     assert.strictEqual(
+      inflectPlace('Yhdistyneet arabiemiraatit', 'local'),
+      'Yhdistyneissä arabiemiraateissa'
+    );
+    assert.strictEqual(
+      inflectPlace('Yhdistyneet arabiemiraatit', 'localTo'),
+      'Yhdistyneisiin arabiemiraatteihin'
+    );
+    assert.strictEqual(
+      inflectPlace('Yhdistyneet arabiemiraatit', 'localFrom'),
+      'Yhdistyneistä arabiemiraateista'
+    );
+    assert.strictEqual(
+      inflectPlace('Yhdistyneet arabiemiraatit', 'genitive'),
+      'Yhdistyneiden arabiemiraattien'
+    );
+    assert.strictEqual(
+      inflectPlace('Arabiemiraatit', 'local'),
+      'Arabiemiraateissa'
+    );
+    assert.strictEqual(
+      inflectPlace('Arabiemiraatit', 'localTo'),
+      'Arabiemiraatteihin'
+    );
+    assert.strictEqual(
+      inflectPlace('Arabiemiraatit', 'localFrom'),
+      'Arabiemiraateista'
+    );
+    assert.strictEqual(
+      inflectPlace('Arabiemiraatit', 'genitive'),
+      'Arabiemiraattien'
+    );
+    assert.strictEqual(
+      inflectPlace('Taiwan', 'local'),
+      'Taiwanissa'
+    );
+    assert.strictEqual(
+      inflectPlace('Taiwan', 'localTo'),
+      'Taiwaniin'
+    );
+    assert.strictEqual(
+      inflectPlace('Taiwan', 'localFrom'),
+      'Taiwanista'
+    );
+    assert.strictEqual(
+      inflectPlace('Taiwan', 'genitive'),
+      'Taiwanin'
+    );
+    assert.strictEqual(
+      inflectPlace('Etelä-Korea', 'local'),
+      'Etelä-Koreassa'
+    );
+    assert.strictEqual(
+      inflectPlace('Etelä-Korea', 'localTo'),
+      'Etelä-Koreaan'
+    );
+    assert.strictEqual(
+      inflectPlace('Etelä-Korea', 'localFrom'),
+      'Etelä-Koreasta'
+    );
+    assert.strictEqual(
+      inflectPlace('Etelä-Korea', 'genitive'),
+      'Etelä-Korean'
+    );
+    assert.strictEqual(
       inflectPlace('Papua-Uusi-Guinea', 'local'),
       'Papua-Uudessa-Guineassa'
     );

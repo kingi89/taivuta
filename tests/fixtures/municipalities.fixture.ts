@@ -730,9 +730,11 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Kontiolahti",
-    "localCase": "Kontiolahdissa",
+    "localCase": "Kontiolahdessa",
     "localCaseType": "in",
-    "genitive": "Kontiolahdin"
+    "genitive": "Kontiolahden",
+    "partitive": "Kontiolahtea",
+    "illative": "Kontiolahteen"
   },
   {
     "name": "Korsnäs",
@@ -859,9 +861,11 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Lahti",
-    "localCase": "Lahdissa",
+    "localCase": "Lahdessa",
     "localCaseType": "in",
-    "genitive": "Lahdin"
+    "genitive": "Lahden",
+    "partitive": "Lahtea",
+    "illative": "Lahteen"
   },
   {
     "name": "Laihia",
@@ -1046,9 +1050,11 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Maalahti",
-    "localCase": "Maalahdissa",
+    "localCase": "Maalahdessa",
     "localCaseType": "in",
-    "genitive": "Maalahdin"
+    "genitive": "Maalahden",
+    "partitive": "Maalahtea",
+    "illative": "Maalahteen"
   },
   {
     "name": "Maarianhamina",
@@ -2040,9 +2046,11 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Vesilahti",
-    "localCase": "Vesilahdissa",
+    "localCase": "Vesilahdessa",
     "localCaseType": "in",
-    "genitive": "Vesilahdin"
+    "genitive": "Vesilahden",
+    "partitive": "Vesilahtea",
+    "illative": "Vesilahteen"
   },
   {
     "name": "Veteli",
@@ -2079,9 +2087,11 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
   },
   {
     "name": "Virolahti",
-    "localCase": "Virolahdissa",
+    "localCase": "Virolahdessa",
     "localCaseType": "in",
-    "genitive": "Virolahdin"
+    "genitive": "Virolahden",
+    "partitive": "Virolahtea",
+    "illative": "Virolahteen"
   },
   {
     "name": "Virrat",

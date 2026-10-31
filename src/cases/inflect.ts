@@ -6,7 +6,11 @@
 
 import type { CaseName, GrammaticalCase, InflectOptions } from './types.ts';
 import { inflectPerson } from '../person/inflect-person.ts';
-import { inflectPlace, TOPONYM_SUFFIX_REGEX } from '../place/inflect-place.ts';
+import {
+  inflectPlace,
+  detectLocalCase,
+  TOPONYM_SUFFIX_REGEX
+} from '../place/inflect-place.ts';
 import {
   EXTERNAL_CASE_MUNICIPALITIES,
   ISLAND_INTERNAL_EXCEPTIONS,
@@ -14,12 +18,22 @@ import {
 } from '../place/municipalities.data.ts';
 
 function isKnownPlace(name: string): boolean {
-  return (
+  if (detectLocalCase(name) === 'on') {
+    return true;
+  }
+
+  if (
     IRREGULAR_PLACES.has(name) ||
     EXTERNAL_CASE_MUNICIPALITIES.has(name) ||
     ISLAND_INTERNAL_EXCEPTIONS.has(name) ||
-    TOPONYM_SUFFIX_REGEX.test(name)
-  );
+    TOPONYM_SUFFIX_REGEX.test(name) ||
+    /(?:tasavalta|vallat|maat|saaret|kunnat|emiraatit)$/i.test(name) ||
+    /(?:^|[ -])(?:Uusi|Iso)-/i.test(name)
+  ) {
+    return true;
+  }
+
+  return inflectPlace(name, 'localFrom') !== inflectPerson(name, 'elative');
 }
 
 function isContextualLocalCase(targetCase: CaseName): boolean {

@@ -107,7 +107,9 @@ export function inflectPluralIslandArchipelago(
 }
 
 function inflectEmirates(place: string, targetCase: GrammaticalCase): string | null {
-  if (place !== 'Yhdistyneet arabiemiirikunnat' && place !== 'Arabiemiirikunnat') {
+  const isEmiraatit = place === 'Yhdistyneet arabiemiraatit' || place === 'Arabiemiraatit';
+  const isMiirikunnat = place === 'Yhdistyneet arabiemiirikunnat' || place === 'Arabiemiirikunnat';
+  if (!isEmiraatit && !isMiirikunnat) {
     return null;
   }
   const isCompound = place.startsWith('Yhdistyneet');
@@ -118,7 +120,13 @@ function inflectEmirates(place: string, targetCase: GrammaticalCase): string | n
     genitive: 'Yhdistyneiden ',
     partitive: 'Yhdistyneitä '
   };
-  const kunnatEndings: Record<string, string> = {
+  const kunnatEndings: Record<string, string> = isEmiraatit ? {
+    inessive: 'arabiemiraateissa',
+    elative: 'arabiemiraateista',
+    illative: 'arabiemiraatteihin',
+    genitive: 'arabiemiraattien',
+    partitive: 'arabiemiraatteja'
+  } : {
     inessive: 'arabiemiirikunnissa',
     elative: 'arabiemiirikunnista',
     illative: 'arabiemiirikuntiin',
