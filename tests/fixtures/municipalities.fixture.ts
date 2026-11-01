@@ -907,7 +907,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
     "name": "Lappeenranta",
     "localCase": "Lappeenrannassa",
     "localCaseType": "in",
-    "genitive": "Lappeenrannan"
+    "genitive": "Lappeenrannan",
+    "partitive": "Lappeenrantaa",
+    "illative": "Lappeenrantaan"
   },
   {
     "name": "Lapua",
@@ -1493,7 +1495,9 @@ export const MUNICIPALITY_TEST_CASES: readonly MunicipalityTestCase[] = [
     "name": "Pyhäranta",
     "localCase": "Pyhärannassa",
     "localCaseType": "in",
-    "genitive": "Pyhärannan"
+    "genitive": "Pyhärannan",
+    "partitive": "Pyhärantaa",
+    "illative": "Pyhärantaan"
   },
   {
     "name": "Pälkäne",

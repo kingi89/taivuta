@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getVowelHarmony, harmonize } from '../src/morphology/vowels.ts';
 import { weakenConsonants } from '../src/morphology/gradation.ts';
+import { matchNatureNoun, assembleCase } from '../src/morphology/index.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -167,123 +168,16 @@ function main(): void {
     const clean = name;
     const lower = clean.toLowerCase();
 
-    // Nature suffix heuristics
-    if (lower.endsWith('järvi')) {
-      const base = clean.slice(0, -5);
+    // Nature suffix heuristics using canonical morphology engine
+    const nature = matchNatureNoun(name);
+    if (nature) {
       testCases.push({
         name,
-        localCase: `${base}järvellä`,
-        localCaseType: 'on',
-        genitive: `${base}järven`,
-        partitive: `${base}järveä`,
-        illative: `${base}järveen`
-      });
-      continue;
-    }
-
-    if (lower.endsWith('joki')) {
-      const base = clean.slice(0, -4);
-      testCases.push({
-        name,
-        localCase: `${base}joella`,
-        localCaseType: 'on',
-        genitive: `${base}joen`,
-        partitive: `${base}jokea`,
-        illative: `${base}jokeen`
-      });
-      continue;
-    }
-
-    if (lower.endsWith('mäki')) {
-      const base = clean.slice(0, -4);
-      testCases.push({
-        name,
-        localCase: `${base}mäellä`,
-        localCaseType: 'on',
-        genitive: `${base}mäen`,
-        partitive: `${base}mäkeä`,
-        illative: `${base}mäkeen`
-      });
-      continue;
-    }
-
-    if (lower.endsWith('vesi')) {
-      const base = clean.slice(0, -4);
-      testCases.push({
-        name,
-        localCase: `${base}vedellä`,
-        localCaseType: 'on',
-        genitive: `${base}veden`,
-        partitive: `${base}vettä`,
-        illative: `${base}veteen`
-      });
-      continue;
-    }
-
-    if (lower.endsWith('koski')) {
-      const base = clean.slice(0, -5);
-      testCases.push({
-        name,
-        localCase: `${base}koskella`,
-        localCaseType: 'on',
-        genitive: `${base}kosken`,
-        partitive: `${base}koskea`,
-        illative: `${base}koskeen`
-      });
-      continue;
-    }
-
-    if (lower.endsWith('salmi')) {
-      const base = clean.slice(0, -5);
-      testCases.push({
-        name,
-        localCase: `${base}salmella`,
-        localCaseType: 'on',
-        genitive: `${base}salmen`,
-        partitive: `${base}salmea`,
-        illative: `${base}salmeen`
-      });
-      continue;
-    }
-
-    if (lower.endsWith('saari')) {
-      const base = clean.slice(0, -5);
-      testCases.push({
-        name,
-        localCase: `${base}saarella`,
-        localCaseType: 'on',
-        genitive: `${base}saaren`,
-        partitive: `${base}saarta`,
-        illative: `${base}saareen`
-      });
-      continue;
-    }
-
-    if (lower.endsWith('niemi')) {
-      const base = clean.slice(0, -5);
-      testCases.push({
-        name,
-        localCase: `${base}niemellä`,
-        localCaseType: 'on',
-        genitive: `${base}niemen`,
-        partitive: `${base}niemeä`,
-        illative: `${base}niemeen`
-      });
-      continue;
-    }
-
-    if (lower.endsWith('lahti')) {
-      const base = clean.slice(0, -5);
-      const isCap = (clean[0] ?? '').toUpperCase() === clean[0];
-      const weak = base ? `${base}lahde` : isCap ? 'Lahde' : 'lahde';
-      const strong = base ? `${base}lahte` : isCap ? 'Lahte' : 'lahte';
-      testCases.push({
-        name,
-        localCase: `${weak}ssa`,
-        localCaseType: 'in',
-        genitive: `${weak}n`,
-        partitive: `${strong}a`,
-        illative: `${strong}en`
+        localCase: assembleCase(nature, 'local'),
+        localCaseType: nature.defaultSpatialCase,
+        genitive: assembleCase(nature, 'genitive'),
+        partitive: assembleCase(nature, 'partitive'),
+        illative: assembleCase(nature, 'illative')
       });
       continue;
     }
