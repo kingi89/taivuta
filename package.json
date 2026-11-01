@@ -21,6 +21,26 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
+    },
+    "./person": {
+      "types": "./dist/person/index.d.ts",
+      "import": "./dist/person/index.mjs",
+      "require": "./dist/person/index.cjs"
+    },
+    "./place": {
+      "types": "./dist/place/index.d.ts",
+      "import": "./dist/place/index.mjs",
+      "require": "./dist/place/index.cjs"
+    },
+    "./morphology": {
+      "types": "./dist/morphology/index.d.ts",
+      "import": "./dist/morphology/index.mjs",
+      "require": "./dist/morphology/index.cjs"
+    },
+    "./template": {
+      "types": "./dist/template/index.d.ts",
+      "import": "./dist/template/index.mjs",
+      "require": "./dist/template/index.cjs"
     }
   },
   "files": [

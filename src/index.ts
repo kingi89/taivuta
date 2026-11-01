@@ -41,13 +41,13 @@ export {
 
 export {
   inflectPerson
-} from './person/inflect-person.ts';
+} from './person/index.ts';
 
 export {
   detectLocalCase,
   inflectPlace,
   type InflectPlaceOptions
-} from './place/inflect-place.ts';
+} from './place/index.ts';
 
 export {
   inflect,
@@ -59,7 +59,7 @@ export {
   t,
   type FormatValues,
   type TaggedTemplateArg
-} from './template/format.ts';
+} from './template/index.ts';
 
 export type {
   GrammaticalCase,
