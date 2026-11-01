@@ -68,37 +68,7 @@ export function inflectColonWord(token: string, targetCase: GrammaticalCase): st
   return end ? `${token}:${end}` : token;
 }
 
-/**
- * Compound prefixes whose head adjective inflects congruently with the place name (e.g. Uusi-Seelanti, Iso-Britannia).
- */
-const COMPOUND_PREFIX_DECLENSIONS: Record<string, Record<GrammaticalCase, string>> = {
-  'Uusi-': {
-    nominative: 'Uusi-',
-    genitive: 'Uuden-',
-    partitive: 'Uutta-',
-    inessive: 'Uudessa-',
-    elative: 'Uudesta-',
-    illative: 'Uuteen-',
-    adessive: 'Uudella-',
-    ablative: 'Uudelta-',
-    allative: 'Uudelle-',
-    essive: 'Uutena-',
-    translative: 'Uudeksi-'
-  },
-  'Iso-': {
-    nominative: 'Iso-',
-    genitive: 'Ison-',
-    partitive: 'Isoa-',
-    inessive: 'Isossa-',
-    elative: 'Isosta-',
-    illative: 'Isoon-',
-    adessive: 'Isolla-',
-    ablative: 'Isolta-',
-    allative: 'Isolle-',
-    essive: 'Isona-',
-    translative: 'Isoksi-'
-  }
-};
+import { decomposeCompound } from '../morphology/compounds.ts';
 
 /**
  * Matches and inflects compound prefixes where both prefix and noun inflect (e.g. Uusi-Seelanti -> Uudessa-Seelannissa).
@@ -111,18 +81,11 @@ export function getCompoundPrefixMatch(
   place: string,
   targetCase: GrammaticalCase
 ): { prefix: string; remainder: string } | null {
-  const match = place.match(/^(.*?\b)(Uusi-|Iso-)(.*)$/);
-  if (!match) {
+  const comp = decomposeCompound(place, targetCase);
+  if (!comp || !comp.isInflectingPrefix) {
     return null;
   }
-  const pre = match[1] ?? '';
-  const prefix = match[2] ?? '';
-  const remainder = match[3] ?? '';
-  const inflectedPrefix = COMPOUND_PREFIX_DECLENSIONS[prefix]?.[targetCase];
-  if (!inflectedPrefix) {
-    return null;
-  }
-  return { prefix: `${pre}${inflectedPrefix}`, remainder };
+  return { prefix: comp.prefix, remainder: comp.headWord };
 }
 
 /**

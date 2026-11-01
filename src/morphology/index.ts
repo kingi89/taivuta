@@ -27,3 +27,8 @@ export {
   assembleCase,
   type AssembleCaseOptions
 } from './assembler.ts';
+export {
+  decomposeCompound,
+  classifyProperNoun,
+  type CompoundParts
+} from './compounds.ts';

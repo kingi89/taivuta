@@ -6,48 +6,25 @@
 
 import type { CaseName, GrammaticalCase, InflectOptions } from './types.ts';
 import { inflectPerson } from '../person/inflect-person.ts';
-import {
-  inflectPlace,
-  detectLocalCase,
-  TOPONYM_SUFFIX_REGEX
-} from '../place/inflect-place.ts';
-import {
-  EXTERNAL_CASE_MUNICIPALITIES,
-  ISLAND_INTERNAL_EXCEPTIONS,
-  IRREGULAR_PLACES
-} from '../place/municipalities.data.ts';
-
-function isKnownPlace(name: string): boolean {
-  if (detectLocalCase(name) === 'on') {
-    return true;
-  }
-
-  if (
-    IRREGULAR_PLACES.has(name) ||
-    EXTERNAL_CASE_MUNICIPALITIES.has(name) ||
-    ISLAND_INTERNAL_EXCEPTIONS.has(name) ||
-    TOPONYM_SUFFIX_REGEX.test(name) ||
-    /(?:tasavalta|vallat|maat|saaret|kunnat|emiraatit)$/i.test(name) ||
-    /(?:^|[ -])(?:Uusi|Iso)-/i.test(name)
-  ) {
-    return true;
-  }
-
-  return inflectPlace(name, 'localFrom') !== inflectPerson(name, 'elative');
-}
+import { inflectPlace, detectLocalCase } from '../place/inflect-place.ts';
+import { classifyProperNoun } from '../morphology/compounds.ts';
 
 function isContextualLocalCase(targetCase: CaseName): boolean {
   return targetCase === 'local' || targetCase === 'localFrom' || targetCase === 'localTo';
 }
 
 /**
- * Detects whether a proper noun represents a recognized place name or person name.
+ * Heuristically determines whether a proper noun represents a place or a person.
+ *
+ * Note: This is an educated heuristic based on structural markers, prefixes, nature formatives,
+ * and local case conventions. It is not an absolute classifier; ambiguous names (such as surnames
+ * with toponymic origins like "Karhuvaara" or "Ylä-Anttila") should specify an explicit role.
  *
  * @param name - The proper noun to inspect.
- * @returns 'place' if matched against known municipalities, exceptions, or toponymic suffixes; otherwise 'person'.
+ * @returns The detected entity role ('place' or 'person').
  */
 export function detectEntityRole(name: string): 'person' | 'place' {
-  return isKnownPlace(name) ? 'place' : 'person';
+  return classifyProperNoun(name, detectLocalCase(name));
 }
 
 function resolveEntityRole(name: string, explicitRole?: 'person' | 'place' | 'auto'): 'person' | 'place' {

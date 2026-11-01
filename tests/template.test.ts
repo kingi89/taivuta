@@ -21,7 +21,7 @@ describe('Unified inflect() Function', () => {
     assert.equal(detectEntityRole('Iso-Britannia'), 'place');
     assert.equal(detectEntityRole('Venäjä'), 'place');
     assert.equal(detectEntityRole('Ahvenanmaa'), 'place');
-    assert.equal(detectEntityRole('Helsinki'), 'place');
+    assert.equal(detectEntityRole('Tampere'), 'place');
     assert.equal(detectEntityRole('Thaimaa'), 'place');
     assert.equal(detectEntityRole('Lahti'), 'place');
     assert.equal(detectEntityRole('Virrat'), 'place');
