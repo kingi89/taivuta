@@ -15,3 +15,12 @@ export {
   inflectNatureNounSurname,
   type NatureNounStem
 } from './nature-nouns.ts';
+export {
+  createStemParadigm,
+  type StemParadigm,
+  type CreateParadigmOptions
+} from './paradigm.ts';
+export {
+  assembleCase,
+  type AssembleCaseOptions
+} from './assembler.ts';

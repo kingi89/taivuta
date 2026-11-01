@@ -34,9 +34,14 @@ export {
   harmonize,
   weakenConsonants,
   analyzeStem,
+  createStemParadigm,
+  assembleCase,
   type VowelHarmony,
   type GradationOptions,
-  type AnalyzedStem
+  type AnalyzedStem,
+  type StemParadigm,
+  type CreateParadigmOptions,
+  type AssembleCaseOptions
 } from './morphology/index.ts';
 
 export {
