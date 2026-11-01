@@ -1,23 +1,125 @@
 /**
  * Declension paradigms for Finnish surnames and toponyms derived from ancient nature nouns.
  *
- * Many Finnish surnames originated directly from nature nouns (e.g. Niemi, Koski, Mäki, Saari,
- * Salmi, Nurmi, Lahti, Laine). When inflected as surnames, these follow old Finnish nominal stems
- * (e.g. Niemi -> Niemen, Mäki -> Mäen, Laine -> Laineen), unlike modern given names (Sari -> Sarin).
+ * Many Finnish surnames and place names originated directly from ancient nature nouns
+ * (e.g. Niemi, Koski, Mäki, Saari, Salmi, Nurmi, Lahti, Järvi, Joki, Vesi).
+ * Both surnames and toponyms share identical nominal stems, vowel changes, and gradation rules.
  *
- * Kotus Guidelines:
- * - Luontonimet sukuniminä (Niemi, Nurmi, Koski, Mäki jne.) taipuvat kuten vastaavat yleisnimet.
- * - Sanojen Kallio ja Vainio partitiivi on Kalliota ja Vainiota (-ta/-tä pääte).
- * - Johdinsukunimet -la/-lä (Mattila, Anttila, Peltola) eivät taivu astevaihtelussa.
+ * Scope & Boundaries:
+ * - In scope: Finnish family names (surnames) and toponymic place names ending in ancient nature nouns.
+ * - Out of scope: Finnish given names (first names, e.g. Sari, Kari, Aki, Suvi, or Meri when used as
+ *   a first name). First names follow modern vocalic nominal inflection and resist qualitative
+ *   gradation in the person module (e.g. Sari -> Sarin, not *Saaren).
  *
  * @packageDocumentation
  */
 
-import { harmonize } from './vowels.ts';
-import type { GrammaticalCase } from '../cases/types.ts';
+import { type VowelHarmony } from './vowels.ts';
+import { createStemParadigm, type StemParadigm } from './paradigm.ts';
+import { assembleCase } from './assembler.ts';
+import type { GrammaticalCase, LocalCaseType } from '../cases/types.ts';
 
 /**
- * Stem information for nature noun surnames.
+ * Descriptor rule for inflecting a nature noun suffix.
+ */
+export interface NatureNounRule {
+  /** Suffix in lowercase (e.g. 'järvi', 'lahti', 'mäki') */
+  readonly suffix: string;
+  /** Weak stem suffix (e.g. 'järve', 'lahde', 'mäe') */
+  readonly weak: string;
+  /** Strong stem suffix (e.g. 'järve', 'lahte', 'mäke') */
+  readonly strong: string;
+  /** Complete partitive suffix (e.g. 'järveä', 'lahtea', 'mäkeä') */
+  readonly partitive: string;
+  /** Complete illative suffix (e.g. 'järveen', 'lahteen', 'mäkeen') */
+  readonly illative: string;
+  /** Vowel harmony class of the suffix */
+  readonly harmony: VowelHarmony;
+  /** Default spatial case preference ('in' vs 'on') */
+  readonly defaultSpatialCase: LocalCaseType;
+}
+
+/**
+ * Universal registry of ancient Finnish nature nouns and landscape formatives.
+ */
+export const NATURE_NOUN_RULES: readonly NatureNounRule[] = [
+  { suffix: 'järvi', weak: 'järve', strong: 'järve', partitive: 'järveä', illative: 'järveen', harmony: 'front', defaultSpatialCase: 'on' },
+  { suffix: 'joki', weak: 'joe', strong: 'joke', partitive: 'jokea', illative: 'jokeen', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'mäki', weak: 'mäe', strong: 'mäke', partitive: 'mäkeä', illative: 'mäkeen', harmony: 'front', defaultSpatialCase: 'on' },
+  { suffix: 'vesi', weak: 'vede', strong: 'vete', partitive: 'vettä', illative: 'veteen', harmony: 'front', defaultSpatialCase: 'on' },
+  { suffix: 'saari', weak: 'saare', strong: 'saare', partitive: 'saarta', illative: 'saareen', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'koski', weak: 'koske', strong: 'koske', partitive: 'koskea', illative: 'koskeen', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'salmi', weak: 'salme', strong: 'salme', partitive: 'salmea', illative: 'salmeen', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'niemi', weak: 'nieme', strong: 'nieme', partitive: 'niemeä', illative: 'niemeen', harmony: 'front', defaultSpatialCase: 'on' },
+  { suffix: 'lahti', weak: 'lahde', strong: 'lahte', partitive: 'lahtea', illative: 'lahteen', harmony: 'back', defaultSpatialCase: 'in' },
+  { suffix: 'nurmi', weak: 'nurme', strong: 'nurme', partitive: 'nurmea', illative: 'nurmeen', harmony: 'back', defaultSpatialCase: 'in' },
+  { suffix: 'meri', weak: 'mere', strong: 'mere', partitive: 'merta', illative: 'mereen', harmony: 'front', defaultSpatialCase: 'in' },
+  { suffix: 'vuori', weak: 'vuore', strong: 'vuore', partitive: 'vuorta', illative: 'vuoreen', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'laine', weak: 'lainee', strong: 'lainee', partitive: 'lainetta', illative: 'laineeseen', harmony: 'back', defaultSpatialCase: 'in' },
+  { suffix: 'rinne', weak: 'rintee', strong: 'rintee', partitive: 'rinnettä', illative: 'rinteeseen', harmony: 'front', defaultSpatialCase: 'in' },
+  { suffix: 'harju', weak: 'harju', strong: 'harju', partitive: 'harjua', illative: 'harjuun', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'kangas', weak: 'kankaa', strong: 'kankaa', partitive: 'kangasta', illative: 'kankaaseen', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'suo', weak: 'suo', strong: 'suo', partitive: 'suota', illative: 'suohon', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'lampi', weak: 'lamme', strong: 'lampe', partitive: 'lampea', illative: 'lampeen', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'nummi', weak: 'numme', strong: 'numme', partitive: 'nummea', illative: 'nummeen', harmony: 'back', defaultSpatialCase: 'on' },
+  { suffix: 'ranta', weak: 'ranna', strong: 'ranta', partitive: 'rantaa', illative: 'rantaan', harmony: 'back', defaultSpatialCase: 'in' }
+];
+
+function capitalizeForm(base: string, suffixForm: string, isCapitalized: boolean): string {
+  if (base) {
+    return `${base}${suffixForm}`;
+  }
+  if (!isCapitalized) {
+    return suffixForm;
+  }
+  return (suffixForm[0]?.toUpperCase() ?? '') + suffixForm.slice(1);
+}
+
+/**
+ * Matches a proper noun (surname or place name) against ancient nature noun formatives.
+ *
+ * @param name - The proper noun token (e.g. "Lahti", "Kontiolahti", "Niemi", "Alajärvi").
+ * @returns StemParadigm if matched, otherwise null.
+ *
+ * @example
+ * ```ts
+ * const p = matchNatureNoun("Kontiolahti");
+ * p?.weakVocalicStem; // "Kontiolahde"
+ * p?.defaultSpatialCase; // "in"
+ * ```
+ */
+export function matchNatureNoun(name: string): StemParadigm | null {
+  if (!name) {
+    return null;
+  }
+  const trimmed = name.trim();
+  const lower = trimmed.toLowerCase();
+
+  for (const rule of NATURE_NOUN_RULES) {
+    if (lower.endsWith(rule.suffix)) {
+      const base = trimmed.slice(0, -rule.suffix.length);
+      const isCap = !base && trimmed[0] === trimmed[0]?.toUpperCase();
+      return createStemParadigm(
+        trimmed,
+        {
+          strong: capitalizeForm(base, rule.strong, isCap),
+          weak: capitalizeForm(base, rule.weak, isCap),
+          partitive: capitalizeForm(base, rule.partitive, isCap),
+          illative: capitalizeForm(base, rule.illative, isCap)
+        },
+        {
+          defaultSpatialCase: rule.defaultSpatialCase,
+          vowelHarmony: rule.harmony
+        }
+      );
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Stem information for nature noun surnames (backward compatibility interface).
  */
 export interface NatureNounStem {
   /** The strong vocalic stem (e.g. 'Nieme', 'Lahte', 'Mäke') */
@@ -30,122 +132,6 @@ export interface NatureNounStem {
   readonly illativeSuffix: string;
 }
 
-interface NaturePattern {
-  readonly pattern: RegExp;
-  readonly getStems: (name: string) => NatureNounStem;
-}
-
-const NATURE_PATTERNS: readonly NaturePattern[] = [
-  {
-    pattern: /niemi$/i,
-    getStems: (n) => ({
-      strongStem: n.slice(0, -1) + 'e',
-      weakStem: n.slice(0, -1) + 'e',
-      partitive: n.slice(0, -1) + 'e' + harmonize('ä', n),
-      illativeSuffix: 'en'
-    })
-  },
-  {
-    pattern: /nurmi$/i,
-    getStems: (n) => ({
-      strongStem: n.slice(0, -1) + 'e',
-      weakStem: n.slice(0, -1) + 'e',
-      partitive: n.slice(0, -1) + 'ea',
-      illativeSuffix: 'en'
-    })
-  },
-  {
-    pattern: /saari$/i,
-    getStems: (n) => ({
-      strongStem: n.slice(0, -1) + 'e',
-      weakStem: n.slice(0, -1) + 'e',
-      partitive: n.slice(0, -1) + 'ta',
-      illativeSuffix: 'en'
-    })
-  },
-  {
-    pattern: /salmi$/i,
-    getStems: (n) => ({
-      strongStem: n.slice(0, -1) + 'e',
-      weakStem: n.slice(0, -1) + 'e',
-      partitive: n.slice(0, -1) + 'ea',
-      illativeSuffix: 'en'
-    })
-  },
-  {
-    pattern: /lahti$/i,
-    getStems: (n): NatureNounStem => {
-      const isLower = n.endsWith('i');
-      return {
-        strongStem: n.slice(0, -1) + 'e',
-        weakStem: n.slice(0, -3) + (isLower ? 'hde' : 'Hde'),
-        partitive: n.slice(0, -1) + 'ea',
-        illativeSuffix: 'en'
-      };
-    }
-  },
-  {
-    pattern: /koski$/i,
-    getStems: (n) => ({
-      strongStem: n.slice(0, -1) + 'e',
-      weakStem: n.slice(0, -1) + 'e',
-      partitive: n.slice(0, -1) + 'ea',
-      illativeSuffix: 'en'
-    })
-  },
-  {
-    pattern: /mäki$/i,
-    getStems: (n): NatureNounStem => {
-      const isLower = n.endsWith('i');
-      return {
-        strongStem: n.slice(0, -1) + 'e',
-        weakStem: n.slice(0, -2) + (isLower ? 'e' : 'E'),
-        partitive: n.slice(0, -1) + 'eä',
-        illativeSuffix: 'en'
-      };
-    }
-  },
-  {
-    pattern: /meri$/i,
-    getStems: (n) => ({
-      strongStem: n.slice(0, -1) + 'e',
-      weakStem: n.slice(0, -1) + 'e',
-      partitive: n.slice(0, -1) + 'tä',
-      illativeSuffix: 'en'
-    })
-  },
-  {
-    pattern: /laine$/i,
-    getStems: (n) => ({
-      strongStem: n + 'e',
-      weakStem: n + 'e',
-      partitive: n + 'tta',
-      illativeSuffix: 'seen'
-    })
-  },
-  {
-    pattern: /rinne$/i,
-    getStems: (n): NatureNounStem => {
-      const isLower = n.endsWith('e');
-      return {
-        strongStem: n.slice(0, -4) + (isLower ? 'ntee' : 'Ntee'),
-        weakStem: n.slice(0, -4) + (isLower ? 'ntee' : 'Ntee'),
-        partitive: n + 'ttä',
-        illativeSuffix: 'seen'
-      };
-    }
-  }
-];
-
-const STANDARD_SUFFIXES: Record<string, string> = {
-  inessive: 'ssa',
-  elative: 'sta',
-  adessive: 'lla',
-  ablative: 'lta',
-  allative: 'lle',
-  translative: 'ksi'
-};
-
 /**
  * Checks whether a proper noun matches an ancient nature noun surname stem.
  *
@@ -153,13 +139,16 @@ const STANDARD_SUFFIXES: Record<string, string> = {
  * @returns NatureNounStem definition if matched, otherwise undefined.
  */
 export function matchNatureNounSurname(name: string): NatureNounStem | undefined {
-  const trimmed = name.trim();
-  for (const entry of NATURE_PATTERNS) {
-    if (entry.pattern.test(trimmed)) {
-      return entry.getStems(trimmed);
-    }
+  const p = matchNatureNoun(name);
+  if (!p) {
+    return undefined;
   }
-  return undefined;
+  return {
+    strongStem: p.strongVocalicStem,
+    weakStem: p.weakVocalicStem,
+    partitive: p.partitive,
+    illativeSuffix: p.illative.slice(p.strongVocalicStem.length)
+  };
 }
 
 /**
@@ -175,26 +164,15 @@ export function inflectNatureNounSurname(
   caseName: GrammaticalCase,
   stemDef: NatureNounStem
 ): string {
-  if (caseName === 'nominative') {
-    return name;
+  const p = matchNatureNoun(name);
+  if (p) {
+    return assembleCase(p, caseName);
   }
-  if (caseName === 'genitive') {
-    return stemDef.weakStem + 'n';
-  }
-  if (caseName === 'partitive') {
-    return stemDef.partitive;
-  }
-  if (caseName === 'illative') {
-    return stemDef.strongStem + harmonize(stemDef.illativeSuffix, name);
-  }
-  if (caseName === 'essive') {
-    return stemDef.strongStem + harmonize('na', name);
-  }
-
-  const rawSuffix = STANDARD_SUFFIXES[caseName];
-  if (rawSuffix) {
-    return stemDef.weakStem + harmonize(rawSuffix, name);
-  }
-
-  return name;
+  const fallbackParadigm = createStemParadigm(name, {
+    strong: stemDef.strongStem,
+    weak: stemDef.weakStem,
+    partitive: stemDef.partitive,
+    illative: `${stemDef.strongStem}${stemDef.illativeSuffix}`
+  });
+  return assembleCase(fallbackParadigm, caseName);
 }

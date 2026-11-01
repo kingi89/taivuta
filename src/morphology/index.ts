@@ -11,9 +11,12 @@ export { getVowelHarmony, harmonize, type VowelHarmony } from './vowels.ts';
 export { weakenConsonants, type GradationOptions } from './gradation.ts';
 export { analyzeStem, type AnalyzedStem } from './stem.ts';
 export {
+  matchNatureNoun,
   matchNatureNounSurname,
   inflectNatureNounSurname,
-  type NatureNounStem
+  NATURE_NOUN_RULES,
+  type NatureNounStem,
+  type NatureNounRule
 } from './nature-nouns.ts';
 export {
   createStemParadigm,

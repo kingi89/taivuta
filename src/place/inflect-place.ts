@@ -28,6 +28,8 @@ import {
   inflectStateCompound
 } from './state-places.ts';
 import { dispatchStemInflection } from './stem-places.ts';
+import { matchNatureNoun } from '../morphology/nature-nouns.ts';
+import { assembleCase } from '../morphology/assembler.ts';
 
 /**
  * Options controlling place name inflection.
@@ -111,6 +113,13 @@ function hasExternalLocalCase(place: string): boolean {
   );
 }
 
+function checkCompoundRemainder(place: string): string | null {
+  if (place.startsWith('Uusi-') || place.startsWith('Iso-')) {
+    return place.slice(place.indexOf('-') + 1);
+  }
+  return null;
+}
+
 export function detectLocalCase(place: string): LocalCaseType {
   if (!place) {
     return 'in';
@@ -129,8 +138,14 @@ export function detectLocalCase(place: string): LocalCaseType {
     return 'in';
   }
 
-  if (place.startsWith('Uusi-') || place.startsWith('Iso-')) {
-    return detectLocalCase(place.slice(place.indexOf('-') + 1));
+  const remainder = checkCompoundRemainder(place);
+  if (remainder) {
+    return detectLocalCase(remainder);
+  }
+
+  const nature = matchNatureNoun(place);
+  if (nature) {
+    return nature.defaultSpatialCase;
   }
 
   if (NATURE_EXTERNAL_SUFFIXES.test(place)) {
@@ -140,85 +155,7 @@ export function detectLocalCase(place: string): LocalCaseType {
   return 'in';
 }
 
-interface SuffixForms {
-  weakStem: string;
-  strongStem: string;
-  partitive: string;
-  illative: string;
-  suffixHarmony: 'front' | 'back';
-}
 
-interface NatureSuffixRule {
-  readonly suffix: string;
-  readonly weak: string;
-  readonly strong: string;
-  readonly partitive: string;
-  readonly illative: string;
-  readonly harmony: 'front' | 'back';
-}
-
-const NATURE_SUFFIX_RULES: readonly NatureSuffixRule[] = [
-  { suffix: 'järvi', weak: 'järve', strong: 'järve', partitive: 'järveä', illative: 'järveen', harmony: 'front' },
-  { suffix: 'joki', weak: 'joe', strong: 'joke', partitive: 'jokea', illative: 'jokeen', harmony: 'back' },
-  { suffix: 'mäki', weak: 'mäe', strong: 'mäke', partitive: 'mäkeä', illative: 'mäkeen', harmony: 'front' },
-  { suffix: 'vesi', weak: 'vede', strong: 'vete', partitive: 'vettä', illative: 'veteen', harmony: 'front' },
-  { suffix: 'saari', weak: 'saare', strong: 'saare', partitive: 'saarta', illative: 'saareen', harmony: 'back' },
-  { suffix: 'koski', weak: 'koske', strong: 'koske', partitive: 'koskea', illative: 'koskeen', harmony: 'back' },
-  { suffix: 'salmi', weak: 'salme', strong: 'salme', partitive: 'salmea', illative: 'salmeen', harmony: 'back' },
-  { suffix: 'niemi', weak: 'nieme', strong: 'nieme', partitive: 'niemeä', illative: 'niemeen', harmony: 'front' },
-  { suffix: 'lahti', weak: 'lahde', strong: 'lahte', partitive: 'lahtea', illative: 'lahteen', harmony: 'back' }
-];
-
-function resolveNatureSuffix(place: string): SuffixForms | null {
-  const lower = place.toLowerCase();
-  for (const rule of NATURE_SUFFIX_RULES) {
-    if (lower.endsWith(rule.suffix)) {
-      const base = place.slice(0, -rule.suffix.length);
-      const isCap = !base && place[0] === place[0]?.toUpperCase();
-      const cap = (s: string): string => (isCap ? (s[0]?.toUpperCase() ?? '') + s.slice(1) : s);
-      return {
-        weakStem: base ? `${base}${rule.weak}` : cap(rule.weak),
-        strongStem: base ? `${base}${rule.strong}` : cap(rule.strong),
-        partitive: base ? `${base}${rule.partitive}` : cap(rule.partitive),
-        illative: base ? `${base}${rule.illative}` : cap(rule.illative),
-        suffixHarmony: rule.harmony
-      };
-    }
-  }
-  return null;
-}
-
-const FRONT_NATURE_ENDINGS: Record<string, string> = {
-  inessive: 'ssä',
-  elative: 'stä',
-  adessive: 'llä',
-  ablative: 'ltä',
-  allative: 'lle',
-  essive: 'nä',
-  translative: 'ksi'
-};
-
-const BACK_NATURE_ENDINGS: Record<string, string> = {
-  inessive: 'ssa',
-  elative: 'sta',
-  adessive: 'lla',
-  ablative: 'lta',
-  allative: 'lle',
-  essive: 'na',
-  translative: 'ksi'
-};
-
-function inflectNaturePlace(forms: SuffixForms, targetCase: GrammaticalCase): string {
-  const { weakStem, strongStem, partitive, illative, suffixHarmony } = forms;
-  if (targetCase === 'partitive') return partitive;
-  if (targetCase === 'illative') return illative;
-  if (targetCase === 'genitive') return `${weakStem}n`;
-
-  const table = suffixHarmony === 'front' ? FRONT_NATURE_ENDINGS : BACK_NATURE_ENDINGS;
-  const end = table[targetCase];
-  const stem = targetCase === 'essive' ? strongStem : weakStem;
-  return end ? `${stem}${end}` : weakStem;
-}
 
 function resolveSpecialPlace(place: string, targetCase: GrammaticalCase): string | null {
   if (needsColon(place)) {
@@ -321,9 +258,9 @@ export function inflectPlace(
     return special;
   }
 
-  const natureForms = resolveNatureSuffix(place);
-  if (natureForms) {
-    return inflectNaturePlace(natureForms, resolvedCase);
+  const nature = matchNatureNoun(place);
+  if (nature) {
+    return assembleCase(nature, resolvedCase);
   }
 
   return dispatchStemInflection(place, resolvedCase);
