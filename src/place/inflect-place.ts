@@ -13,21 +13,15 @@ import {
   ISLAND_INTERNAL_EXCEPTIONS,
   IRREGULAR_PLACES
 } from './municipalities.data.ts';
-import {
-  needsColon,
-  inflectColonWord,
-  getCompoundPrefixMatch,
-  inflectIslandGroup,
-  inflectNenPlace,
-  inflectMacronPlace
-} from './special-places.ts';
+import { needsColon, inflectColonWord } from '../morphology/colon.ts';
 import {
   inflectPluralMaat,
   inflectPluralVallat,
   inflectPluralIslandArchipelago,
   inflectStateCompound
 } from './state-places.ts';
-import { dispatchStemInflection } from './stem-places.ts';
+import { getPlaceParadigm } from './stem-places.ts';
+import { decomposeCompound } from '../morphology/compounds.ts';
 import { matchNatureNoun } from '../morphology/nature-nouns.ts';
 import { assembleCase } from '../morphology/assembler.ts';
 
@@ -157,36 +151,13 @@ export function detectLocalCase(place: string): LocalCaseType {
 
 
 
-function resolveSpecialPlace(place: string, targetCase: GrammaticalCase): string | null {
-  if (needsColon(place)) {
-    return inflectColonWord(place, targetCase);
-  }
-  const state = inflectStateCompound(place, targetCase);
-  if (state) {
-    return state;
-  }
-  const maat = inflectPluralMaat(place, targetCase);
-  if (maat) {
-    return maat;
-  }
-  const vallat = inflectPluralVallat(place, targetCase);
-  if (vallat) {
-    return vallat;
-  }
-  const islandGroup =
-    inflectIslandGroup(place, targetCase) ??
-    inflectPluralIslandArchipelago(place, targetCase);
-  if (islandGroup) {
-    return islandGroup;
-  }
-  const macron = inflectMacronPlace(place, targetCase);
-  if (macron) {
-    return macron;
-  }
-  if (place.endsWith('nen')) {
-    return inflectNenPlace(place, targetCase);
-  }
-  return null;
+function resolveGeopoliticalState(place: string, targetCase: GrammaticalCase): string | null {
+  return (
+    inflectStateCompound(place, targetCase) ??
+    inflectPluralMaat(place, targetCase) ??
+    inflectPluralVallat(place, targetCase) ??
+    inflectPluralIslandArchipelago(place, targetCase)
+  );
 }
 
 function resolveLocalCaseTarget(
@@ -206,6 +177,23 @@ function resolveLocalCaseTarget(
     return localType === 'on' ? 'ablative' : 'elative';
   }
   return localType === 'on' ? 'allative' : 'illative';
+}
+
+function resolveSpecialOrStatePlace(
+  place: string,
+  resolvedCase: GrammaticalCase
+): string | null {
+  const override = IRREGULAR_PLACES.get(place);
+  if (override && resolvedCase !== 'nominative') {
+    const custom = override[resolvedCase];
+    if (custom) {
+      return custom;
+    }
+  }
+  if (needsColon(place)) {
+    return inflectColonWord(place, resolvedCase);
+  }
+  return resolveGeopoliticalState(place, resolvedCase);
 }
 
 /**
@@ -243,19 +231,14 @@ export function inflectPlace(
     return place;
   }
 
-  const override = IRREGULAR_PLACES.get(place);
-  if (override && override[resolvedCase]) {
-    return override[resolvedCase]!;
-  }
-
-  const compound = getCompoundPrefixMatch(place, resolvedCase);
-  if (compound) {
-    return `${compound.prefix}${inflectPlace(compound.remainder, resolvedCase, options)}`;
-  }
-
-  const special = resolveSpecialPlace(place, resolvedCase);
+  const special = resolveSpecialOrStatePlace(place, resolvedCase);
   if (special) {
     return special;
+  }
+
+  const compound = decomposeCompound(place, resolvedCase);
+  if (compound?.isInflectingPrefix) {
+    return `${compound.prefix}${inflectPlace(compound.headWord, resolvedCase, options)}`;
   }
 
   const nature = matchNatureNoun(place);
@@ -263,5 +246,6 @@ export function inflectPlace(
     return assembleCase(nature, resolvedCase);
   }
 
-  return dispatchStemInflection(place, resolvedCase);
+  const paradigm = getPlaceParadigm(place, detectLocalCase(place));
+  return assembleCase(paradigm, resolvedCase);
 }

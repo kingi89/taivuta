@@ -27,6 +27,15 @@ describe('Canonical StemParadigm & assembleCase()', () => {
     assert.equal(assembleCase(mattiParadigm, 'allative'), 'Matille');
     assert.equal(assembleCase(mattiParadigm, 'essive'), 'Mattina');
     assert.equal(assembleCase(mattiParadigm, 'translative'), 'Matiksi');
+
+    const pluralParadigm = createStemParadigm('Kanariansaaret', {
+      strong: 'Kanariansaari',
+      weak: 'Kanariansaari',
+      partitive: 'Kanariansaaria',
+      illative: 'Kanariansaariin',
+      genitive: 'Kanariansaarten'
+    }, { isPlural: true });
+    assert.equal(assembleCase(pluralParadigm, 'genitive'), 'Kanariansaarten');
   });
 
   it('harmonizes suffixes according to front-vowel harmony', () => {

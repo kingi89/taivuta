@@ -32,3 +32,7 @@ export {
   classifyProperNoun,
   type CompoundParts
 } from './compounds.ts';
+export {
+  needsColon,
+  inflectColonWord
+} from './colon.ts';

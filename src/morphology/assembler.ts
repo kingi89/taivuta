@@ -82,6 +82,19 @@ function buildStandardCase(
   return `${stem}${suffix}`;
 }
 
+function resolveSpecialCase(paradigm: StemParadigm, targetCase: CaseName): string | null {
+  if (targetCase === 'genitive') {
+    return paradigm.genitive ?? `${paradigm.weakVocalicStem}n`;
+  }
+  if (targetCase === 'partitive') {
+    return paradigm.partitive;
+  }
+  if (targetCase === 'illative') {
+    return paradigm.illative;
+  }
+  return null;
+}
+
 /**
  * Assembles the requested grammatical or contextual local case for a given StemParadigm.
  *
@@ -107,14 +120,9 @@ export function assembleCase(
     return paradigm ? paradigm.nominative : '';
   }
 
-  if (targetCase === 'genitive') {
-    return `${paradigm.weakVocalicStem}n`;
-  }
-  if (targetCase === 'partitive') {
-    return paradigm.partitive;
-  }
-  if (targetCase === 'illative') {
-    return paradigm.illative;
+  const special = resolveSpecialCase(paradigm, targetCase);
+  if (special) {
+    return special;
   }
 
   if (isContextualCase(targetCase)) {

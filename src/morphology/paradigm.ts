@@ -28,6 +28,8 @@ export interface StemParadigm {
   readonly vowelHarmony: VowelHarmony;
   /** Default spatial case preference ('in' for sisäpaikallissijat, 'on' for ulkopaikallissijat) */
   readonly defaultSpatialCase: LocalCaseType;
+  /** Explicit genitive form override for plural or non-standard genitives (e.g. "Kanariansaarten") */
+  readonly genitive?: string;
   /** Whether the noun is inherently plural (e.g. "Yhdysvallat", "Virrat") */
   readonly isPlural?: boolean;
 }
@@ -69,6 +71,7 @@ export function createStemParadigm(
     readonly weak: string;
     readonly partitive: string;
     readonly illative: string;
+    readonly genitive?: string;
   },
   options: CreateParadigmOptions = {}
 ): StemParadigm {
@@ -81,6 +84,7 @@ export function createStemParadigm(
     illative: stems.illative,
     vowelHarmony: harmony,
     defaultSpatialCase: options.defaultSpatialCase ?? 'in',
+    ...(stems.genitive ? { genitive: stems.genitive } : {}),
     ...(options.isPlural ? { isPlural: true } : {})
   };
 }
