@@ -11,7 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { inflectPerson } from '../src/person/index.ts';
 import { inflectPlace, detectLocalCase, TOPONYM_SUFFIX_REGEX } from '../src/place/index.ts';
 import { getVowelHarmony, harmonize, weakenConsonants, analyzeStem } from '../src/morphology/index.ts';
-import { format, t } from '../src/template/index.ts';
+import { createTemplateEngine } from '../src/template/index.ts';
+import { format, t } from '../src/index.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,8 +42,10 @@ describe('Modular Subpath Exports (Source)', () => {
     assert.equal(stem.stem, 'Virtase');
   });
 
-  it('correctly interpolates templates via template subpath', () => {
-    assert.equal(format('Hei {$name:illative}!', { name: 'Matti' }), 'Hei Mattiin!');
+  it('correctly interpolates templates via template subpath and root helpers', () => {
+    const tpl = createTemplateEngine(inflectPerson);
+    assert.equal(tpl.format('Onnea {$name:allative}!', { name: 'Matti' }), 'Onnea Matille!');
+    assert.equal(format('Tervetuloa {$city:localTo}!', { city: 'Helsinki' }), 'Tervetuloa Helsinkiin!');
     const name = 'Tampere';
     assert.equal(t`Matkustan ${[name, 'localTo']}.`, 'Matkustan Tampereelle.');
   });
@@ -68,6 +71,18 @@ describe('Distribution Subpaths & Bundle Independence', () => {
       assert.ok(!content.includes('Pedersören kunta'), 'morphology bundle must not include municipality entries');
       assert.ok(!content.includes('Uusikaarlepyy'), 'morphology bundle must not include municipality entries');
       assert.ok(!content.includes('EXTERNAL_CASE_MUNICIPALITIES'), 'morphology bundle must not include municipality dataset');
+    }
+  });
+
+  it('ensures template distribution bundle is lightweight and standalone', () => {
+    const tplBundlePath = path.join(projectRoot, 'dist', 'template', 'index.mjs');
+    if (fs.existsSync(tplBundlePath)) {
+      const content = fs.readFileSync(tplBundlePath, 'utf8');
+      assert.ok(!content.includes('Pedersören kunta'), 'template bundle must not include municipality entries');
+      assert.ok(!content.includes('Uusikaarlepyy'), 'template bundle must not include municipality entries');
+      assert.ok(!content.includes('EXTERNAL_CASE_MUNICIPALITIES'), 'template bundle must not include municipality dataset');
+      assert.ok(!content.includes('inflectPerson'), 'template bundle must not include person engine');
+      assert.ok(!content.includes('inflectPlace'), 'template bundle must not include place engine');
     }
   });
 });

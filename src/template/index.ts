@@ -1,15 +1,16 @@
 /**
  * Template string interpolation engine for Finnish grammatical inflections.
  *
- * Provides format() and tagged template t`` functions for composing natural Finnish text
- * with inline inflections (e.g. "Hei {$name:genitive}!").
+ * Provides factory createTemplateEngine() for composing natural Finnish text
+ * with inline inflections.
  *
  * @packageDocumentation
  */
 
 export {
-  format,
-  t,
+  createTemplateEngine,
+  type TemplateEngine,
+  type InflectorFn,
   type FormatValues,
   type TaggedTemplateArg
 } from './format.ts';

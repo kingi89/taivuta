@@ -1,20 +1,71 @@
 /**
  * Template engine and tagged template literal helper for Finnish nominal inflection.
  *
+ * Provides factory createTemplateEngine() for composing natural Finnish text
+ * with inline inflections.
+ *
  * @packageDocumentation
  */
 
 import type { CaseName, InflectOptions } from '../cases/types.ts';
-import { inflect } from '../cases/inflect.ts';
 
 /**
  * Format variables mapping for template interpolation.
  */
 export type FormatValues = Record<string, string | number | undefined | null>;
 
-function interpolateMatch(
+/**
+ * Function signature for proper noun inflection in template engines.
+ */
+export type InflectorFn<C extends string = string, O = unknown> = (
+  name: string,
+  targetCase: C,
+  options?: O
+) => string;
+
+/**
+ * Type of template literal arguments supported by the tagged template `t`.
+ */
+export type TaggedTemplateArg =
+  | string
+  | number
+  | null
+  | undefined
+  | [string, CaseName]
+  | [string, CaseName, InflectOptions];
+
+/**
+ * An instantiated template engine providing format() and tagged template t`` functions.
+ */
+export interface TemplateEngine {
+  /**
+   * Interpolates variables into a template string, inflecting them into requested cases.
+   *
+   * Expression syntax: `{$variable:case[:role]}`
+   *
+   * @param template - The template string containing expressions like `{$user:genitive}`.
+   * @param values - Key-value map of variable values.
+   * @returns The formatted and inflected string.
+   */
+  readonly format: (template: string, values: FormatValues) => string;
+
+  /**
+   * Tagged template literal helper for inline Finnish name inflection.
+   *
+   * @param strings - The template string parts.
+   * @param values - Interleaved values, strings, numbers, or inflection tuples.
+   * @returns The composed and inflected string.
+   */
+  readonly t: (
+    strings: TemplateStringsArray,
+    ...values: readonly TaggedTemplateArg[]
+  ) => string;
+}
+
+function interpolateMatch<C extends string, O>(
   token: string,
-  values: FormatValues
+  values: FormatValues,
+  inflect: InflectorFn<C, O>
 ): string {
   const parts = token.slice(2, -1).split(':');
   const key = parts[0];
@@ -34,87 +85,59 @@ function interpolateMatch(
   }
 
   const role = parts[2];
-  const options: InflectOptions = role ? { role: role as 'person' | 'place' | 'auto' } : {};
-  return inflect(strVal, caseName as CaseName, options);
+  const options = (role ? { role: role as 'person' | 'place' | 'auto' } : {}) as unknown as O;
+  return inflect(strVal, caseName as C, options);
 }
 
 /**
- * Interpolates variables into a template string, inflecting them into requested cases.
+ * Creates an isolated template engine bound to the specified inflection function.
  *
- * Expression syntax: `{$variable:case[:role]}`
- * - `variable`: Key in the values object.
- * - `case`: Optional case name (e.g. "genitive", "partitive", "local", "localTo").
- * - `role`: Optional entity role ("person", "place", "auto").
- *
- * @param template - The template string containing expressions like `{$user:genitive}`.
- * @param values - Key-value map of variable values.
- * @returns The formatted and inflected string.
+ * @param inflect - The inflection function to use (e.g. universal inflect, inflectPerson, or inflectPlace).
+ * @returns An object containing `format()` and tagged template `t`` functions.
  *
  * @example
  * ```ts
- * format("Tänään on {$user:genitive} syntymäpäivä.", { user: "Erkki" });
- * // "Tänään on Erkin syntymäpäivä."
+ * import { createTemplateEngine } from 'taivuta/template';
+ * import { inflectPerson } from 'taivuta/person';
  *
- * format("Tervetuloa {$city:localTo}!", { city: "Tampere" });
- * // "Tervetuloa Tampereelle!"
+ * const { format, t } = createTemplateEngine(inflectPerson);
+ * format("Onnea {$name:allative}!", { name: "Matti" }); // "Onnea Matille!"
  * ```
  */
-export function format(template: string, values: FormatValues): string {
-  if (!template) {
-    return '';
+export function createTemplateEngine<C extends string = string, O = unknown>(
+  inflect: InflectorFn<C, O>
+): TemplateEngine {
+  function format(template: string, values: FormatValues): string {
+    if (!template) {
+      return '';
+    }
+
+    return template.replace(/\{\$[a-zA-Z0-9_]+(?::[a-zA-Z0-9_]+)?(?::[a-zA-Z0-9_]+)?\}/g, (token) => {
+      return interpolateMatch(token, values, inflect);
+    });
   }
 
-  return template.replace(/\{\$[a-zA-Z0-9_]+(?::[a-zA-Z0-9_]+)?(?::[a-zA-Z0-9_]+)?\}/g, (token) => {
-    return interpolateMatch(token, values);
-  });
-}
+  function t(
+    strings: TemplateStringsArray,
+    ...values: readonly TaggedTemplateArg[]
+  ): string {
+    let result = '';
 
-/**
- * Type of template literal arguments supported by the tagged template `t`.
- */
-export type TaggedTemplateArg =
-  | string
-  | number
-  | null
-  | undefined
-  | [string, CaseName]
-  | [string, CaseName, InflectOptions];
-
-/**
- * Tagged template literal helper for inline Finnish name inflection.
- *
- * Wrap values in a tuple `[value, caseName, options?]` to inflect them inline.
- *
- * @param strings - The template string parts.
- * @param values - Interleaved values, strings, numbers, or inflection tuples.
- * @returns The composed and inflected string.
- *
- * @example
- * ```ts
- * const user = "Liisa";
- * const city = "Tampere";
- * t`Onnea ${[user, "genitive"]} päivänä! Tervetuloa ${[city, "localTo"]}!`;
- * // "Onnea Liisan päivänä! Tervetuloa Tampereelle!"
- * ```
- */
-export function t(
-  strings: TemplateStringsArray,
-  ...values: readonly TaggedTemplateArg[]
-): string {
-  let result = '';
-
-  for (let i = 0; i < strings.length; i++) {
-    result += strings[i];
-    if (i < values.length) {
-      const val = values[i];
-      if (Array.isArray(val)) {
-        const [name, targetCase, options] = val;
-        result += inflect(name, targetCase, options);
-      } else if (val !== undefined && val !== null) {
-        result += String(val);
+    for (let i = 0; i < strings.length; i++) {
+      result += strings[i];
+      if (i < values.length) {
+        const val = values[i];
+        if (Array.isArray(val)) {
+          const [name, targetCase, options] = val;
+          result += inflect(name, targetCase as unknown as C, options as unknown as O);
+        } else if (val !== undefined && val !== null) {
+          result += String(val);
+        }
       }
     }
+
+    return result;
   }
 
-  return result;
+  return { format, t };
 }

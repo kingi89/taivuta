@@ -59,9 +59,50 @@ export {
   detectEntityRole
 } from './cases/inflect.ts';
 
+import { inflect } from './cases/inflect.ts';
+import { createTemplateEngine } from './template/index.ts';
+
+const rootTemplateEngine = createTemplateEngine(inflect);
+
+/**
+ * Interpolates variables into a template string, inflecting them into requested cases.
+ *
+ * Expression syntax: `{$variable:case[:role]}`
+ *
+ * @param template - The template string containing expressions like `{$user:genitive}`.
+ * @param values - Key-value map of variable values.
+ * @returns The formatted and inflected string.
+ *
+ * @example
+ * ```ts
+ * format("Tänään on {$user:genitive} syntymäpäivä.", { user: "Erkki" });
+ * // "Tänään on Erkin syntymäpäivä."
+ * ```
+ */
+export const format = rootTemplateEngine.format;
+
+/**
+ * Tagged template literal helper for inline Finnish name inflection.
+ *
+ * Wrap values in a tuple `[value, caseName, options?]` to inflect them inline.
+ *
+ * @param strings - The template string parts.
+ * @param values - Interleaved values, strings, numbers, or inflection tuples.
+ * @returns The composed and inflected string.
+ *
+ * @example
+ * ```ts
+ * const user = "Liisa";
+ * t`Onnea ${[user, "genitive"]} päivänä!`;
+ * // "Onnea Liisan päivänä!"
+ * ```
+ */
+export const t = rootTemplateEngine.t;
+
 export {
-  format,
-  t,
+  createTemplateEngine,
+  type TemplateEngine,
+  type InflectorFn,
   type FormatValues,
   type TaggedTemplateArg
 } from './template/index.ts';

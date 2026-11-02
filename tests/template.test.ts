@@ -6,8 +6,9 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { format, t } from '../src/template/format.ts';
+import { format, t, createTemplateEngine } from '../src/index.ts';
 import { inflect, detectEntityRole } from '../src/cases/inflect.ts';
+import { inflectPerson } from '../src/person/index.ts';
 
 describe('Unified inflect() Function', () => {
   it('inflects person names accurately with explicit or auto role', () => {
@@ -102,5 +103,12 @@ describe('t Tagged Template Literal Function', () => {
     const count = 5;
     const result = t`${greeting}, nähdään ${[place, 'local']} ${count} päivän kuluttua.`;
     assert.equal(result, 'Moi, nähdään Espoossa 5 päivän kuluttua.');
+  });
+
+  it('supports isolated custom template engine via createTemplateEngine', () => {
+    const customEngine = createTemplateEngine(inflectPerson);
+    assert.equal(customEngine.format('Terveisiä {$user:ablative}!', { user: 'Pekka' }), 'Terveisiä Pekalta!');
+    const user = 'Kari-Pekka';
+    assert.equal(customEngine.t`Moi ${[user, 'allative']}!`, 'Moi Kari-Pekalle!');
   });
 });
