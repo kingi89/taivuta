@@ -7,7 +7,7 @@
 import type { CaseName, GrammaticalCase, InflectOptions } from './types.ts';
 import { inflectPerson } from '../person/inflect-person.ts';
 import { inflectPlace, detectLocalCase } from '../place/inflect-place.ts';
-import { classifyProperNoun } from '../morphology/compounds.ts';
+import { classifyProperNoun } from './classify.ts';
 
 function isContextualLocalCase(targetCase: CaseName): boolean {
   return targetCase === 'local' || targetCase === 'localFrom' || targetCase === 'localTo';

@@ -65,6 +65,9 @@ describe('Distribution Subpaths & Bundle Independence', () => {
       const content = fs.readFileSync(morphBundlePath, 'utf8');
       assert.ok(!content.includes('inflectPerson'), 'morphology bundle must not include person engine');
       assert.ok(!content.includes('inflectPlace'), 'morphology bundle must not include place engine');
+      assert.ok(!content.includes('Pedersören kunta'), 'morphology bundle must not include municipality entries');
+      assert.ok(!content.includes('Uusikaarlepyy'), 'morphology bundle must not include municipality entries');
+      assert.ok(!content.includes('EXTERNAL_CASE_MUNICIPALITIES'), 'morphology bundle must not include municipality dataset');
     }
   });
 });

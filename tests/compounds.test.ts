@@ -5,10 +5,8 @@
 import { describe, it } from 'node:test';
 import * as assert from 'node:assert/strict';
 
-import {
-  decomposeCompound,
-  classifyProperNoun
-} from '../src/morphology/index.ts';
+import { decomposeCompound } from '../src/morphology/index.ts';
+import { classifyProperNoun } from '../src/cases/classify.ts';
 
 describe('Compound Token Decomposition (decomposeCompound)', () => {
   it('correctly decomposes inflecting prefixes with requested case', () => {

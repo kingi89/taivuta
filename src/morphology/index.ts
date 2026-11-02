@@ -29,7 +29,6 @@ export {
 } from './assembler.ts';
 export {
   decomposeCompound,
-  classifyProperNoun,
   type CompoundParts
 } from './compounds.ts';
 export {
