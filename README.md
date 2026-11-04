@@ -11,80 +11,160 @@
 
 When localizing applications into Finnish, inserting proper nouns into templates frequently results in awkward or unidiomatic phrasing to avoid grammatical inflection (e.g. *"Käyttäjällä Erkki on tänään syntymäpäivä"* or *"Matkusta kohteeseen Tampere"*). 
 
-**`taivuta`** allows generating native-sounding Finnish messages (*"Tänään on Erkin syntymäpäivä"*, *"Matkusta Tampereelle"* or *"Turkuun"*) by automatically handling Finnish nominal morphology, consonant gradation (*astevaihtelu*), and local case detection (*sisä-* vs *ulkopaikallissijat*).
+**`taivuta`** generates native-sounding Finnish messages (*"Tänään on Erkin syntymäpäivä"*, *"Matkusta Tampereelle"* or *"Turkuun"*) by automatically handling Finnish nominal morphology, consonant gradation (*astevaihtelu*), and local case detection (*sisä-* vs *ulkopaikallissijat*).
 
-### Key Features (In Development)
+### Key Features
 
-- **Zero Runtime Dependencies**: Published package contains zero external dependencies and maintains a small bundle footprint (<25 kB).
-- **Place Name Inflection & Local Case Detection**: Automatically determines whether a place uses internal local cases (*Turussa*) or external local cases (*Tampereella*) with 100% accuracy on all 309 Finnish municipalities.
-- **Person Name Inflection**: Handles consonant gradation (*k/p/t*), vowel harmony, and suffix classes for Finnish and foreign given names and surnames.
-- **Template Engine**: Formats strings using expressive syntax (`{$name:case[:role]}`) or tagged template literals (`t`).
-- **Dual Module Output**: First-class ESM (`.mjs`) and CommonJS (`.cjs`) builds with complete TypeScript declarations.
+- **Zero Runtime Dependencies**: Published package contains zero external dependencies (`dependencies: {}`).
+- **Modular Subpath Architecture**: Import only what you need (`taivuta/person`, `taivuta/place`, `taivuta/template`, `taivuta/morphology`) to keep bundle footprints minimal.
+- **Place Name Inflection & Local Case Detection**: Automatically determines whether a place uses internal local cases (*Turussa*) or external local cases (*Tampereella*) with 100% verified accuracy across all official Finnish municipalities.
+- **Person Name Inflection**: Handles consonant gradation (*k/p/t*), vowel harmony, *s*-stems, *-nen* surnames, nature noun surnames, and foreign names with $\ge 95\%$ accuracy on official DVV benchmarks.
+- **Template Engine**: Formats strings using expressive syntax (`{$name:case[:role]}`) or tagged template literals (`` t`...` ``), with an isolated factory (`createTemplateEngine`) for zero-dataset custom builds.
+- **Dual Module Output**: First-class ESM (`.mjs`) and CommonJS (`.cjs`) builds with TypeScript declaration maps (`.d.ts`).
 
 ---
 
-## Getting Started
-
-### Installation
+## Installation
 
 ```bash
 npm install taivuta
 ```
 
-*(Note: Currently in early development — Milestone 3: Person Name Inflection)*
+---
 
-### Quick Example
+## Modular Subpaths & Configuration Guide
+
+To avoid bundle bloat, `taivuta` provides dedicated subpath exports. Choose the configuration that best matches your application:
+
+| Configuration / Subpath | Primary Use Case | What It Includes | What It Excludes | Trade-offs |
+| :--- | :--- | :--- | :--- | :--- |
+| **Full `taivuta`** | General web apps, blogs, full e-commerce | Auto role detection, 308 municipalities, countries, full templates | None | Largest bundle; easiest setup with automatic name/place detection. |
+| **`taivuta/person`** | CRMs, user profiles, auth, notifications | First/last names, foreign names, hyphenated names, nature surnames | Municipalities, places, countries | Omits place names; local cases on places will not inflect with municipal accuracy. |
+| **`taivuta/place`** | Delivery, logistics, real estate, travel, maps | 308 municipalities (100% accuracy), countries, toponyms | Personal name heuristics, templates | Excludes person-specific rules (e.g. given name gradation resistance). |
+| **`taivuta/template` + `person`** | Chatbots, user email templates, profile UI | Tagged templates `t`, `format()`, person inflection | Municipality dataset, country lists | Featherweight templating for user-facing text without geospatial data. |
+| **`taivuta/morphology`** | Custom NLP tools, search stems, grammar aids | Phonology, gradation, stem analysis, paradigms, colon suffixation | High-level person/place registries | Low-level primitives; requires manual paradigm assembly. |
+
+---
+
+## Usage Examples
+
+### 1. Full Library (Unified API)
+
+For general applications that need automatic detection between person and place names, full template interpolation, and all 308 Finnish municipalities:
 
 ```typescript
-import { inflect, inflectPlace, inflectPerson, format, t } from 'taivuta';
+import { inflect, format, t } from 'taivuta';
 
-// 1. Unified Inflection API
+// Automatic role detection
 inflect('Erkki', 'genitive');                  // "Erkin"
 inflect('Virtanen', 'partitive');              // "Virtasta"
 inflect('Tampere', 'local');                   // "Tampereella"
 inflect('Helsinki', 'localTo');                // "Helsinkiin"
 
-// 2. String Template Formatting
+// Template string formatting
 format('Tänään on {$user:genitive} syntymäpäivä!', { user: 'Erkki' });
 // "Tänään on Erkin syntymäpäivä!"
 
 format('Tervetuloa {$city:localTo}!', { city: 'Tampere' });
 // "Tervetuloa Tampereelle!"
 
-format('Tervetuloa {$city:localTo}!', { city: 'Helsinki' });
-// "Tervetuloa Helsinkiin!"
-
-// 3. Tagged Template Literals
+// Tagged template literals
 const user = 'Liisa';
 const city = 'Rovaniemi';
 t`Onnea ${[user, 'genitive']} päivänä! Terveisiä ${[city, 'localFrom']}!`;
 // "Onnea Liisan päivänä! Terveisiä Rovaniemeltä!"
+```
 
-// 4. Place Names & 100% Municipality Accuracy
+### 2. Person Names Only (`taivuta/person`)
+
+For user profiles, authentication, greetings, and CRM applications that only deal with human names. Excludes the municipality dataset:
+
+```typescript
+import { inflectPerson, getPersonParadigm } from 'taivuta/person';
+
+// Given names and surnames
+inflectPerson('Matti', 'genitive');            // "Matin"
+inflectPerson('Virtanen', 'partitive');        // "Virtasta"
+inflectPerson('Tuomas', 'illative');           // "Tuomakseen"
+inflectPerson('Marja-Liisa', 'allative');      // "Marja-Liisalle"
+
+// Foreign names and orthography
+inflectPerson('John', 'allative');             // "Johnille"
+inflectPerson('Bordeaux', 'inessive');         // "Bordeaux'ssa"
+
+// Direct morphological paradigm inspection
+const paradigm = getPersonParadigm('Kerttu');
+// { strongVocalicStem: "Kerttu", weakVocalicStem: "Kertu", partitive: "Kerttua", illative: "Kerttuun", ... }
+```
+
+### 3. Place Names & Toponyms Only (`taivuta/place`)
+
+For logistics, delivery, real estate, weather, and travel applications requiring 100% linguistic accuracy for Finnish local cases (*sisä-* vs *ulkopaikallissijat*):
+
+```typescript
+import { inflectPlace, detectLocalCase } from 'taivuta/place';
+
+// 100% verified municipality accuracy
+detectLocalCase('Helsinki');                   // "in"  (Helsingissä)
+detectLocalCase('Tampere');                    // "on"  (Tampereella)
+detectLocalCase('Rovaniemi');                  // "on"  (Rovaniemellä)
+
+// Contextual local cases: 'local' (missä), 'localFrom' (mistä), 'localTo' (mihin)
 inflectPlace('Turku', 'local');                // "Turussa"
 inflectPlace('Tampere', 'local');              // "Tampereella"
 inflectPlace('Tampere', 'localTo');            // "Tampereelle"
+inflectPlace('Helsinki', 'localTo');           // "Helsinkiin"
 inflectPlace('Kauniainen', 'genitive');        // "Kauniaisten"
-
-// 5. Person Names & Morphological Roles
-inflectPerson('Matti', 'genitive');            // "Matin"
-inflectPerson('Tuomas', 'illative');           // "Tuomakseen"
-inflectPerson('John', 'allative');             // "Johnille"
-inflectPerson('Bordeaux', 'inessive');         // "Bordeaux'ssa"
 ```
 
----
+### 4. Lightweight Templating (`taivuta/template` + `taivuta/person`)
 
-## Interactive Demo
+For localized email notifications, chatbots, or UI text that only needs person name inflection without bundling the municipality dataset:
 
-You can explore the interactive inflection playground and template sandbox locally:
+```typescript
+import { inflectPerson } from 'taivuta/person';
+import { createTemplateEngine } from 'taivuta/template';
 
-```bash
-# Start the demo web server
-npm run demo
+// Create a featherweight template engine bound only to the person inflector
+const { format, t } = createTemplateEngine(inflectPerson);
+
+format('Onnea {$name:allative}!', { name: 'Matti' });
+// "Onnea Matille!"
+
+const user = 'Pekka';
+t`Terveisiä ${[user, 'ablative']}!`;
+// "Terveisiä Pekalta!"
 ```
 
-Then open `http://localhost:3000` in your browser.
+### 5. Morphology & Linguistic Primitives (`taivuta/morphology`)
+
+For NLP pipelines, search indexing, and linguistic tools needing low-level phonology and stem analysis:
+
+```typescript
+import {
+  getVowelHarmony,
+  harmonize,
+  weakenConsonants,
+  analyzeStem,
+  createStemParadigm,
+  assembleCase
+} from 'taivuta/morphology';
+
+// Phonology and consonant gradation
+getVowelHarmony('Väinö');                      // "front"
+harmonize('ssa', 'Väinö');                     // "ssä"
+weakenConsonants('Kerttu');                    // "Kertu"
+
+// Canonical paradigm assembly
+const paradigm = createStemParadigm('Matti', {
+  strong: 'Matti',
+  weak: 'Mati',
+  partitive: 'Mattia',
+  illative: 'Mattiin'
+});
+assembleCase(paradigm, 'genitive');            // "Matin"
+assembleCase(paradigm, 'adessive');            // "Matilla"
+```
 
 ---
 
