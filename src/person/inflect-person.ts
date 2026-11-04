@@ -12,51 +12,10 @@
  * @packageDocumentation
  */
 
-import { composeCase } from '../cases/inflect-case.ts';
+import { assembleCase } from '../morphology/assembler.ts';
+import { needsColon, inflectColonWord } from '../morphology/colon.ts';
+import { getPersonParadigm } from './stem-person.ts';
 import type { GrammaticalCase, InflectPersonOptions } from '../cases/types.ts';
-
-/**
- * Registry of irregular or traditional historical given names with non-standard stems.
- */
-const IRREGULAR_NAMES: Record<string, Record<string, string>> = {
-  Sampo: {
-    genitive: 'Sammon',
-    partitive: 'Sampoa',
-    inessive: 'Sammossa',
-    elative: 'Sammosta',
-    illative: 'Sampoon',
-    adessive: 'Sammolla',
-    ablative: 'Sammolta',
-    allative: 'Sammolle',
-    essive: 'Sampona',
-    translative: 'Sammoksi'
-  },
-  Aleksis: {
-    genitive: 'Aleksiksen',
-    partitive: 'Aleksista',
-    inessive: 'Aleksiksessa',
-    elative: 'Aleksiksesta',
-    illative: 'Aleksikseen',
-    adessive: 'Aleksiksella',
-    ablative: 'Aleksikselta',
-    allative: 'Aleksikselle',
-    essive: 'Aleksiksena',
-    translative: 'Aleksikseksi'
-  },
-  // Kotus: Satu inflects with t -> d gradation (Satu : Sadun), but ungradated (Satun) is accepted via { gradation: false }
-  Satu: {
-    genitive: 'Sadun',
-    partitive: 'Satua',
-    inessive: 'Sadussa',
-    elative: 'Sadusta',
-    illative: 'Satuun',
-    adessive: 'Sadulla',
-    ablative: 'Sadulta',
-    allative: 'Sadulle',
-    essive: 'Satuna',
-    translative: 'Saduksi'
-  }
-};
 
 /**
  * Inflects a single person name token (first name or surname).
@@ -71,22 +30,21 @@ function inflectSingleName(
   targetCase: GrammaticalCase,
   options: InflectPersonOptions
 ): string {
-  const allowGradation = options.gradation !== false;
-  const irregular = allowGradation ? IRREGULAR_NAMES[token]?.[targetCase] : undefined;
-  if (irregular) {
-    return irregular;
+  if (needsColon(token)) {
+    return inflectColonWord(token, targetCase);
   }
 
   // Handle hyphenated compound names (e.g. "Marja-Liisa" -> "Marja-Liisan")
   if (token.includes('-')) {
     const parts = token.split('-');
     const lastIndex = parts.length - 1;
-    const inflectedLast = composeCase(parts[lastIndex] ?? '', targetCase, options);
+    const inflectedLast = inflectSingleName(parts[lastIndex] ?? '', targetCase, options);
     parts[lastIndex] = inflectedLast;
     return parts.join('-');
   }
 
-  return composeCase(token, targetCase, options);
+  const paradigm = getPersonParadigm(token, options);
+  return assembleCase(paradigm, targetCase);
 }
 
 /**

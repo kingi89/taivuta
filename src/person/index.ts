@@ -11,6 +11,10 @@ export {
   inflectPerson
 } from './inflect-person.ts';
 
+export {
+  getPersonParadigm
+} from './stem-person.ts';
+
 export type {
   InflectPersonOptions,
   GrammaticalCase
