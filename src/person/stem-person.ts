@@ -2,7 +2,7 @@
  * Canonical morphological stem paradigm generator for Finnish person names.
  *
  * Constructs StemParadigm models for given names, surnames, foreign names,
- * and irregular historical names.
+ * and traditional names.
  *
  * @packageDocumentation
  */
@@ -14,51 +14,14 @@ import { matchNatureNoun } from '../morphology/nature-nouns.ts';
 import { analyzeStem, type AnalyzedStem } from '../morphology/stem.ts';
 import type { InflectPersonOptions } from '../cases/types.ts';
 
-function resolveIrregularParadigm(
-  name: string,
-  options?: InflectPersonOptions
-): StemParadigm | null {
-  if (options?.gradation === false) {
-    if (name === 'Satu') {
-      return createStemParadigm('Satu', {
-        strong: 'Satu',
-        weak: 'Satu',
-        partitive: 'Satua',
-        illative: 'Satuun'
-      });
-    }
-    return null;
-  }
-
-  if (name === 'Sampo') {
-    return createStemParadigm('Sampo', {
-      strong: 'Sampo',
-      weak: 'Sammo',
-      partitive: 'Sampoa',
-      illative: 'Sampoon'
-    });
-  }
-
-  if (name === 'Aleksis') {
-    return createStemParadigm('Aleksis', {
-      strong: 'Aleksikse',
-      weak: 'Aleksikse',
-      partitive: 'Aleksista',
-      illative: 'Aleksikseen'
-    });
-  }
-
-  if (name === 'Satu') {
-    return createStemParadigm('Satu', {
-      strong: 'Satu',
-      weak: 'Sadu',
-      partitive: 'Satua',
-      illative: 'Satuun'
-    });
-  }
-
-  return null;
-}
+/**
+ * Traditional Finnish given names that conventionally undergo qualitative gradation
+ * (e.g. Sampo -> Sammon, Satu -> Sadun) according to Kotus guidelines.
+ */
+const TRADITIONAL_QUALITATIVE_GIVEN_NAMES: ReadonlySet<string> = new Set([
+  'sampo',
+  'satu'
+]);
 
 function resolveSpecialAnalyzedParadigm(
   name: string,
@@ -108,18 +71,33 @@ function resolveSpecialAnalyzedParadigm(
   return null;
 }
 
+function resolveVocalicPartitiveSuffix(name: string): string {
+  if (/(?:io|iö)$/i.test(name)) {
+    return harmonize('ta', name);
+  }
+  return harmonize('a', name);
+}
+
+function resolveWeakVocalicStem(name: string, options?: InflectPersonOptions): string {
+  if (options?.gradation === false) {
+    return name;
+  }
+  // Kotus: Surnames ending in -la/-lä resist consonant gradation (Mattila -> Mattilan)
+  if (options?.role === 'surname' && /(?:la|lä)$/i.test(name)) {
+    return name;
+  }
+
+  const isGiven = options?.role !== 'surname';
+  const allowsQualitative = TRADITIONAL_QUALITATIVE_GIVEN_NAMES.has(name.toLowerCase());
+  return weakenConsonants(name, { doubleOnly: isGiven && !allowsQualitative });
+}
+
 function resolveVocalicPersonParadigm(
   name: string,
   options?: InflectPersonOptions
 ): StemParadigm {
-  const isGiven = options?.role !== 'surname';
-  // Kotus: Surnames ending in -la/-lä resist consonant gradation (Mattila -> Mattilan)
-  const isLaSurname = options?.role === 'surname' && /(?:la|lä)$/i.test(name);
-  const shouldWeaken = options?.gradation !== false && !isLaSurname;
-  const weakStem = shouldWeaken ? weakenConsonants(name, { doubleOnly: isGiven }) : name;
-  const partitiveSuffix = /(?:io|iö)$/i.test(name)
-    ? harmonize('ta', name)
-    : harmonize('a', name);
+  const weakStem = resolveWeakVocalicStem(name, options);
+  const partitiveSuffix = resolveVocalicPartitiveSuffix(name);
   const lastChar = name.slice(-1);
 
   return createStemParadigm(name, {
@@ -155,11 +133,6 @@ export function getPersonParadigm(
     if (nature) {
       return nature;
     }
-  }
-
-  const irregular = resolveIrregularParadigm(name, options);
-  if (irregular) {
-    return irregular;
   }
 
   const analyzed = analyzeStem(name, options);

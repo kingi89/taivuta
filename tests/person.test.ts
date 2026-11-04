@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflectPerson } from '../src/index.ts';
+import { getPersonParadigm } from '../src/person/index.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -85,6 +86,9 @@ describe('Hyphenated Compound Names', () => {
     assert.equal(inflectPerson('Juha-Pekka', 'genitive'), 'Juha-Pekan');
     assert.equal(inflectPerson('Kari-Matti', 'adessive'), 'Kari-Matilla');
     assert.equal(inflectPerson('Anna-Kirsti', 'allative'), 'Anna-Kirstille');
+    assert.equal(inflectPerson('Jean-Pierre', 'genitive'), 'Jean-Pierren');
+    assert.equal(inflectPerson('Kari-Sampo', 'genitive'), 'Kari-Sammon');
+    assert.equal(inflectPerson('Anna-Kerttu', 'adessive'), 'Anna-Kertulla');
   });
 });
 
@@ -123,6 +127,7 @@ describe('Foreign Person Names', () => {
     assert.equal(inflectPerson('Erik', 'allative'), 'Erikille');
     assert.equal(inflectPerson('James', 'genitive'), 'Jamesin');
     assert.equal(inflectPerson('Charles', 'genitive'), 'Charlesin');
+    assert.equal(inflectPerson('John', 'essive'), 'Johnina');
 
     // Foreign names ending in accented vowels or macrons attach endings directly
     assert.equal(inflectPerson('José', 'genitive'), 'Josén');
@@ -137,7 +142,11 @@ describe('Foreign Person Names', () => {
     assert.equal(inflectPerson('Bordeaux', 'illative'), "Bordeaux'hon");
     assert.equal(inflectPerson('Bordeaux', 'partitive'), "Bordeaux'ta");
     assert.equal(inflectPerson('Bordeaux', 'adessive'), "Bordeaux'lla");
+    assert.equal(inflectPerson('Bordeaux', 'essive'), "Bordeaux'na");
     assert.equal(inflectPerson('Dumas', 'genitive'), "Dumas'n");
+    assert.equal(inflectPerson('Degas', 'genitive'), "Degas'n");
+    assert.equal(inflectPerson('Monet', 'genitive'), "Monet'n");
+    assert.equal(inflectPerson('Monet', 'adessive'), "Monet'lla");
   });
 });
 
@@ -314,5 +323,75 @@ describe('Irregular & Edge Cases', () => {
   it('handles empty input gracefully', () => {
     assert.equal(inflectPerson('', 'genitive'), '');
     assert.equal(inflectPerson('   ', 'partitive'), '');
+  });
+});
+
+describe('Canonical Person StemParadigm (getPersonParadigm)', () => {
+  it('constructs correct paradigm for standard vocalic given name', () => {
+    const p = getPersonParadigm('Matti');
+    assert.equal(p.nominative, 'Matti');
+    assert.equal(p.strongVocalicStem, 'Matti');
+    assert.equal(p.weakVocalicStem, 'Mati');
+    assert.equal(p.partitive, 'Mattia');
+    assert.equal(p.illative, 'Mattiin');
+    assert.equal(p.vowelHarmony, 'back');
+  });
+
+  it('constructs correct paradigm for traditional qualitative given names', () => {
+    const sampo = getPersonParadigm('Sampo');
+    assert.equal(sampo.strongVocalicStem, 'Sampo');
+    assert.equal(sampo.weakVocalicStem, 'Sammo');
+    assert.equal(sampo.partitive, 'Sampoa');
+    assert.equal(sampo.illative, 'Sampoon');
+
+    const satu = getPersonParadigm('Satu');
+    assert.equal(satu.strongVocalicStem, 'Satu');
+    assert.equal(satu.weakVocalicStem, 'Sadu');
+
+    const satuUngradated = getPersonParadigm('Satu', { gradation: false });
+    assert.equal(satuUngradated.weakVocalicStem, 'Satu');
+  });
+
+  it('constructs correct paradigm for -nen surnames', () => {
+    const p = getPersonParadigm('Virtanen');
+    assert.equal(p.nominative, 'Virtanen');
+    assert.equal(p.strongVocalicStem, 'Virtase');
+    assert.equal(p.weakVocalicStem, 'Virtase');
+    assert.equal(p.partitive, 'Virtasta');
+    assert.equal(p.illative, 'Virtaseen');
+  });
+
+  it('constructs correct paradigm for s-stems', () => {
+    const tuomas = getPersonParadigm('Tuomas');
+    assert.equal(tuomas.strongVocalicStem, 'Tuomakse');
+    assert.equal(tuomas.partitive, 'Tuomasta');
+    assert.equal(tuomas.illative, 'Tuomakseen');
+
+    const aleksis = getPersonParadigm('Aleksis');
+    assert.equal(aleksis.strongVocalicStem, 'Aleksikse');
+    assert.equal(aleksis.partitive, 'Aleksista');
+    assert.equal(aleksis.illative, 'Aleksikseen');
+  });
+
+  it('constructs correct paradigm for foreign consonant and silent names', () => {
+    const john = getPersonParadigm('John');
+    assert.equal(john.strongVocalicStem, 'Johni');
+    assert.equal(john.weakVocalicStem, 'Johni');
+    assert.equal(john.partitive, 'Johnia');
+    assert.equal(john.illative, 'Johniin');
+
+    const bordeaux = getPersonParadigm('Bordeaux');
+    assert.equal(bordeaux.strongVocalicStem, "Bordeaux'");
+    assert.equal(bordeaux.weakVocalicStem, "Bordeaux'");
+    assert.equal(bordeaux.partitive, "Bordeaux'ta");
+    assert.equal(bordeaux.illative, "Bordeaux'hon");
+  });
+
+  it('constructs correct paradigm for nature noun surnames', () => {
+    const niemi = getPersonParadigm('Niemi', { role: 'surname' });
+    assert.equal(niemi.strongVocalicStem, 'Nieme');
+    assert.equal(niemi.weakVocalicStem, 'Nieme');
+    assert.equal(niemi.partitive, 'Niemeä');
+    assert.equal(niemi.illative, 'Niemeen');
   });
 });
