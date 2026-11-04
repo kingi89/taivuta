@@ -1,0 +1,10 @@
+# Authors & Contributors
+
+## Project Maintainer & Lead Author
+
+- **Riku Eskelinen** <taivuta.maintainers@kingi89.fi>
+  - Project architecture, linguistic rules, morphological design, and code maintenance.
+
+## Development Methodology & Tooling Disclosure
+
+- The algorithms, morphological tests, and codebase architecture were co-developed in collaborative pair-programming with Google Antigravity / Gemini.

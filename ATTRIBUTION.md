@@ -1,6 +1,6 @@
 # Data Sources & Attribution
 
-The `taivuta` library utilizes open data from official Finnish public agencies in accordance with their respective open data licenses:
+The `taivuta` project utilizes and references the following open datasets:
 
 ---
 
@@ -10,18 +10,18 @@ The `taivuta` library utilizes open data from official Finnish public agencies i
 - **Provider**: Digi- ja väestötietovirasto (Finnish Digital and Population Data Services Agency).
 - **Source**: [https://dvv.fi](https://dvv.fi) / [https://avoindata.fi](https://avoindata.fi)
 - **License**: [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
-- **Usage**: Used to verify declension accuracy against the Top-500 Finnish given names and Top-100 Finnish surnames in automated benchmark test suites.
-- **Extraction**: Raw spreadsheets placed in `data/names/` are extracted into `tests/fixtures/dvv-top-names.json` using the project's zero-dependency extraction script:
+- **Usage**: Used in automated test suites (`tests/fixtures/dvv-top-names.json`) to verify inflection accuracy against popular Finnish given names and surnames.
+- **Extraction**: Raw spreadsheets placed in `data/names/` are parsed using:
   ```bash
   npm run extract:names
   ```
-  The raw `.xlsx` files are ignored by git to keep repository footprint minimal.
 
 ---
 
 ## 2. Kotimaisten kielten keskus (Kotus)
 
-- **Dataset**: *Asutusnimihakemisto* (Settlement and place names directory) and nominal morphology guidelines.
+- **Dataset**: *Asutusnimihakemisto* (Directory of Finnish settlement names).
 - **Provider**: Kotimaisten kielten keskus (Institute for the Languages of Finland).
+- **Source**: [https://kaino.kotus.fi/asutusnimihakemisto/](https://kaino.kotus.fi/asutusnimihakemisto/)
 - **License**: [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
-- **Usage**: Used to determine standard internal (*sisä-*) vs external (*ulko-*) local case preferences (*Turussa* vs *Tampereella*) for Finnish place names.
+- **Usage**: Consulted as an authoritative reference for conventional local case selection (*sisäpaikallissijat* vs *ulkopaikallissijat*) for Finnish place names and municipalities.
