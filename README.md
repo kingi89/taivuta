@@ -17,8 +17,8 @@ When localizing applications into Finnish, inserting proper nouns into templates
 
 - **Zero Runtime Dependencies**: Published package contains zero external dependencies (`dependencies: {}`).
 - **Modular Subpath Architecture**: Import only what you need (`taivuta/person`, `taivuta/place`, `taivuta/template`, `taivuta/morphology`) to keep bundle footprints minimal.
-- **Place Name Inflection & Local Case Detection**: Automatically determines whether a place uses internal local cases (*Turussa*) or external local cases (*Tampereella*) with 100% verified accuracy across all official Finnish municipalities.
-- **Person Name Inflection**: Handles consonant gradation (*k/p/t*), vowel harmony, *s*-stems, *-nen* surnames, nature noun surnames, and foreign names with $\ge 95\%$ accuracy on official DVV benchmarks.
+- **Place Name Inflection & Local Case Detection**: Automatically determines whether a place uses internal local cases (*Turussa*) or external local cases (*Tampereella*), covering all official Finnish municipalities and geographic toponyms.
+- **Person Name Inflection**: Handles consonant gradation (*k/p/t*), vowel harmony, *s*-stems, *-nen* surnames, nature noun surnames, and foreign names.
 - **Template Engine**: Formats strings using expressive syntax (`{$name:case[:role]}`) or tagged template literals (`` t`...` ``), with an isolated factory (`createTemplateEngine`) for zero-dataset custom builds.
 - **Dual Module Output**: First-class ESM (`.mjs`) and CommonJS (`.cjs`) builds with TypeScript declaration maps (`.d.ts`).
 
@@ -32,30 +32,14 @@ npm install taivuta
 
 ---
 
-## Modular Subpaths & Configuration Guide
+## Quickstart
 
-To avoid bundle bloat, `taivuta` provides dedicated subpath exports. Choose the configuration that best matches your application:
-
-| Configuration / Subpath | Primary Use Case | What It Includes | What It Excludes | Trade-offs |
-| :--- | :--- | :--- | :--- | :--- |
-| **Full `taivuta`** | General web apps, blogs, full e-commerce | Auto role detection, 308 municipalities, countries, full templates | None | Largest bundle; easiest setup with automatic name/place detection. |
-| **`taivuta/person`** | CRMs, user profiles, auth, notifications | First/last names, foreign names, hyphenated names, nature surnames | Municipalities, places, countries | Omits place names; local cases on places will not inflect with municipal accuracy. |
-| **`taivuta/place`** | Delivery, logistics, real estate, travel, maps | 308 municipalities (100% accuracy), countries, toponyms | Personal name heuristics, templates | Excludes person-specific rules (e.g. given name gradation resistance). |
-| **`taivuta/template` + `person`** | Chatbots, user email templates, profile UI | Tagged templates `t`, `format()`, person inflection | Municipality dataset, country lists | Featherweight templating for user-facing text without geospatial data. |
-| **`taivuta/morphology`** | Custom NLP tools, search stems, grammar aids | Phonology, gradation, stem analysis, paradigms, colon suffixation | High-level person/place registries | Low-level primitives; requires manual paradigm assembly. |
-
----
-
-## Usage Examples
-
-### 1. Full Library (Unified API)
-
-For general applications that need automatic detection between person and place names, full template interpolation, and all 308 Finnish municipalities:
+### 1. Unified Inflection & Templates
 
 ```typescript
 import { inflect, format, t } from 'taivuta';
 
-// Automatic role detection
+// Automatic role detection (person vs. place)
 inflect('Erkki', 'genitive');                  // "Erkin"
 inflect('Virtanen', 'partitive');              // "Virtasta"
 inflect('Tampere', 'local');                   // "Tampereella"
@@ -75,120 +59,75 @@ t`Onnea ${[user, 'genitive']} päivänä! Terveisiä ${[city, 'localFrom']}!`;
 // "Onnea Liisan päivänä! Terveisiä Rovaniemeltä!"
 ```
 
-### 2. Person Names Only (`taivuta/person`)
+### 2. Modular Subpaths
 
-For user profiles, authentication, greetings, and CRM applications that only deal with human names. Excludes the municipality dataset:
-
-```typescript
-import { inflectPerson, getPersonParadigm } from 'taivuta/person';
-
-// Given names and surnames
-inflectPerson('Matti', 'genitive');            // "Matin"
-inflectPerson('Virtanen', 'partitive');        // "Virtasta"
-inflectPerson('Tuomas', 'illative');           // "Tuomakseen"
-inflectPerson('Marja-Liisa', 'allative');      // "Marja-Liisalle"
-
-// Foreign names and orthography
-inflectPerson('John', 'allative');             // "Johnille"
-inflectPerson('Bordeaux', 'inessive');         // "Bordeaux'ssa"
-
-// Direct morphological paradigm inspection
-const paradigm = getPersonParadigm('Kerttu');
-// { strongVocalicStem: "Kerttu", weakVocalicStem: "Kertu", partitive: "Kerttua", illative: "Kerttuun", ... }
-```
-
-### 3. Place Names & Toponyms Only (`taivuta/place`)
-
-For logistics, delivery, real estate, weather, and travel applications requiring 100% linguistic accuracy for Finnish local cases (*sisä-* vs *ulkopaikallissijat*):
+For bundle-constrained applications, import dedicated subpaths directly:
 
 ```typescript
-import { inflectPlace, detectLocalCase } from 'taivuta/place';
-
-// 100% verified municipality accuracy
-detectLocalCase('Helsinki');                   // "in"  (Helsingissä)
-detectLocalCase('Tampere');                    // "on"  (Tampereella)
-detectLocalCase('Rovaniemi');                  // "on"  (Rovaniemellä)
-
-// Contextual local cases: 'local' (missä), 'localFrom' (mistä), 'localTo' (mihin)
-inflectPlace('Turku', 'local');                // "Turussa"
-inflectPlace('Tampere', 'local');              // "Tampereella"
-inflectPlace('Tampere', 'localTo');            // "Tampereelle"
-inflectPlace('Helsinki', 'localTo');           // "Helsinkiin"
-inflectPlace('Kauniainen', 'genitive');        // "Kauniaisten"
-```
-
-### 4. Lightweight Templating (`taivuta/template` + `taivuta/person`)
-
-For localized email notifications, chatbots, or UI text that only needs person name inflection without bundling the municipality dataset:
-
-```typescript
+// Person names only (omits municipality dataset, < 12 kB budget)
 import { inflectPerson } from 'taivuta/person';
+inflectPerson('Matti', 'genitive');            // "Matin"
+inflectPerson('Tuomas', 'illative');           // "Tuomakseen"
+
+// Place names and local cases (< 25 kB budget)
+import { inflectPlace, detectLocalCase } from 'taivuta/place';
+detectLocalCase('Tampere');                    // "on"  (Tampereella)
+inflectPlace('Turku', 'local');                // "Turussa"
+
+// Featherweight template engine bound to a custom inflector (< 2 kB budget)
 import { createTemplateEngine } from 'taivuta/template';
-
-// Create a featherweight template engine bound only to the person inflector
-const { format, t } = createTemplateEngine(inflectPerson);
-
-format('Onnea {$name:allative}!', { name: 'Matti' });
-// "Onnea Matille!"
-
-const user = 'Pekka';
-t`Terveisiä ${[user, 'ablative']}!`;
-// "Terveisiä Pekalta!"
+const { format: formatPerson } = createTemplateEngine(inflectPerson);
+formatPerson('Hei {$name:allative}!', { name: 'Satu' }); // "Hei Sadulle!"
 ```
 
-### 5. Morphology & Linguistic Primitives (`taivuta/morphology`)
+For advanced morphology primitives (`weakenConsonants`, `StemParadigm`, `assembleCase`), see [Architecture & Design Principles](ARCHITECTURE.md).
 
-For NLP pipelines, search indexing, and linguistic tools needing low-level phonology and stem analysis:
+---
 
-```typescript
-import {
-  getVowelHarmony,
-  harmonize,
-  weakenConsonants,
-  analyzeStem,
-  createStemParadigm,
-  assembleCase
-} from 'taivuta/morphology';
+## Modular Subpaths Overview
 
-// Phonology and consonant gradation
-getVowelHarmony('Väinö');                      // "front"
-harmonize('ssa', 'Väinö');                     // "ssä"
-weakenConsonants('Kerttu');                    // "Kertu"
+| Subpath | Primary Use Case | Bundle Budget |
+| :--- | :--- | :--- |
+| `taivuta` | Full library with auto role detection & templates | < 30 kB |
+| `taivuta/person` | Given names, surnames, foreign names | < 12 kB |
+| `taivuta/place` | Municipalities, countries, toponyms & local cases | < 25 kB |
+| `taivuta/template` | Featherweight tagged template & string formatter | < 2 kB |
+| `taivuta/morphology` | Low-level phonology, gradation & stem paradigms | < 12 kB |
 
-// Canonical paradigm assembly
-const paradigm = createStemParadigm('Matti', {
-  strong: 'Matti',
-  weak: 'Mati',
-  partitive: 'Mattia',
-  illative: 'Mattiin'
-});
-assembleCase(paradigm, 'genitive');            // "Matin"
-assembleCase(paradigm, 'adessive');            // "Matilla"
-```
+See [ARCHITECTURE.md](ARCHITECTURE.md) for full module boundaries and trade-offs.
+
+---
+
+## Documentation & Guides
+
+- [Architecture & Design Principles](ARCHITECTURE.md): Deep dive into the `StemParadigm` morphological engine, consonant gradation anchoring, and modular bundle boundaries.
+- [Contributing Guide](CONTRIBUTING.md): Development environment setup, quality gates, and pull request conventions.
+- [Changelog](CHANGELOG.md): Detailed release history adhering to Keep a Changelog.
+- [Attribution & Sources](ATTRIBUTION.md): Citations and licenses for linguistic open data sources.
+- [Authors](AUTHORS): Maintainers and contributors.
+
+---
+
+## Versioning & Stability
+
+`taivuta` strictly adheres to [Semantic Versioning 2.0.0](https://semver.org/).
+
+### Deprecation Policy
+- Deprecated APIs will remain functional for at least one minor release cycle during `0.y.z` development, and until the next major version after `1.0.0`.
+- Deprecated methods emit runtime warnings strictly in non-production environments (`process.env.NODE_ENV !== 'production'`) to keep production builds lean and silent.
+- For complete details, see our [API Evolution & Deprecation Policy](CONTRIBUTING.md#api-evolution--deprecation-policy).
 
 ---
 
 ## Development
 
 ```bash
-# Build dual ESM/CJS bundles and declaration maps
-npm run build
-
-# Run unit tests
-npm test
-
-# Run test coverage with V8
-npm run test:coverage
-
-# Run TypeScript typecheck
-npm run typecheck
-
-# Run linter
-npm run lint
+# Run all quality gates and bundle verifications
+npm run check
 ```
 
 ---
 
 ## License
 
-BSD-3-Clause. Data derived from Kotus and Maanmittauslaitos open datasets are used in accordance with CC-BY 4.0.
+BSD-3-Clause. Certain linguistic datasets and benchmarks are derived from open data sources licensed under CC-BY 4.0; see [ATTRIBUTION.md](ATTRIBUTION.md) for source details and attributions.
