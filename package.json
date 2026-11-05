@@ -12,6 +12,16 @@
     "places"
   ],
   "license": "BSD-3-Clause",
+  "author": "Riku Eskelinen <taivuta.maintainers@kingi89.fi>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kingi89/taivuta.git"
+  },
+  "homepage": "https://kingi89.github.io/taivuta/",
+  "bugs": {
+    "url": "https://github.com/kingi89/taivuta/issues"
+  },
+  "sideEffects": false,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -44,7 +54,11 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "AUTHORS"
   ],
   "scripts": {
     "build": "tsup",
@@ -52,7 +66,9 @@
     "lint": "eslint . --max-warnings 0",
     "test": "node --experimental-strip-types --test tests/**/*.test.ts",
     "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage --test-coverage-lines=95 --test-coverage-functions=95 --test-coverage-branches=90 --test-coverage-include=\"src/**\" --test-coverage-exclude=\"src/**/*.data.ts\" tests/**/*.test.ts",
-    "check": "npm run typecheck && npm run lint && npm run build && npm run test && npm run test:coverage",
+    "verify:bundle": "node --experimental-strip-types scripts/verify-bundle.ts",
+    "check": "npm run typecheck && npm run lint && npm run build && npm run test && npm run test:coverage && npm run verify:bundle",
+    "prepublishOnly": "npm run check",
     "extract:names": "node --experimental-strip-types scripts/extract-dvv-names.ts",
     "generate:matrix": "node --experimental-strip-types scripts/generate-names-matrix.ts",
     "generate:places-matrix": "node --experimental-strip-types scripts/generate-places-matrix.ts",
