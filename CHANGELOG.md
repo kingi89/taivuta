@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.1] - 2026-11-05
+
+### Changed
+- **Release Automation**: Migrated npm release workflow to Trusted Publishing via GitHub Actions OIDC tokens, eliminating long-lived secret tokens and enabling provenance attestations.
+
+### Fixed
+- **CI Compatibility**: Updated GitHub Actions test matrix to Node.js 22.x and 24.x with `fail-fast: false`, resolving `--experimental-strip-types` incompatibility on Node 20.
+- **Dependencies**: Overrode transitive `minimatch` dependency to `>=11.0.4` to remediate GHSA-g3hv-75wg-m249 / CVE-2026-118764 DoS vulnerability.
+- **Demo**: Added dual-path fallback script loading to `demo/index.html` to support both local execution and GitHub Pages deployment.
+
+---
+
 ## [0.1.0] - 2026-11-05
 
 ### Added

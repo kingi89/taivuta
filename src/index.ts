@@ -7,7 +7,7 @@
 /**
  * The current semantic version of the taivuta library.
  */
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.1';
 
 /**
  * Returns library metadata and readiness status.
