@@ -25,7 +25,8 @@ export default defineConfig([
       'person/index': 'src/person/index.ts',
       'place/index': 'src/place/index.ts',
       'morphology/index': 'src/morphology/index.ts',
-      'template/index': 'src/template/index.ts'
+      'template/index': 'src/template/index.ts',
+      'preferences/index': 'src/preferences/index.ts'
     },
     format: ['esm', 'cjs'],
     dts: true,

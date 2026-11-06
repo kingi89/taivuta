@@ -58,6 +58,12 @@ const BUNDLE_SPECS: readonly BundleSpec[] = [
       'inflectPerson',
       'inflectPlace'
     ]
+  },
+  {
+    name: 'taivuta/preferences',
+    file: 'dist/preferences/index.mjs',
+    maxMinifiedKb: 15.0,
+    forbiddenStrings: ['EXTERNAL_CASE_MUNICIPALITIES', 'Pedersören kunta']
   }
 ];
 

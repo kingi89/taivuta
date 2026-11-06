@@ -51,6 +51,11 @@
       "types": "./dist/template/index.d.ts",
       "import": "./dist/template/index.mjs",
       "require": "./dist/template/index.cjs"
+    },
+    "./preferences": {
+      "types": "./dist/preferences/index.d.ts",
+      "import": "./dist/preferences/index.mjs",
+      "require": "./dist/preferences/index.cjs"
     }
   },
   "files": [
