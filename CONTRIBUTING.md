@@ -96,3 +96,21 @@ All deprecations must be recorded under the `### Deprecated` section of `CHANGEL
   - `test(scope): ...` for test additions
   - `docs: ...` for documentation updates
 - **PR Submission**: Ensure `npm run check` passes locally before submitting your Pull Request.
+
+---
+
+## 5. Prioritization Matrix & Milestone Governance
+
+Work on `taivuta` is triaged against our five core project pillars (linguistic accuracy, zero-runtime-dependency footprint, developer ergonomics, maintainability, and supply-chain security):
+
+### A. Priority Matrix (P0–P3)
+- **P0 (Critical Hotfix)**: Security vulnerabilities, CI or build breakages, and benchmark regressions. Addressed immediately.
+- **P1 (Milestone Essential)**: Core features committed to the active milestone in [`ROADMAP.md`](ROADMAP.md) and consumer bugs affecting common names.
+- **P2 (Strategic Enhancement)**: High-value linguistic edge cases, tree-shaking optimizations, and benchmark extensions.
+- **P3 (Icebox)**: Exploratory tasks, speculative features, or low return-on-effort ideas.
+
+### B. Milestone Assessment Protocol
+Roadmap milestones are assessed at every **Minor release boundary** (e.g. v0.1 $\to$ v0.2) via a 3-step review:
+1. **Deliverable Audit**: Confirm all checklist deliverables in `ROADMAP.md` and bundle budgets held green.
+2. **Backlog Harvest**: Promote candidate P2 tasks in `BACKLOG.md` to P1 for the upcoming release.
+3. **Horizon Adjustment**: Set scope boundaries for the next milestone horizon (typically 2–4 targeted increments).
