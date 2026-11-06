@@ -23,12 +23,14 @@ flowchart TD
   person["taivuta/person\n(Personal Names)"]
   place["taivuta/place\n(Municipalities & Toponyms)"]
   template["taivuta/template\n(Template Engine)"]
+  preferences["taivuta/preferences\n(Disambiguation)"]
   morphology["taivuta/morphology\n(Morphological Primitives)"]
   data[("municipalities.data.ts\n(Municipality Dataset)")]
 
   taivuta --> person
   taivuta --> place
   taivuta --> template
+  preferences --> person
   person --> morphology
   place --> morphology
   template --> morphology
@@ -42,6 +44,7 @@ flowchart TD
 | **Full `taivuta`** | General web apps, blogs, full e-commerce | < 30 kB | Auto role detection, municipalities, countries, full templates | None |
 | **`taivuta/person`** | CRMs, user profiles, auth, notifications | < 12 kB | First/last names, foreign names, hyphenated names, nature surnames | Municipalities, places, countries |
 | **`taivuta/place`** | Delivery, logistics, real estate, travel, maps | < 25 kB | All Finnish municipalities, countries, toponyms | Personal name heuristics, templates |
+| **`taivuta/preferences`** | User onboarding, profile settings, disambiguation prompts | < 15 kB | Algorithmic ambiguity detection, multi-dimensional option generation | Municipalities, places, templates |
 | **`taivuta/template`** | Chatbots, user email templates, profile UI | < 2 kB | Tagged templates `t`, `format()`, custom engine factory | Municipality dataset, personal name heuristics |
 | **`taivuta/morphology`** | Custom NLP tools, search stems, grammar aids | < 12 kB | Phonology, gradation, stem analysis, paradigms, colon suffixation | High-level person/place registries |
 
@@ -94,3 +97,19 @@ In Finnish, place names require either internal local cases (*-ssa/-sta/-on*) or
    - Internal: *-la/-lä*, *-kallio*, *-kangas*, *-kuru*, and generic stems.
 3. **Compound Toponyms**:
    Hyphenated and spaced place names (e.g. *Uusi-Seelanti*, *Iso-Britannia*) correctly inflect only the governing head or both components according to standard Finnish grammatical conventions.
+
+---
+
+## 6. Name Holder Disambiguation & Preference Subsystem
+
+In Finnish, proper nouns decline into grammatical cases, but not all Finnish names can be unambiguously inflected by grammatical algorithms alone:
+
+1. **The Name Holder as Ultimate Authority**: Under Finnish naming conventions and linguistic guidelines (Kotus), the individual name holder is the ultimate authority on how their personal name inflects. For example, one person named *Satu* may choose standard consonant gradation (*Sadulle*), while another prefers ungradated declension (*Satulle*). Similarly, *Lucas* may be inflected using the foreign vocalic pattern (*Lucasin*) or the Finnish s-stem (*Lucaksen*).
+2. **Opt-in Preference Support**: `taivuta` provides first-class support for detecting ambiguous names during user registration or onboarding, capturing the user's preferred declension, and applying it seamlessly across templates and notification strings.
+3. **Safe Automated Defaults**: Consumers are **not required** to collect or track name holder preferences. When no preference is supplied, `taivuta`'s built-in heuristics automatically apply safe, idiomatic linguistic defaults that sound natural in the vast majority of scenarios.
+
+The `taivuta/preferences` subpath provides:
+- **Algorithmic Disambiguation**: Detects qualitative consonant gradation positions, nouns ending in *-s*, word-derived nominal stems, all-caps acronyms, and trailing numeral vowel harmonies without requiring exhaustive manual name dictionaries.
+- **Dimension Decomposition**: Emits structured dimensions (`gradation`, `s-stem`, `vocalic-variant`, `acronym-colon`, `vowel-harmony`) with precomputed example inflections.
+- **Cartesian Option Bundling**: Automatically computes combination options for multi-dimensional cases (e.g. `SATU` combining acronym vs. word and gradation vs. no-gradation).
+- **Default Linguistic Fallbacks**: Resolves recommended linguistic defaults when no explicit preference is provided.

@@ -57,9 +57,49 @@ const user = 'Liisa';
 const city = 'Rovaniemi';
 t`Onnea ${[user, 'genitive']} päivänä! Terveisiä ${[city, 'localFrom']}!`;
 // "Onnea Liisan päivänä! Terveisiä Rovaniemeltä!"
+
+// Nameholder inflection preferences
+format('Lähetä viesti {$user:allative}!', { user: 'Satu' }, {
+  preferences: { user: 'no-gradation' }
+}); // "Lähetä viesti Satulle!" (instead of default "Sadulle")
 ```
 
-### 2. Modular Subpaths
+### 2. Name Holder Preferences & Disambiguation (`taivuta/preferences`)
+
+In Finnish, not all personal names can be unambiguously inflected by grammar rules alone:
+- **The Name Holder is the Authority**: Under Finnish linguistic customs, the name holder themselves is the ultimate authority on how their own name inflects. For example, one person named *Satu* might prefer traditional consonant gradation (*"Sadulle"*), while another prefers ungradated inflection (*"Satulle"*). Similarly, *Lucas* can be declined as *Lucasin* or *Lucaksen*.
+- **Opt-in Preference Handling**: `taivuta` supports detecting these ambiguities during user onboarding or profile creation, and applying the user's stored preference when generating messages.
+- **Zero Configuration Needed**: If your application does not collect user preferences or you cannot bother with disambiguation, that is completely fine! `taivuta` automatically applies safe, idiomatic linguistic defaults that sound natural in everyday Finnish.
+
+When building user onboarding or account settings, use `taivuta/preferences` to detect ambiguous names and prompt the user:
+
+```typescript
+import { detectNameDisambiguation, getNamePreferenceOptions } from 'taivuta/preferences';
+import { format, t } from 'taivuta';
+
+// 1. Detect during sign-in or profile saving
+const disambiguation = detectNameDisambiguation('Satu');
+if (disambiguation?.isAmbiguous) {
+  // Present options to the user in a radio button group:
+  // Option 1: "Sadun, Sadulle" (default / consonant gradation)
+  // Option 2: "Satun, Satulle" (no gradation)
+  console.log(disambiguation.options.map(opt => opt.label));
+}
+
+// 2. Apply stored preference in UI notifications and messages
+const selectedPreference = 'no-gradation';
+
+// Using format()
+format('Lähetä paketti {$user:allative}!', { user: 'Satu' }, {
+  preferences: { user: selectedPreference }
+}); // "Lähetä paketti Satulle!"
+
+// Using tagged template literal t
+t`Soita ${['Satu', 'allative', { preference: selectedPreference }]}!`;
+// "Soita Satulle!"
+```
+
+### 3. Modular Subpaths
 
 For bundle-constrained applications, import dedicated subpaths directly:
 
@@ -92,6 +132,7 @@ For advanced morphology primitives (`weakenConsonants`, `StemParadigm`, `assembl
 | `taivuta/person` | Given names, surnames, foreign names | < 12 kB |
 | `taivuta/place` | Municipalities, countries, toponyms & local cases | < 25 kB |
 | `taivuta/template` | Featherweight tagged template & string formatter | < 2 kB |
+| `taivuta/preferences` | Disambiguation detection & preference options | < 15 kB |
 | `taivuta/morphology` | Low-level phonology, gradation & stem paradigms | < 12 kB |
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for full module boundaries and trade-offs.

@@ -40,5 +40,19 @@ export default defineConfig([
         js: format === 'esm' ? '.mjs' : '.cjs'
       };
     }
+  },
+  {
+    entry: {
+      'preferences/index': 'src/preferences/index.ts'
+    },
+    format: ['iife'],
+    globalName: 'taivutaPreferences',
+    clean: false,
+    sourcemap: true,
+    outExtension() {
+      return {
+        js: '.global.js'
+      };
+    }
   }
 ]);
