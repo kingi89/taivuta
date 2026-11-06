@@ -78,6 +78,59 @@ function resolveVocalicPartitiveSuffix(name: string): string {
   return harmonize('a', name);
 }
 
+const STRING_PREFERENCE_OVERRIDES: Record<string, Partial<InflectPersonOptions>> = {
+  'no-gradation': { gradation: false },
+  gradation: { gradation: true },
+  's-stem': { sStem: true },
+  vocalic: { sStem: false },
+  nominative: { vocalicStemVariant: 'nominative' },
+  inflected: { vocalicStemVariant: 'inflected' },
+  acronym: { colon: true },
+  word: { colon: false },
+  'harmony-back': { harmony: 'back' },
+  'harmony-front': { harmony: 'front' }
+};
+
+function normalizeSinglePreference(item: unknown): Partial<InflectPersonOptions> {
+  if (typeof item === 'string') {
+    return STRING_PREFERENCE_OVERRIDES[item] ?? {};
+  }
+  if (item && typeof item === 'object') {
+    if ('params' in item && item.params && typeof item.params === 'object') {
+      return item.params as Partial<InflectPersonOptions>;
+    }
+    return item as Partial<InflectPersonOptions>;
+  }
+  return {};
+}
+
+/**
+ * Resolves preference option IDs, parameter objects, arrays of options, or PreferenceOption instances
+ * into concrete InflectPersonOptions.
+ *
+ * Mutual exclusivity: When contradictory options are passed (e.g. `['gradation', 'no-gradation']`),
+ * latter-wins precedence is applied deterministically.
+ *
+ * @param options - Input person inflection options containing an optional preference.
+ * @returns Concrete InflectPersonOptions with normalized preference overrides.
+ */
+export function resolvePersonPreference(options: InflectPersonOptions = {}): InflectPersonOptions {
+  if (!options.preference) {
+    return options;
+  }
+
+  const pref = options.preference;
+  if (Array.isArray(pref)) {
+    let merged = { ...options };
+    for (const item of pref) {
+      merged = { ...merged, ...normalizeSinglePreference(item) };
+    }
+    return merged;
+  }
+
+  return { ...options, ...normalizeSinglePreference(pref) };
+}
+
 function resolveWeakVocalicStem(name: string, options?: InflectPersonOptions): string {
   if (options?.gradation === false) {
     return name;
@@ -88,7 +141,7 @@ function resolveWeakVocalicStem(name: string, options?: InflectPersonOptions): s
   }
 
   const isGiven = options?.role !== 'surname';
-  const allowsQualitative = TRADITIONAL_QUALITATIVE_GIVEN_NAMES.has(name.toLowerCase());
+  const allowsQualitative = options?.gradation === true || TRADITIONAL_QUALITATIVE_GIVEN_NAMES.has(name.toLowerCase());
   return weakenConsonants(name, { doubleOnly: isGiven && !allowsQualitative });
 }
 
@@ -128,16 +181,18 @@ export function getPersonParadigm(
   name: string,
   options: InflectPersonOptions = {}
 ): StemParadigm {
-  if (options.role === 'surname') {
+  const effectiveOptions = resolvePersonPreference(options);
+
+  if (effectiveOptions.role === 'surname' || effectiveOptions.vocalicStemVariant === 'inflected') {
     const nature = matchNatureNoun(name);
     if (nature) {
       return nature;
     }
   }
 
-  const analyzed = analyzeStem(name, options);
+  const analyzed = analyzeStem(name, effectiveOptions);
   return (
     resolveSpecialAnalyzedParadigm(name, analyzed) ??
-    resolveVocalicPersonParadigm(name, options)
+    resolveVocalicPersonParadigm(name, effectiveOptions)
   );
 }

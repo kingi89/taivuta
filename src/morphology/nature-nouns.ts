@@ -62,7 +62,13 @@ export const NATURE_NOUN_RULES: readonly NatureNounRule[] = [
   { suffix: 'suo', weak: 'suo', strong: 'suo', partitive: 'suota', illative: 'suohon', harmony: 'back', defaultSpatialCase: 'on' },
   { suffix: 'lampi', weak: 'lamme', strong: 'lampe', partitive: 'lampea', illative: 'lampeen', harmony: 'back', defaultSpatialCase: 'on' },
   { suffix: 'nummi', weak: 'numme', strong: 'numme', partitive: 'nummea', illative: 'nummeen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'ranta', weak: 'ranna', strong: 'ranta', partitive: 'rantaa', illative: 'rantaan', harmony: 'back', defaultSpatialCase: 'in' }
+  { suffix: 'ranta', weak: 'ranna', strong: 'ranta', partitive: 'rantaa', illative: 'rantaan', harmony: 'back', defaultSpatialCase: 'in' },
+  { suffix: 'tuuli', weak: 'tuule', strong: 'tuule', partitive: 'tuulta', illative: 'tuuleen', harmony: 'back', defaultSpatialCase: 'in' },
+  { suffix: 'pilvi', weak: 'pilve', strong: 'pilve', partitive: 'pilveä', illative: 'pilveen', harmony: 'front', defaultSpatialCase: 'in' },
+  { suffix: 'lumi', weak: 'lume', strong: 'lume', partitive: 'lunta', illative: 'lumeen', harmony: 'back', defaultSpatialCase: 'in' },
+  { suffix: 'helmi', weak: 'helme', strong: 'helme', partitive: 'helmeä', illative: 'helmeen', harmony: 'front', defaultSpatialCase: 'in' },
+  { suffix: 'suvi', weak: 'suve', strong: 'suve', partitive: 'suvea', illative: 'suveen', harmony: 'back', defaultSpatialCase: 'in' },
+  { suffix: 'sini', weak: 'sine', strong: 'sine', partitive: 'sineä', illative: 'sineen', harmony: 'front', defaultSpatialCase: 'in' }
 ];
 
 function capitalizeForm(base: string, suffixForm: string, isCapitalized: boolean): string {

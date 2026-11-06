@@ -12,10 +12,14 @@ export {
 } from './inflect-person.ts';
 
 export {
-  getPersonParadigm
+  getPersonParadigm,
+  resolvePersonPreference
 } from './stem-person.ts';
 
 export type {
   InflectPersonOptions,
-  GrammaticalCase
+  GrammaticalCase,
+  PersonPreferenceParams,
+  PreferenceOption,
+  NameDisambiguation
 } from '../cases/types.ts';

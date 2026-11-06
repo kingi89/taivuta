@@ -14,7 +14,7 @@
 
 import { assembleCase } from '../morphology/assembler.ts';
 import { needsColon, inflectColonWord } from '../morphology/colon.ts';
-import { getPersonParadigm } from './stem-person.ts';
+import { getPersonParadigm, resolvePersonPreference } from './stem-person.ts';
 import type { GrammaticalCase, InflectPersonOptions } from '../cases/types.ts';
 
 /**
@@ -30,8 +30,9 @@ function inflectSingleName(
   targetCase: GrammaticalCase,
   options: InflectPersonOptions
 ): string {
-  if (needsColon(token)) {
-    return inflectColonWord(token, targetCase);
+  const useColon = options.colon ?? needsColon(token);
+  if (useColon) {
+    return inflectColonWord(token, targetCase, { harmony: options.harmony });
   }
 
   // Handle hyphenated compound names (e.g. "Marja-Liisa" -> "Marja-Liisan")
@@ -92,13 +93,14 @@ function inflectFullName(
 export function inflectPerson(
   name: string,
   targetCase: GrammaticalCase,
-  options: InflectPersonOptions = {}
+  rawOptions: InflectPersonOptions = {}
 ): string {
   const trimmed = name?.trim() ?? '';
   if (!trimmed || targetCase === 'nominative') {
     return trimmed;
   }
 
+  const options = resolvePersonPreference(rawOptions);
   const tokens = trimmed.split(/\s+/);
   if (tokens.length === 1) {
     return inflectSingleName(tokens[0] ?? '', targetCase, options);

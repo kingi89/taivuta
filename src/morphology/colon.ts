@@ -47,41 +47,57 @@ export function needsColon(token: string): boolean {
   return !/[aeiouyäöáéíóúàèìòùâêîôûãõäöüÿøåæœōūāēī]/i.test(lastSegment);
 }
 
+const COLON_BASE_ENDINGS: Record<GrammaticalCase, string | null> = {
+  nominative: null,
+  genitive: 'n',
+  partitive: 'a',
+  illative: 'iin',
+  inessive: 'ssa',
+  elative: 'sta',
+  adessive: 'lla',
+  ablative: 'lta',
+  allative: 'lle',
+  essive: 'na',
+  translative: 'ksi'
+};
+
+function resolveHarmonizedSuffix(
+  suffix: string,
+  token: string,
+  harmony?: 'front' | 'back'
+): string {
+  if (harmony === 'front') {
+    return suffix.replace(/a/g, 'ä').replace(/o/g, 'ö').replace(/u/g, 'y');
+  }
+  if (harmony === 'back') {
+    return suffix.replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/y/g, 'u');
+  }
+  return harmonize(suffix, token);
+}
+
 /**
  * Inflects an abbreviation, numeral, handle, or non-alphabetic token using colon suffixation.
  *
  * @param token - Token requiring colon suffixation (e.g. "Koski Tl", "Agent007").
  * @param targetCase - Target grammatical case.
+ * @param options - Optional configuration, including explicit vowel harmony override.
  * @returns Colon-separated inflected string.
  *
  * @example
  * ```ts
  * inflectColonWord("Agent007", "genitive"); // "Agent007:n"
  * inflectColonWord("HJK", "inessive");      // "HJK:ssa"
- * inflectColonWord("Koski Tl", "adessive"); // "Koski Tl:llä"
+ * inflectColonWord("Agent007", "adessive", { harmony: 'front' }); // "Agent007:llä"
  * ```
  */
-export function inflectColonWord(token: string, targetCase: GrammaticalCase): string {
-  if (targetCase === 'genitive') {
-    return `${token}:n`;
+export function inflectColonWord(
+  token: string,
+  targetCase: GrammaticalCase,
+  options?: { readonly harmony?: 'front' | 'back' }
+): string {
+  const baseSuffix = COLON_BASE_ENDINGS[targetCase];
+  if (!baseSuffix) {
+    return token;
   }
-  if (targetCase === 'partitive') {
-    return `${token}:${harmonize('a', token)}`;
-  }
-  if (targetCase === 'illative') {
-    return `${token}:${harmonize('iin', token)}`;
-  }
-
-  const endings: Record<string, string> = {
-    inessive: harmonize('ssa', token),
-    elative: harmonize('sta', token),
-    adessive: harmonize('lla', token),
-    ablative: harmonize('lta', token),
-    allative: 'lle',
-    essive: harmonize('na', token),
-    translative: 'ksi'
-  };
-
-  const end = endings[targetCase];
-  return end ? `${token}:${end}` : token;
+  return `${token}:${resolveHarmonizedSuffix(baseSuffix, token, options?.harmony)}`;
 }
