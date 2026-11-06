@@ -553,6 +553,16 @@ Tapasimme {$homonym:genitive:person} {$homonym:local:place}.</textarea>
     const { inflect, detectLocalCase, detectEntityRole, format } = window.taivuta || {};
     const { detectNameDisambiguation } = window.taivutaPreferences || {};
 
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     // TAB 1: Inflection Explorer
     const nameInput = document.getElementById('name-input');
     const paradigmTbody = document.getElementById('paradigm-tbody');
@@ -657,10 +667,10 @@ Tapasimme {$homonym:genitive:person} {$homonym:local:place}.</textarea>
       paradigmTbody.innerHTML = CASES.map(c => {
         const inflected = inflect(name, c.id);
         const isSelected = c.id === selectedCaseId;
-        return `<tr class="paradigm-row ${isSelected ? 'selected' : ''}" onclick="selectCase('${c.id}')">
-          <td>${c.label}</td>
-          <td><code class="copyable-key">${c.id}</code></td>
-          <td><strong>${inflected}</strong></td>
+        return `<tr class="paradigm-row ${isSelected ? 'selected' : ''}" onclick="selectCase('${escapeHtml(c.id)}')">
+          <td>${escapeHtml(c.label)}</td>
+          <td><code class="copyable-key">${escapeHtml(c.id)}</code></td>
+          <td><strong>${escapeHtml(inflected)}</strong></td>
         </tr>`;
       }).join('');
 
@@ -669,7 +679,7 @@ Tapasimme {$homonym:genitive:person} {$homonym:local:place}.</textarea>
       const ex = c.example(name, form);
       exampleFi.textContent = ex.fi;
       exampleEn.textContent = ex.en;
-      explorerCodeSample.innerHTML = `<code>inflect("${name}", "${selectedCaseId}"); // "${form}"</code>`;
+      explorerCodeSample.textContent = `inflect(${JSON.stringify(name)}, "${selectedCaseId}"); // "${form}"`;
     }
 
     function setName(name) {
@@ -755,12 +765,13 @@ Tapasimme {$homonym:genitive:person} {$homonym:local:place}.</textarea>
 
       options.forEach(opt => {
         const isChecked = opt.id === selectedOptionId;
+        const escapedId = escapeHtml(opt.id);
         html += `
-          <div class="option-card ${isChecked ? 'selected' : ''}" onclick="selectPreference('${opt.id}')">
-            <input type="radio" name="name-pref" id="opt-${opt.id}" value="${opt.id}" ${isChecked ? 'checked' : ''}>
+          <div class="option-card ${isChecked ? 'selected' : ''}" onclick="selectPreference('${escapedId}')">
+            <input type="radio" name="name-pref" id="opt-${escapedId}" value="${escapedId}" ${isChecked ? 'checked' : ''}>
             <div class="option-info">
-              <div class="option-label">${opt.label}</div>
-              <div class="option-desc">${opt.description}</div>
+              <div class="option-label">${escapeHtml(opt.label)}</div>
+              <div class="option-desc">${escapeHtml(opt.description)}</div>
             </div>
           </div>`;
       });
@@ -798,34 +809,42 @@ Tapasimme {$homonym:genitive:person} {$homonym:local:place}.</textarea>
 
     function updateCodeSnippet(name, pref) {
       const isAmb = Boolean(currentDisambiguation?.isAmbiguous);
+      const nameJson = JSON.stringify(name);
+      const prefJson = pref ? JSON.stringify(pref) : 'undefined';
+      const prefLiteral = JSON.stringify(pref || '');
+      const createOut = JSON.stringify(actionBtnCreate.textContent);
+      const transferOut = JSON.stringify(actionBtnTransfer.textContent);
+
       liveCodeSnippet.textContent =
 `import { detectNameDisambiguation } from 'taivuta/preferences';
 import { format, t } from 'taivuta';
 
+const user = ${nameJson};
+
 // 1. Detect ambiguity during user registration / onboarding
-const disambiguation = detectNameDisambiguation("${name}");
+const disambiguation = detectNameDisambiguation(user);
 // isAmbiguous: ${isAmb}
 ${isAmb ? `// Display preference choices to user:
 const options = disambiguation.options;
-// User selected: "${pref}"` : '// Unambiguous name: standard morphology heuristics apply'}
+// User selected: ${prefJson}` : '// Unambiguous name: standard morphology heuristics apply'}
 
 // 2. Format UI buttons or notifications with user preference
 const createButtonText = format(
   "Luo uusi tili {$user:allative}",
-  { user: "${name}" },
-  { preferences: { user: ${pref ? `"${pref}"` : 'undefined'} } }
+  { user },
+  { preferences: { user: ${prefJson} } }
 );
-// Output: "${actionBtnCreate.textContent}"
+// Output: ${createOut}
 
 const transferButtonText = format(
   "Siirrä tili {$user:ablative}",
-  { user: "${name}" },
-  { preferences: { user: ${pref ? `"${pref}"` : 'undefined'} } }
+  { user },
+  { preferences: { user: ${prefJson} } }
 );
-// Output: "${actionBtnTransfer.textContent}"
+// Output: ${transferOut}
 
 // Or with tagged template literal:
-const msg = t\`Luo uusi tili \${["${name}", "allative", { preference: "${pref || ''}" }]}\`;`;
+const msg = t\`Luo uusi tili \${[user, "allative", { preference: ${prefLiteral} }]}\`;`;
     }
 
     prefNameInput.addEventListener('input', updatePreferences);
