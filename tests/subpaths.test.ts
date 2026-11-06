@@ -12,6 +12,11 @@ import { inflectPerson } from '../src/person/index.ts';
 import { inflectPlace, detectLocalCase, TOPONYM_SUFFIX_REGEX } from '../src/place/index.ts';
 import { getVowelHarmony, harmonize, weakenConsonants, analyzeStem } from '../src/morphology/index.ts';
 import { createTemplateEngine } from '../src/template/index.ts';
+import {
+  detectNameDisambiguation,
+  isAmbiguousName,
+  getNamePreferenceOptions
+} from '../src/preferences/index.ts';
 import { format, t } from '../src/index.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -48,6 +53,12 @@ describe('Modular Subpath Exports (Source)', () => {
     assert.equal(format('Tervetuloa {$city:localTo}!', { city: 'Helsinki' }), 'Tervetuloa Helsinkiin!');
     const name = 'Tampere';
     assert.equal(t`Matkustan ${[name, 'localTo']}.`, 'Matkustan Tampereelle.');
+  });
+
+  it('correctly exports disambiguation detection via preferences subpath', () => {
+    assert.equal(typeof detectNameDisambiguation, 'function');
+    assert.equal(typeof isAmbiguousName, 'function');
+    assert.equal(typeof getNamePreferenceOptions, 'function');
   });
 });
 

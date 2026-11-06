@@ -7,12 +7,34 @@
  * @packageDocumentation
  */
 
-import type { CaseName, InflectOptions } from '../cases/types.ts';
+import type {
+  CaseName,
+  InflectOptions,
+  PersonPreference
+} from '../cases/types.ts';
 
 /**
  * Format variables mapping for template interpolation.
  */
 export type FormatValues = Record<string, string | number | undefined | null>;
+
+/**
+ * Configuration options for template string formatting.
+ */
+export interface FormatOptions {
+  /**
+   * Optional map of variable names to their inflection preferences.
+   *
+   * @example
+   * ```typescript
+   * format("Soita {$user:allative}!", { user: "Satu" }, {
+   *   preferences: { user: "no-gradation" }
+   * });
+   * // "Soita Satulle!"
+   * ```
+   */
+  readonly preferences?: Record<string, PersonPreference>;
+}
 
 /**
  * Function signature for proper noun inflection in template engines.
@@ -45,9 +67,10 @@ export interface TemplateEngine {
    *
    * @param template - The template string containing expressions like `{$user:genitive}`.
    * @param values - Key-value map of variable values.
+   * @param options - Optional formatting options, such as nameholder preferences.
    * @returns The formatted and inflected string.
    */
-  readonly format: (template: string, values: FormatValues) => string;
+  readonly format: (template: string, values: FormatValues, options?: FormatOptions) => string;
 
   /**
    * Tagged template literal helper for inline Finnish name inflection.
@@ -62,10 +85,15 @@ export interface TemplateEngine {
   ) => string;
 }
 
+interface InterpolationContext<C extends string, O> {
+  readonly values: FormatValues;
+  readonly inflect: InflectorFn<C, O>;
+  readonly options?: FormatOptions;
+}
+
 function interpolateMatch<C extends string, O>(
   token: string,
-  values: FormatValues,
-  inflect: InflectorFn<C, O>
+  context: InterpolationContext<C, O>
 ): string {
   const parts = token.slice(2, -1).split(':');
   const key = parts[0];
@@ -73,7 +101,7 @@ function interpolateMatch<C extends string, O>(
     return '';
   }
 
-  const rawVal = values[key];
+  const rawVal = context.values[key];
   if (rawVal === undefined || rawVal === null) {
     return '';
   }
@@ -85,8 +113,12 @@ function interpolateMatch<C extends string, O>(
   }
 
   const role = parts[2];
-  const options = (role ? { role: role as 'person' | 'place' | 'auto' } : {}) as unknown as O;
-  return inflect(strVal, caseName as C, options);
+  const preference = context.options?.preferences?.[key];
+  const options: Record<string, unknown> = role ? { role } : {};
+  if (preference !== undefined) {
+    options.preference = preference;
+  }
+  return context.inflect(strVal, caseName as C, options as unknown as O);
 }
 
 /**
@@ -107,13 +139,14 @@ function interpolateMatch<C extends string, O>(
 export function createTemplateEngine<C extends string = string, O = unknown>(
   inflect: InflectorFn<C, O>
 ): TemplateEngine {
-  function format(template: string, values: FormatValues): string {
+  function format(template: string, values: FormatValues, options?: FormatOptions): string {
     if (!template) {
       return '';
     }
 
+    const context: InterpolationContext<C, O> = { values, inflect, options };
     return template.replace(/\{\$[a-zA-Z0-9_]+(?::[a-zA-Z0-9_]+)?(?::[a-zA-Z0-9_]+)?\}/g, (token) => {
-      return interpolateMatch(token, values, inflect);
+      return interpolateMatch(token, context);
     });
   }
 

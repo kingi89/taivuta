@@ -4,7 +4,11 @@
  * @packageDocumentation
  */
 
-import type { CaseName, GrammaticalCase, InflectOptions } from './types.ts';
+import type {
+  CaseName,
+  GrammaticalCase,
+  InflectOptions
+} from './types.ts';
 import { inflectPerson } from '../person/inflect-person.ts';
 import { inflectPlace, detectLocalCase } from '../place/inflect-place.ts';
 import { classifyProperNoun } from './classify.ts';
@@ -69,7 +73,12 @@ export function inflect(
   }
 
   return inflectPerson(name, targetCase as GrammaticalCase, {
+    role: options.role === 'auto' ? 'auto' : undefined,
     sStem: options.sStem,
-    gradation: options.gradation
+    gradation: options.gradation,
+    vocalicStemVariant: options.vocalicStemVariant,
+    colon: options.colon,
+    harmony: options.harmony,
+    preference: options.preference
   });
 }

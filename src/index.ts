@@ -104,6 +104,7 @@ export {
   type TemplateEngine,
   type InflectorFn,
   type FormatValues,
+  type FormatOptions,
   type TaggedTemplateArg
 } from './template/index.ts';
 
@@ -113,5 +114,16 @@ export type {
   PlaceLocalCase,
   CaseName,
   InflectPersonOptions,
-  InflectOptions
+  InflectOptions,
+  PersonPreferenceParams,
+  PlacePreferenceParams,
+  PreferenceParams,
+  DimensionChoice,
+  AmbiguityDimension,
+  PreferenceOption,
+  NameDisambiguation,
+  PersonPreferenceInput,
+  PersonPreference,
+  GeneralPreferenceInput,
+  GeneralPreference
 } from './cases/types.ts';

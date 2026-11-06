@@ -37,6 +37,17 @@ describe('Unified inflect() Function', () => {
     assert.equal(inflect('Turku', 'local'), 'Turussa');
   });
 
+  it('honors preferences passed to unified inflect()', () => {
+    assert.equal(inflect('Satu', 'allative', { preference: 'no-gradation' }), 'Satulle');
+    assert.equal(inflect('Satu', 'allative', { preference: 'gradation' }), 'Sadulle');
+    assert.equal(inflect('Lucas', 'genitive', { preference: 's-stem' }), 'Lucaksen');
+    assert.equal(inflect('Niklas', 'genitive', { preference: 'vocalic' }), 'Niklasin');
+    assert.equal(inflect('Tuuli', 'genitive', { preference: 'inflected' }), 'Tuulen');
+    assert.equal(inflect('KELA', 'allative', { preference: 'acronym' }), 'KELA:lle');
+    assert.equal(inflect('Agent007', 'adessive', { preference: 'harmony-back' }), 'Agent007:lla');
+    assert.equal(inflect('Tampere', 'local', { localCase: 'in' }), 'Tampereessa');
+  });
+
   it('handles edge cases safely without throwing exceptions', () => {
     assert.equal(inflect('', 'genitive'), '');
     assert.equal(inflect('Helsinki', 'nominative'), 'Helsinki');
@@ -68,6 +79,26 @@ describe('format() Template String Engine', () => {
     const result = format(template, { target: 'Salo' });
     // Salo as person (surname) -> Salon; Salo as place -> Salossa
     assert.equal(result, 'Tapasimme Salon Salossa.');
+  });
+
+  it('honors nameholder preferences in format() options', () => {
+    const template = 'Lähetä viesti {$user:allative}!';
+    assert.equal(
+      format(template, { user: 'Satu' }, { preferences: { user: 'no-gradation' } }),
+      'Lähetä viesti Satulle!'
+    );
+    assert.equal(
+      format(template, { user: 'Satu' }, { preferences: { user: 'gradation' } }),
+      'Lähetä viesti Sadulle!'
+    );
+
+    const dual = 'Terveisiä {$user:allative} ja {$friend:allative}!';
+    assert.equal(
+      format(dual, { user: 'Satu', friend: 'Lucas' }, {
+        preferences: { user: 'no-gradation', friend: 's-stem' }
+      }),
+      'Terveisiä Satulle ja Lucakselle!'
+    );
   });
 
   it('interpolates uninflected variables when no case is specified', () => {
@@ -103,6 +134,18 @@ describe('t Tagged Template Literal Function', () => {
     const count = 5;
     const result = t`${greeting}, nähdään ${[place, 'local']} ${count} päivän kuluttua.`;
     assert.equal(result, 'Moi, nähdään Espoossa 5 päivän kuluttua.');
+  });
+
+  it('honors nameholder preferences in tagged template t', () => {
+    const satu = 'Satu';
+    const lucas = 'Lucas';
+    const bot = 'AGENT007';
+    assert.equal(t`Lähetä paketti ${[satu, 'allative', { preference: 'no-gradation' }]}!`, 'Lähetä paketti Satulle!');
+    assert.equal(t`Soita ${[lucas, 'allative', { preference: 's-stem' }]}!`, 'Soita Lucakselle!');
+    assert.equal(
+      t`${[bot, 'adessive', { preference: ['acronym', 'harmony-back'] }]} on asiaa!`,
+      'AGENT007:lla on asiaa!'
+    );
   });
 
   it('supports isolated custom template engine via createTemplateEngine', () => {

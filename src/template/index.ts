@@ -12,5 +12,6 @@ export {
   type TemplateEngine,
   type InflectorFn,
   type FormatValues,
+  type FormatOptions,
   type TaggedTemplateArg
 } from './format.ts';

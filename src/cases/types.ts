@@ -307,6 +307,6 @@ export interface InflectOptions {
   /**
    * Nameholder inflection preference option, option ID, array of preferences, or parameter bundle.
    */
-  readonly preference?: GeneralPreference;
+  readonly preference?: PersonPreference;
 }
 
