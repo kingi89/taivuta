@@ -96,7 +96,9 @@ function weakenQualitative(stem: string, original: string): string {
     result = result.replace(/([aeiouyäö])t([aeiouyäö])$/i, '$1d$2');
   }
 
-  // Single k after vowel and liquid only if the original did not have a geminate kk
+  // Single k after vowel and liquid only if the original did not have a geminate kk.
+  // Note: Intervocalic single k-loss (Kotus type 9 k -> Ø, e.g. Taika -> Taian) is
+  // deliberately deferred to a future dedicated nominal paradigm increment.
   if (!/kk[aeiouyäö]/i.test(original)) {
     result = result.replace(/([aeiouyäö][rl])k([aeiouyäö])$/i, '$1$2');
   }

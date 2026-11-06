@@ -8,18 +8,30 @@ import type {
 import { inflectPerson } from '../person/index.ts';
 import { WORD_DERIVED_GIVEN_NAMES } from './ambiguous-names.data.ts';
 
-const QUALITATIVE_GRADATION_REGEX = /(?:[aeiouyäö])(?:t|k|p|mp|nt|lt|rt)[aeiouyäö]$/i;
-const S_STEM_REGEX = /[a-zåäö]s$/i;
+// Note: Matches qualitative gradation patterns (stops mp, nt, lt, rt, single t/p, and liquid + k).
+// Intervocalic single-k loss (e.g. Taika -> Taian) is deferred to a future Kotus type-9 increment.
+const QUALITATIVE_GRADATION_REGEX = /(?:[aeiouyäö](?:t|p|mp|nt|lt|rt)|[rl]k)[aeiouyäö]$/i;
+const S_STEM_REGEX = /[aeiouyäö]s$/i;
 const FOREIGN_OR_OS_REGEX = /[cxzqw]|os$/i;
+
+interface InflectionExamples {
+  readonly genitive: string;
+  readonly allative: string;
+  readonly illative: string;
+  readonly adessive: string;
+  readonly ablative: string;
+}
 
 function createExamples(
   name: string,
   params: PersonPreferenceParams
-): { readonly genitive: string; readonly allative: string; readonly illative: string } {
+): InflectionExamples {
   return {
     genitive: inflectPerson(name, 'genitive', { preference: params }),
     allative: inflectPerson(name, 'allative', { preference: params }),
-    illative: inflectPerson(name, 'illative', { preference: params })
+    illative: inflectPerson(name, 'illative', { preference: params }),
+    adessive: inflectPerson(name, 'adessive', { preference: params }),
+    ablative: inflectPerson(name, 'ablative', { preference: params })
   };
 }
 
@@ -41,7 +53,9 @@ function detectGradationDimension(name: string): AmbiguityDimension | null {
 }
 
 function detectSStemDimension(name: string): AmbiguityDimension | null {
-  if (!S_STEM_REGEX.test(name)) {
+  // Kotus: S-stems ending in -as/-äs, -us/-ys, -os, -es, -is are polysyllabic derivations.
+  // Monosyllabic words (e.g. Kas, Hans, Lars) take consonant linking vowel -i- without alternation.
+  if (name.length <= 3 || !S_STEM_REGEX.test(name)) {
     return null;
   }
   const defaultChoiceId = FOREIGN_OR_OS_REGEX.test(name) ? 'vocalic' : 's-stem';
@@ -93,21 +107,42 @@ function detectAcronymDimension(name: string): AmbiguityDimension | null {
   };
 }
 
-function detectNumeralHarmonyDimension(name: string): AmbiguityDimension | null {
-  if (!name.endsWith('7')) {
+function detectSymbolHarmonyDimension(name: string): AmbiguityDimension | null {
+  const lastChar = name.slice(-1);
+  if (!lastChar || /\p{Script=Latin}/u.test(lastChar)) {
     return null;
   }
   const choices: readonly DimensionChoice[] = [
-    { id: 'harmony-front', label: `${name}:llä (front vowel, e.g. "seitsemän")`, params: { harmony: 'front' } },
-    { id: 'harmony-back', label: `${name}:lla (back vowel, e.g. "seiska")`, params: { harmony: 'back' } }
+    { id: 'harmony-front', label: `${name}:llä, ${name}:ltä (front vowel)`, params: { harmony: 'front' } },
+    { id: 'harmony-back', label: `${name}:lla, ${name}:lta (back vowel)`, params: { harmony: 'back' } }
   ];
   return {
     key: 'vowel-harmony',
     title: 'Suffix Vowel Harmony',
-    description: 'Vowel harmony based on pronunciation (front vowel e.g. "seitsemän" vs. back vowel e.g. "seiska").',
+    description: 'Vowel harmony based on pronunciation of non-alphabetic character (front vs. back vowel).',
     choices,
     defaultChoiceId: 'harmony-front'
   };
+}
+
+function formatOptionLabel(dimKey: string, examples: InflectionExamples): string {
+  if (dimKey === 'vowel-harmony') {
+    return `${examples.adessive}, ${examples.ablative}`;
+  }
+  return `${examples.genitive}, ${examples.allative}`;
+}
+
+function deduplicateOptions(options: readonly PreferenceOption[]): PreferenceOption[] {
+  const seen = new Set<string>();
+  const unique: PreferenceOption[] = [];
+  for (const opt of options) {
+    const sig = `${opt.label}|${opt.examples.genitive}|${opt.examples.illative}`;
+    if (!seen.has(sig)) {
+      seen.add(sig);
+      unique.push(opt);
+    }
+  }
+  return unique;
 }
 
 function buildSingleDimensionOptions(name: string, dim: AmbiguityDimension): PreferenceOption[] {
@@ -115,7 +150,7 @@ function buildSingleDimensionOptions(name: string, dim: AmbiguityDimension): Pre
     const examples = createExamples(name, choice.params);
     return {
       id: choice.id,
-      label: `${examples.genitive}, ${examples.allative}`,
+      label: formatOptionLabel(dim.key, examples),
       description: choice.label,
       examples,
       params: choice.params,
@@ -125,12 +160,12 @@ function buildSingleDimensionOptions(name: string, dim: AmbiguityDimension): Pre
 }
 
 function buildCartesianOptions(name: string, dimensions: readonly AmbiguityDimension[]): PreferenceOption[] {
-  if (dimensions.length === 0) {
+  const firstDim = dimensions[0];
+  if (!firstDim) {
     return [];
   }
-  const firstDim = dimensions[0];
-  if (!firstDim || dimensions.length === 1) {
-    return buildSingleDimensionOptions(name, firstDim ?? { key: 'gradation', title: '', choices: [], defaultChoiceId: '' });
+  if (dimensions.length === 1) {
+    return buildSingleDimensionOptions(name, firstDim);
   }
 
   const secondDim = dimensions[1];
@@ -154,7 +189,7 @@ function buildCartesianOptions(name: string, dimensions: readonly AmbiguityDimen
       });
     }
   }
-  return results;
+  return deduplicateOptions(results);
 }
 
 /**
@@ -181,33 +216,39 @@ function buildCartesianOptions(name: string, dimensions: readonly AmbiguityDimen
  * }
  * ```
  */
+function collectDimensions(name: string): AmbiguityDimension[] {
+  const detectors = [
+    detectGradationDimension,
+    detectSStemDimension,
+    detectVocalicVariantDimension,
+    detectAcronymDimension,
+    detectSymbolHarmonyDimension
+  ];
+  const dims: AmbiguityDimension[] = [];
+  for (const detect of detectors) {
+    const dim = detect(name);
+    if (dim) {
+      dims.push(dim);
+    }
+  }
+  return dims;
+}
+
 export function detectNameDisambiguation(name: string): NameDisambiguation | null {
   const trimmed = name.trim();
   if (!trimmed) {
     return null;
   }
 
-  const dims: AmbiguityDimension[] = [];
-  const gDim = detectGradationDimension(trimmed);
-  if (gDim) dims.push(gDim);
-
-  const sDim = detectSStemDimension(trimmed);
-  if (sDim) dims.push(sDim);
-
-  const vDim = detectVocalicVariantDimension(trimmed);
-  if (vDim) dims.push(vDim);
-
-  const aDim = detectAcronymDimension(trimmed);
-  if (aDim) dims.push(aDim);
-
-  const hDim = detectNumeralHarmonyDimension(trimmed);
-  if (hDim) dims.push(hDim);
-
+  const dims = collectDimensions(trimmed);
   if (dims.length === 0) {
     return null;
   }
 
-  const options = buildCartesianOptions(trimmed, dims);
+  const options = deduplicateOptions(buildCartesianOptions(trimmed, dims));
+  if (options.length <= 1) {
+    return null;
+  }
   const defaultOpt = options.find((opt) => opt.isDefault) ?? options[0];
 
   return {

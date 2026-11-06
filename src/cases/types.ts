@@ -158,6 +158,8 @@ export interface PreferenceOption<P = PersonPreferenceParams> {
     readonly genitive: string;
     readonly allative: string;
     readonly illative: string;
+    readonly adessive?: string;
+    readonly ablative?: string;
   };
   /**
    * Concrete morphological parameters applied when this option is selected.

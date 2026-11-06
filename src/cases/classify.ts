@@ -17,6 +17,16 @@ import { matchNatureNoun } from '../morphology/nature-nouns.ts';
 
 const GEOGRAPHIC_PREFIX_REGEX = /^(?:Pohjois|Etelä|Itä|Länsi|Keski|Ylä|Ala|Taka|Etu)-/i;
 
+const WORD_DERIVED_GIVEN_NAMES = new Set([
+  'tuuli',
+  'meri',
+  'pilvi',
+  'helmi',
+  'suvi',
+  'lumi',
+  'sini'
+]);
+
 const PLACE_SUFFIX_REGEX = /(?:järvi|joki|mäki|vesi|koski|salmi|saari|saaret|niemi|vaara|harju|kangas|suo|lampi|nummi|kylä|linna|lahti|maa|rannikko|laakso|kunta|kunnat|tasavalta|tasavallat|vallat|maat|emiraatit)$/i;
 
 function isKnownPlaceDataset(name: string): boolean {
@@ -75,6 +85,10 @@ export function classifyProperNoun(
 
   if (defaultSpatialCase === 'on' || isKnownPlaceDataset(trimmed)) {
     return 'place';
+  }
+
+  if (WORD_DERIVED_GIVEN_NAMES.has(trimmed.toLowerCase())) {
+    return 'person';
   }
 
   if (matchNatureNoun(trimmed) || PLACE_SUFFIX_REGEX.test(trimmed)) {

@@ -14,6 +14,7 @@ describe('Unified inflect() Function', () => {
   it('inflects person names accurately with explicit or auto role', () => {
     assert.equal(inflect('Matti', 'genitive', { role: 'person' }), 'Matin');
     assert.equal(inflect('Virtanen', 'partitive', { role: 'person' }), 'Virtasta');
+    assert.equal(inflect('Matti', 'genitive', { role: 'auto' }), 'Matin');
     assert.equal(inflect('Matti', 'genitive'), 'Matin');
   });
 
@@ -111,6 +112,8 @@ describe('format() Template String Engine', () => {
     const template = 'Hei {$missing:genitive}, koodi on {test}.';
     const result = format(template, {});
     assert.equal(result, 'Hei , koodi on {test}.');
+    assert.equal(format('Hei {$:genitive}', {}), 'Hei {$:genitive}');
+    assert.equal(format('Hei {$user:}', { user: 'Matti' }), 'Hei {$user:}');
   });
 
   it('preserves malformed and unclosed tokens without throwing', () => {

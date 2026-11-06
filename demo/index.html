@@ -781,7 +781,7 @@ Tapasimme {$homonym:genitive:person} {$homonym:local:place}.</textarea>
 
     function updateActionButtons() {
       const name = prefNameInput.value.trim() || 'Satu';
-      const pref = selectedOptionId;
+      const pref = currentDisambiguation?.isAmbiguous ? selectedOptionId : undefined;
       const opts = pref ? { preferences: { user: pref } } : undefined;
 
       const createText = format ? format('Luo uusi tili {$user:allative}', { user: name }, opts) : `Luo uusi tili ${name}:lle`;
@@ -795,7 +795,7 @@ Tapasimme {$homonym:genitive:person} {$homonym:local:place}.</textarea>
 
     function executeAction(type) {
       const name = prefNameInput.value.trim() || 'Satu';
-      const pref = selectedOptionId;
+      const pref = currentDisambiguation?.isAmbiguous ? selectedOptionId : undefined;
       const opts = pref ? { preferences: { user: pref } } : undefined;
 
       if (type === 'create') {
@@ -808,28 +808,14 @@ Tapasimme {$homonym:genitive:person} {$homonym:local:place}.</textarea>
     }
 
     function updateCodeSnippet(name, pref) {
-      const isAmb = Boolean(currentDisambiguation?.isAmbiguous);
+      const isAmb = Boolean(currentDisambiguation?.isAmbiguous && pref);
       const nameJson = JSON.stringify(name);
-      const prefJson = pref ? JSON.stringify(pref) : 'undefined';
-      const prefLiteral = JSON.stringify(pref || '');
+      const prefJson = JSON.stringify(pref);
       const createOut = JSON.stringify(actionBtnCreate.textContent);
       const transferOut = JSON.stringify(actionBtnTransfer.textContent);
 
-      liveCodeSnippet.textContent =
-`import { detectNameDisambiguation } from 'taivuta/preferences';
-import { format, t } from 'taivuta';
-
-const user = ${nameJson};
-
-// 1. Detect ambiguity during user registration / onboarding
-const disambiguation = detectNameDisambiguation(user);
-// isAmbiguous: ${isAmb}
-${isAmb ? `// Display preference choices to user:
-const options = disambiguation.options;
-// User selected: ${prefJson}` : '// Unambiguous name: standard morphology heuristics apply'}
-
-// 2. Format UI buttons or notifications with user preference
-const createButtonText = format(
+      const formatSnippet = isAmb
+        ? `const createButtonText = format(
   "Luo uusi tili {$user:allative}",
   { user },
   { preferences: { user: ${prefJson} } }
@@ -844,7 +830,37 @@ const transferButtonText = format(
 // Output: ${transferOut}
 
 // Or with tagged template literal:
-const msg = t\`Luo uusi tili \${[user, "allative", { preference: ${prefLiteral} }]}\`;`;
+const msg = t\`Luo uusi tili \${[user, "allative", { preference: ${prefJson} }]}\`;`
+        : `const createButtonText = format(
+  "Luo uusi tili {$user:allative}",
+  { user }
+);
+// Output: ${createOut}
+
+const transferButtonText = format(
+  "Siirrä tili {$user:ablative}",
+  { user }
+);
+// Output: ${transferOut}
+
+// Or with tagged template literal:
+const msg = t\`Luo uusi tili \${[user, "allative"]}\`;`;
+
+      liveCodeSnippet.textContent =
+`import { detectNameDisambiguation } from 'taivuta/preferences';
+import { format, t } from 'taivuta';
+
+const user = ${nameJson};
+
+// 1. Detect ambiguity during user registration / onboarding
+const disambiguation = detectNameDisambiguation(user);
+// isAmbiguous: ${isAmb}
+${isAmb ? `// Display preference choices to user:
+const options = disambiguation.options;
+// User selected: ${prefJson}` : '// Unambiguous name: standard morphology heuristics apply'}
+
+// 2. Format UI buttons or notifications ${isAmb ? 'with user preference' : '(no preferences needed)'}
+${formatSnippet}`;
     }
 
     prefNameInput.addEventListener('input', updatePreferences);

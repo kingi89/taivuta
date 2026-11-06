@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { inflectPerson, getPersonParadigm } from '../src/person/index.ts';
+import { inflect, format } from '../src/index.ts';
 import { assembleCase } from '../src/morphology/assembler.ts';
 import type { PreferenceOption } from '../src/cases/types.ts';
 
@@ -93,6 +94,22 @@ describe('Name Holder Preference Applying', () => {
 
     it('honors params object { vocalicStemVariant: "nominative" }', () => {
       assert.equal(inflectPerson('Tuuli', 'genitive', { preference: { vocalicStemVariant: 'nominative' } }), 'Tuulin');
+    });
+
+    it('honors "nominative" and "inflected" via unified inflect() and format()', () => {
+      assert.equal(inflect('Tuuli', 'allative'), 'Tuulille');
+      assert.equal(inflect('Tuuli', 'allative', { preference: 'nominative' }), 'Tuulille');
+      assert.equal(inflect('Tuuli', 'allative', { preference: 'inflected' }), 'Tuulelle');
+
+      const msgNom = format('Luo uusi tili {$user:allative}', { user: 'Tuuli' }, {
+        preferences: { user: 'nominative' }
+      });
+      assert.equal(msgNom, 'Luo uusi tili Tuulille');
+
+      const msgInf = format('Luo uusi tili {$user:allative}', { user: 'Tuuli' }, {
+        preferences: { user: 'inflected' }
+      });
+      assert.equal(msgInf, 'Luo uusi tili Tuulelle');
     });
   });
 

@@ -31,9 +31,21 @@ export function detectEntityRole(name: string): 'person' | 'place' {
   return classifyProperNoun(name, detectLocalCase(name));
 }
 
-function resolveEntityRole(name: string, explicitRole?: 'person' | 'place' | 'auto'): 'person' | 'place' {
-  if (explicitRole === 'person' || explicitRole === 'place') {
-    return explicitRole;
+function hasPersonOptions(options: InflectOptions): boolean {
+  return (
+    options.preference !== undefined ||
+    options.vocalicStemVariant !== undefined ||
+    options.sStem !== undefined ||
+    options.gradation !== undefined
+  );
+}
+
+function resolveEntityRole(name: string, options: InflectOptions): 'person' | 'place' {
+  if (options.role === 'person' || options.role === 'place') {
+    return options.role;
+  }
+  if (hasPersonOptions(options)) {
+    return 'person';
   }
   return detectEntityRole(name);
 }
@@ -67,7 +79,7 @@ export function inflect(
     return inflectPlace(name, targetCase, { localCase: options.localCase });
   }
 
-  const role = resolveEntityRole(name, options.role);
+  const role = resolveEntityRole(name, options);
   if (role === 'place') {
     return inflectPlace(name, targetCase, { localCase: options.localCase });
   }

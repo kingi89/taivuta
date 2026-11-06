@@ -206,6 +206,16 @@ describe('Irregular & Edge Cases', () => {
     assert.equal(inflectPerson('Satu', 'adessive', { gradation: false }), 'Satulla');
   });
 
+  it('inflects foreign feminine names in -tte with quantitative gradation (tt -> t)', () => {
+    // Known limitation & intentional design choice:
+    // Names like Janette, Bernadette can in practice alternate between assimilated Finnish
+    // gradation (Janetelle, Janeten) and unweakened foreign spelling preservation (Janettelle, Janetten).
+    // Currently, taivuta applies standard quantitative tt -> t gradation by default.
+    assert.equal(inflectPerson('Janette', 'allative'), 'Janetelle');
+    assert.equal(inflectPerson('Janette', 'genitive'), 'Janeten');
+    assert.equal(inflectPerson('Bernadette', 'allative'), 'Bernadetelle');
+  });
+
   it('inflects s-stem names and supports sStem overrides', () => {
     // Default Finnish s-stems
     assert.equal(inflectPerson('Niklas', 'genitive'), 'Niklaksen');
