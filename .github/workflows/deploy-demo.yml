@@ -43,12 +43,13 @@ jobs:
 
       - name: Prepare demo site
         run: |
-          mkdir -p _site
+          mkdir -p _site/dist/preferences _site/preferences
           cp demo/index.html _site/index.html
-          cp dist/index.global.js _site/index.global.js
-          if [ -f dist/index.global.js.map ]; then
-            cp dist/index.global.js.map _site/index.global.js.map
-          fi
+          # Provide both structured dist/ paths and root fallbacks
+          cp -r dist/index.global.js* _site/dist/
+          cp -r dist/index.global.js* _site/
+          cp -r dist/preferences/index.global.js* _site/dist/preferences/
+          cp -r dist/preferences/index.global.js* _site/preferences/
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

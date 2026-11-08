@@ -19,7 +19,7 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 | :--- | :--- | :--- | :--- | :--- |
 | `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | P2 | ✅ Completed |
 | `[TASK-002]` | Foreign Feminine -tte Quantitative Gradation (*Janette*) | Linguistic | P2 | 1 increment |
-| `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | P2 | 1 increment |
+| `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | P2 | ✅ Completed |
 
 ---
 

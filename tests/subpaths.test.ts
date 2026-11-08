@@ -96,4 +96,24 @@ describe('Distribution Subpaths & Bundle Independence', () => {
       assert.ok(!content.includes('inflectPlace'), 'template bundle must not include place engine');
     }
   });
+
+  it('ensures browser IIFE global bundles exist and expose their namespaces for demo hosting', () => {
+    const rootGlobalPath = path.join(projectRoot, 'dist', 'index.global.js');
+    const prefGlobalPath = path.join(projectRoot, 'dist', 'preferences', 'index.global.js');
+
+    assert.ok(fs.existsSync(rootGlobalPath), 'dist/index.global.js must exist for browser demo');
+    assert.ok(fs.existsSync(prefGlobalPath), 'dist/preferences/index.global.js must exist for browser demo');
+
+    const rootContent = fs.readFileSync(rootGlobalPath, 'utf8');
+    const prefContent = fs.readFileSync(prefGlobalPath, 'utf8');
+
+    assert.ok(
+      rootContent.includes('taivuta =') || rootContent.includes('globalThis.taivuta'),
+      'dist/index.global.js must export the taivuta global namespace'
+    );
+    assert.ok(
+      prefContent.includes('taivutaPreferences =') || prefContent.includes('globalThis.taivutaPreferences'),
+      'dist/preferences/index.global.js must export the taivutaPreferences global namespace'
+    );
+  });
 });
