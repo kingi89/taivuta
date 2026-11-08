@@ -18,6 +18,7 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
 | `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | P2 | ✅ Completed |
+| `[TASK-003]` | Single-Letter Proper Noun & Acronym Inflection | Linguistic | P1 | 1 increment |
 | `[TASK-002]` | Foreign Feminine -tte Quantitative Gradation (*Janette*) | Linguistic | P2 | 1 increment |
 | `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | P2 | ✅ Completed |
 
@@ -50,6 +51,26 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 - **Acceptance Criteria**:
   - `inflectPerson('Janette', 'allative', { preference: 'gradation' }) === 'Janetelle'`
   - `inflectPerson('Janette', 'allative', { preference: 'no-gradation' }) === 'Janettelle'`
+
+### [TASK-003] Single-Letter Proper Noun & Acronym Inflection
+- **Priority**: P1
+- **Category**: Linguistic Accuracy
+- **Target Milestone**: v0.2.0
+- **Affected Components**: `src/morphology/colon.ts`, `src/morphology/vowels.ts`, `src/person/stem-person.ts`
+- **Kotus Guideline**: Single-letter proper nouns, initials, and letter designations are read by their spoken letter names (e.g. *X* = "äks", *E* = "ee", *H* = "hoo", *K* = "koo") and require a colon before case suffixes (*X:ään, E:hen, H:hon*).
+- **Current Behavior**:
+  - `inflectPerson('X', 'illative')` outputs `'X:iin'` (incorrect vowel harmony/linking vowel; should be `'X:ään'`).
+  - `inflectPerson('E', 'illative')` outputs `'EEn'` (missing colon and proper *hVn* suffixation; should be `'E:hen'`).
+- **Target Behavior**:
+  - Systematically map single letters (A–Ö, foreign Latin letters) to their phonetic letter-name stems and vowel harmony classes.
+  - Require colon suffixation for single-letter tokens by default.
+  - Produce correct case forms across all cases (e.g. *X:ään, X:ää, X:ssä; E:hen, E:tä, E:ssä; H:hon, H:ta, H:ssa*).
+- **Acceptance Criteria**:
+  - `inflectPerson('X', 'illative') === 'X:ään'`
+  - `inflectPerson('E', 'illative') === 'E:hen'`
+  - `inflectPerson('X', 'inessive') === 'X:ssä'`
+  - `inflectPerson('H', 'illative') === 'H:hon'`
+  - Single letter names have complete TSDoc coverage and test suite coverage $\ge 95\%$.
 
 ### [BUG-001] GitHub Pages Demo First Two Tabs Malfunctioning
 - **Priority**: P2
