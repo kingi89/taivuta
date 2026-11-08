@@ -35,19 +35,63 @@ describe('Name Holder Disambiguation Subsystem (taivuta/preferences)', () => {
       assert.equal(isAmbiguousName('Aatu'), true);
       assert.equal(isAmbiguousName('Into'), true);
 
-      // Known limitation & deliberate design choice:
-      // Modern Finnish given names ending in intervocalic single -k- (Aki, Mika, Riku, Reko) resist k-loss
-      // (Reko -> Rekon). While word-derived names like "Taika" can historically inflect with k-loss
-      // (Taika -> Taian, Kotus type 9 k -> Ø), intervocalic single-k gradation is currently deferred
-      // to a future dedicated Kotus type-9 increment. Until then, both produce "Rekon" and "Taikan",
-      // so option deduplication marks them unambiguous.
+      // Modern Finnish given names ending in intervocalic single -k- (Aki, Mika, Riku, Reko, Jouko) resist k-loss
+      // and are unambiguous
       assert.equal(isAmbiguousName('Reko'), false);
-      assert.equal(isAmbiguousName('Taika'), false);
+      assert.equal(isAmbiguousName('Aki'), false);
+      assert.equal(isAmbiguousName('Mika'), false);
+      assert.equal(isAmbiguousName('Riku'), false);
+      assert.equal(isAmbiguousName('Jouko'), false);
 
       const sampoOpts = getNamePreferenceOptions('Sampo');
       assert.equal(sampoOpts.length, 2);
       assert.equal(sampoOpts[0]?.examples.genitive, 'Sammon');
       assert.equal(sampoOpts[1]?.examples.genitive, 'Sampon');
+    });
+
+    it('detects ambiguity for Kotus type 9 word-derived name "Taika"', () => {
+      assert.equal(isAmbiguousName('Taika'), true);
+
+      const disambig = detectNameDisambiguation('Taika');
+      assert.ok(disambig);
+      assert.equal(disambig.defaultOptionId, 'no-gradation');
+      assert.equal(disambig.options.length, 2);
+
+      const gradOpt = disambig.options.find((opt) => opt.id === 'gradation');
+      const noGradOpt = disambig.options.find((opt) => opt.id === 'no-gradation');
+      assert.ok(gradOpt);
+      assert.ok(noGradOpt);
+
+      assert.equal(gradOpt.isDefault, false);
+      assert.equal(gradOpt.examples.genitive, 'Taian');
+      assert.equal(gradOpt.examples.allative, 'Taialle');
+
+      assert.equal(noGradOpt.isDefault, true);
+      assert.equal(noGradOpt.examples.genitive, 'Taikan');
+      assert.equal(noGradOpt.examples.allative, 'Taikalle');
+    });
+
+    it('handles secondary diphthong-ka names ("Jouka", "Malaika", "Aika") with no-gradation default', () => {
+      // Deliberate design choice:
+      // Names ending in diphthong + ka/kä match Type 9 single-k phonotactics.
+      // They safely default to strong grade (Joukan, Malaikan, Aikan) preserving pronunciation,
+      // while offering weak grade (Jouan, Malaian, Aian) if the name-holder prefers it.
+      for (const name of ['Jouka', 'Malaika', 'Aika']) {
+        assert.equal(isAmbiguousName(name), true);
+        const disambig = detectNameDisambiguation(name);
+        assert.ok(disambig);
+        assert.equal(disambig.defaultOptionId, 'no-gradation');
+      }
+
+      const malaikaOpts = getNamePreferenceOptions('Malaika');
+      assert.equal(malaikaOpts[0]?.examples.genitive, 'Malaian');
+      assert.equal(malaikaOpts[1]?.examples.genitive, 'Malaikan');
+      assert.equal(malaikaOpts[1]?.isDefault, true);
+
+      const joukaOpts = getNamePreferenceOptions('Jouka');
+      assert.equal(joukaOpts[0]?.examples.genitive, 'Jouan');
+      assert.equal(joukaOpts[1]?.examples.genitive, 'Joukan');
+      assert.equal(joukaOpts[1]?.isDefault, true);
     });
   });
 

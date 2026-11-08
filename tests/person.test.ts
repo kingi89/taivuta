@@ -204,6 +204,34 @@ describe('Irregular & Edge Cases', () => {
     assert.equal(inflectPerson('Satu', 'partitive'), 'Satua');
     assert.equal(inflectPerson('Satu', 'genitive', { gradation: false }), 'Satun');
     assert.equal(inflectPerson('Satu', 'adessive', { gradation: false }), 'Satulla');
+
+    // Kotus Type 9 nominal gradation (Taika)
+    assert.equal(inflectPerson('Taika', 'genitive'), 'Taikan');
+    assert.equal(inflectPerson('Taika', 'allative'), 'Taikalle');
+    assert.equal(inflectPerson('Taika', 'genitive', { gradation: true }), 'Taian');
+    assert.equal(inflectPerson('Taika', 'allative', { gradation: true }), 'Taialle');
+    assert.equal(inflectPerson('Taika', 'inessive', { gradation: true }), 'Taiassa');
+    assert.equal(inflectPerson('Taika', 'partitive', { gradation: true }), 'Taikaa');
+    assert.equal(inflectPerson('Taika', 'illative', { gradation: true }), 'Taikaan');
+
+    // Secondary diphthong-ka names default to strong grade, with weak grade available on opt-in
+    assert.equal(inflectPerson('Jouka', 'genitive'), 'Joukan');
+    assert.equal(inflectPerson('Jouka', 'genitive', { gradation: true }), 'Jouan');
+    assert.equal(inflectPerson('Malaika', 'genitive'), 'Malaikan');
+    assert.equal(inflectPerson('Malaika', 'genitive', { gradation: true }), 'Malaian');
+
+    // Modern first names strictly resist single k-loss (never *Ain, *Mian, *Riun, *Reon)
+    assert.equal(inflectPerson('Aki', 'genitive'), 'Akin');
+    assert.equal(inflectPerson('Aki', 'allative'), 'Akille');
+    assert.notEqual(inflectPerson('Aki', 'genitive'), 'Ain');
+    assert.equal(inflectPerson('Mika', 'genitive'), 'Mikan');
+    assert.notEqual(inflectPerson('Mika', 'genitive'), 'Mian');
+    assert.equal(inflectPerson('Riku', 'genitive'), 'Rikun');
+    assert.notEqual(inflectPerson('Riku', 'genitive'), 'Riun');
+    assert.equal(inflectPerson('Reko', 'genitive'), 'Rekon');
+    assert.notEqual(inflectPerson('Reko', 'genitive'), 'Reon');
+    assert.equal(inflectPerson('Jouko', 'genitive'), 'Joukon');
+    assert.equal(inflectPerson('Miika', 'genitive'), 'Miikan');
   });
 
   it('inflects foreign feminine names in -tte with quantitative gradation (tt -> t)', () => {

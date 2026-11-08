@@ -37,6 +37,23 @@ describe('Name Holder Preference Applying', () => {
       assert.equal(inflectPerson('Satu', 'allative', { preference: option }), 'Satulle');
     });
 
+    it('honors Kotus type 9 gradation preference for "Taika"', () => {
+      // Default for Taika is strong grade (Taikan, Taikalle)
+      assert.equal(inflectPerson('Taika', 'genitive'), 'Taikan');
+      assert.equal(inflectPerson('Taika', 'allative'), 'Taikalle');
+
+      // Weak grade via "gradation" preference
+      assert.equal(inflectPerson('Taika', 'genitive', { preference: 'gradation' }), 'Taian');
+      assert.equal(inflectPerson('Taika', 'allative', { preference: 'gradation' }), 'Taialle');
+      assert.equal(inflectPerson('Taika', 'inessive', { preference: 'gradation' }), 'Taiassa');
+      assert.equal(inflectPerson('Taika', 'partitive', { preference: 'gradation' }), 'Taikaa');
+      assert.equal(inflectPerson('Taika', 'illative', { preference: 'gradation' }), 'Taikaan');
+
+      // Explicit "no-gradation"
+      assert.equal(inflectPerson('Taika', 'genitive', { preference: 'no-gradation' }), 'Taikan');
+      assert.equal(inflectPerson('Taika', 'allative', { preference: 'no-gradation' }), 'Taikalle');
+    });
+
     it('supports getPersonParadigm with preference directly', () => {
       const paradigm = getPersonParadigm('Satu', { preference: 'no-gradation' });
       assert.equal(assembleCase(paradigm, 'genitive'), 'Satun');

@@ -142,7 +142,10 @@ function resolveWeakVocalicStem(name: string, options?: InflectPersonOptions): s
 
   const isGiven = options?.role !== 'surname';
   const allowsQualitative = options?.gradation === true || TRADITIONAL_QUALITATIVE_GIVEN_NAMES.has(name.toLowerCase());
-  return weakenConsonants(name, { doubleOnly: isGiven && !allowsQualitative });
+  return weakenConsonants(name, {
+    doubleOnly: isGiven && !allowsQualitative,
+    singleKLoss: allowsQualitative
+  });
 }
 
 function resolveVocalicPersonParadigm(

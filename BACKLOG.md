@@ -17,8 +17,9 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
-| `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | P2 | 1 increment |
+| `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | P2 | ✅ Completed |
 | `[TASK-002]` | Foreign Feminine -tte Quantitative Gradation (*Janette*) | Linguistic | P2 | 1 increment |
+| `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | P2 | 1 increment |
 
 ---
 
@@ -49,6 +50,14 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 - **Acceptance Criteria**:
   - `inflectPerson('Janette', 'allative', { preference: 'gradation' }) === 'Janetelle'`
   - `inflectPerson('Janette', 'allative', { preference: 'no-gradation' }) === 'Janettelle'`
+
+### [BUG-001] GitHub Pages Demo First Two Tabs Malfunctioning
+- **Priority**: P2
+- **Category**: Web Demo
+- **Target Milestone**: v0.2.0
+- **Affected Components**: `demo/index.html`
+- **Current Behavior**: The interactive onboarding simulation and case tester tabs fail to render or update in GitHub Pages.
+- **Target Behavior**: All three tabs (interactive tester, onboarding preview, technical reference) function reliably without runtime errors.
 
 ---
 

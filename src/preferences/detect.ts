@@ -8,9 +8,11 @@ import type {
 import { inflectPerson } from '../person/index.ts';
 import { WORD_DERIVED_GIVEN_NAMES } from './ambiguous-names.data.ts';
 
-// Note: Matches qualitative gradation patterns (stops mp, nt, lt, rt, single t/p, and liquid + k).
-// Intervocalic single-k loss (e.g. Taika -> Taian) is deferred to a future Kotus type-9 increment.
-const QUALITATIVE_GRADATION_REGEX = /(?:[aeiouyäö](?:t|p|mp|nt|lt|rt)|[rl]k)[aeiouyäö]$/i;
+// Matches qualitative gradation patterns (stops mp, nt, lt, rt, single t/p, liquid + k, and Kotus type 9 diphthong + k).
+// Kotus: Nouns of nominal type 9 (kala) with single intervocalic k undergo qualitative gradation (k -> Ø),
+// e.g. Taika -> Taian / Taikan. Modern given names (Aki, Mika, Riku, Reko, Jouko) resist k-loss and are unambiguous.
+const QUALITATIVE_GRADATION_REGEX =
+  /(?:[aeiouyäö](?:t|p|mp|nt|lt|rt)|[rl]k)[aeiouyäö]$|(?:ai|ei|au|eu|ui|yi|äi|öi|ou|ey|iy|äy|öy)k[aä]$/i;
 const S_STEM_REGEX = /[aeiouyäö]s$/i;
 const FOREIGN_OR_OS_REGEX = /[cxzqw]|os$/i;
 
@@ -39,6 +41,7 @@ function detectGradationDimension(name: string): AmbiguityDimension | null {
   if (!QUALITATIVE_GRADATION_REGEX.test(name)) {
     return null;
   }
+  const defaultChoiceId = /k[aä]$/i.test(name) ? 'no-gradation' : 'gradation';
   const choices: readonly DimensionChoice[] = [
     { id: 'gradation', label: 'Weak grade / consonant gradation (e.g. Sadun, Sadulle)', params: { gradation: true } },
     { id: 'no-gradation', label: 'Strong grade / no gradation (e.g. Satun, Satulle)', params: { gradation: false } }
@@ -48,7 +51,7 @@ function detectGradationDimension(name: string): AmbiguityDimension | null {
     title: 'Consonant Gradation',
     description: 'Declension with weakened consonants or retaining strong consonants.',
     choices,
-    defaultChoiceId: 'gradation'
+    defaultChoiceId
   };
 }
 

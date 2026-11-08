@@ -90,6 +90,21 @@ describe('Consonant Gradation (weakenConsonants)', () => {
     assert.equal(weakenConsonants('Turku'), 'Turu');
     assert.equal(weakenConsonants('Kulta'), 'Kulla');
     assert.equal(weakenConsonants('Parta'), 'Parra');
+    // Kotus Type 9 intervocalic single k-loss (Taika -> Taia) when singleKLoss is explicitly enabled
+    assert.equal(weakenConsonants('Taika', { singleKLoss: true }), 'Taia');
+    assert.equal(weakenConsonants('Jouka', { singleKLoss: true }), 'Joua');
+    assert.equal(weakenConsonants('Malaika', { singleKLoss: true }), 'Malaia');
+    // General stems and place names resist single k-loss by default
+    assert.equal(weakenConsonants('Taika'), 'Taika');
+    assert.equal(weakenConsonants('Jouka'), 'Jouka');
+    assert.equal(weakenConsonants('Malaika'), 'Malaika');
+    assert.equal(weakenConsonants('Jamaika'), 'Jamaika');
+    // Modern given names resisting single k-loss even in qualitative mode
+    assert.equal(weakenConsonants('Aki'), 'Aki');
+    assert.equal(weakenConsonants('Mika'), 'Mika');
+    assert.equal(weakenConsonants('Riku'), 'Riku');
+    assert.equal(weakenConsonants('Reko'), 'Reko');
+    assert.equal(weakenConsonants('Jouko'), 'Jouko');
   });
 
   it('restricts consonant gradation to the stem-final syllable and preserves earlier syllables', () => {

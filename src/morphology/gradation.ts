@@ -25,6 +25,11 @@ export interface GradationOptions {
    * Qualitative gradation (t->d, nk->ng, etc.) will be skipped.
    */
   readonly doubleOnly?: boolean;
+  /**
+   * If true, Kotus type 9 intervocalic single-k loss (k -> Ø) across diphthongs
+   * (e.g. Taika -> Taian) is applied. Modern given names and place names resist single k-loss.
+   */
+  readonly singleKLoss?: boolean;
 }
 
 /**
@@ -69,7 +74,7 @@ function weakenGeminates(stem: string): string {
  * @param original - The original word before geminate weakening.
  * @returns The stem with qualitative consonant clusters weakened.
  */
-function weakenQualitative(stem: string, original: string): string {
+function weakenQualitative(stem: string, original: string, singleKLoss = false): string {
   let result = stem;
 
   // Clusters with geminate stops (nkk, mpp, ltt, rtt, ntt) only weaken to single stop
@@ -97,10 +102,14 @@ function weakenQualitative(stem: string, original: string): string {
   }
 
   // Single k after vowel and liquid only if the original did not have a geminate kk.
-  // Note: Intervocalic single k-loss (Kotus type 9 k -> Ø, e.g. Taika -> Taian) is
-  // deliberately deferred to a future dedicated nominal paradigm increment.
+  // Kotus type 9 intervocalic single k-loss (k -> Ø) across diphthongs ending in -a/-ä (e.g. Taika -> Taian)
+  // applies when singleKLoss is explicitly enabled (word-derived given names). Place names (Jamaika)
+  // and modern given names ending in single vowels (Aki, Mika, Riku, Reko, Jouko) resist k-loss.
   if (!/kk[aeiouyäö]/i.test(original)) {
     result = result.replace(/([aeiouyäö][rl])k([aeiouyäö])$/i, '$1$2');
+    if (singleKLoss) {
+      result = result.replace(/(ai|ei|au|eu|ui|yi|äi|öi|ou|ey|iy|äy|öy)k([aä])$/i, '$1$2');
+    }
   }
 
   return result;
@@ -131,7 +140,7 @@ export function weakenConsonants(word: string, options: GradationOptions = {}): 
 
   // Apply qualitative gradation unless caller requested doubleOnly
   if (!options.doubleOnly) {
-    result = weakenQualitative(result, word);
+    result = weakenQualitative(result, word, options.singleKLoss);
   }
 
   return result;
