@@ -246,17 +246,67 @@ describe('Name Holder Disambiguation Subsystem (taivuta/preferences)', () => {
       assert.equal(isAmbiguousName('Ville'), false);
     });
 
-    it('documents deferred quantitative gradation ambiguity for foreign -tte names like "Janette"', () => {
-      // Known limitation & intentional design choice:
-      // Foreign names ending in geminate stops like -tte/-tti (e.g. Janette, Bernadette, Juliette)
-      // have real-world ambiguity between standard Finnish quantitative gradation (tt -> t, "Janetelle")
-      // and foreign spelling preservation without gradation ("Janettelle").
-      // Currently, taivuta defaults solely to Finnish quantitative gradation and does not flag
-      // them as ambiguous. This is recorded as an intentional limitation to be addressed in a future
-      // foreign name morphology increment.
-      assert.equal(isAmbiguousName('Janette'), false);
-      assert.equal(detectNameDisambiguation('Janette'), null);
-      assert.equal(isAmbiguousName('Bernadette'), false);
+    it('detects quantitative gradation ambiguity for foreign feminine names in -ette, -otte, and -itte', () => {
+      // Kotus: Foreign feminine names ending in -ette, -otte, or -itte (e.g. Janette, Charlotte, Brigitte)
+      // alternate between standard Finnish quantitative gradation (Janetelle) and foreign spelling preservation (Janettelle).
+      const testNames = [
+        // -ette
+        'Janette',
+        'Bernadette',
+        'Juliette',
+        'Annette',
+        'Mette',
+        // -otte
+        'Charlotte',
+        'Lotte',
+        'Liselotte',
+        // -itte
+        'Brigitte',
+        'Birgitte',
+        'Gitte'
+      ];
+
+      for (const name of testNames) {
+        assert.equal(isAmbiguousName(name), true, `${name} should be recognized as ambiguous`);
+        const disambig = detectNameDisambiguation(name);
+        assert.ok(disambig);
+        assert.equal(disambig.defaultOptionId, 'gradation');
+        assert.equal(disambig.options.length, 2);
+      }
+
+      // Detailed check for -ette (Janette)
+      const janetteOpts = getNamePreferenceOptions('Janette');
+      assert.equal(janetteOpts[0]?.id, 'gradation');
+      assert.equal(janetteOpts[0]?.isDefault, true);
+      assert.equal(janetteOpts[0]?.examples.allative, 'Janetelle');
+      assert.equal(janetteOpts[0]?.examples.genitive, 'Janeten');
+      assert.equal(janetteOpts[1]?.id, 'no-gradation');
+      assert.equal(janetteOpts[1]?.isDefault, false);
+      assert.equal(janetteOpts[1]?.examples.allative, 'Janettelle');
+      assert.equal(janetteOpts[1]?.examples.genitive, 'Janetten');
+
+      // Detailed check for -otte (Charlotte, Lotte)
+      const charlotteOpts = getNamePreferenceOptions('Charlotte');
+      assert.equal(charlotteOpts[0]?.examples.allative, 'Charlotelle');
+      assert.equal(charlotteOpts[1]?.examples.allative, 'Charlottelle');
+
+      const lotteOpts = getNamePreferenceOptions('Lotte');
+      assert.equal(lotteOpts[0]?.examples.allative, 'Lotelle');
+      assert.equal(lotteOpts[1]?.examples.allative, 'Lottelle');
+
+      // Detailed check for -itte (Brigitte, Gitte)
+      const brigitteOpts = getNamePreferenceOptions('Brigitte');
+      assert.equal(brigitteOpts[0]?.examples.allative, 'Brigitelle');
+      assert.equal(brigitteOpts[1]?.examples.allative, 'Brigittelle');
+
+      const gitteOpts = getNamePreferenceOptions('Gitte');
+      assert.equal(gitteOpts[0]?.examples.allative, 'Gitelle');
+      assert.equal(gitteOpts[1]?.examples.allative, 'Gittelle');
+
+      // Native Finnish names ending in -tti or short names like Atte remain unambiguous
+      assert.equal(isAmbiguousName('Matti'), false);
+      assert.equal(isAmbiguousName('Antti'), false);
+      assert.equal(isAmbiguousName('Atte'), false);
     });
 
     it('handles empty, whitespace, and special inputs gracefully', () => {

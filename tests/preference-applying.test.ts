@@ -54,6 +54,41 @@ describe('Name Holder Preference Applying', () => {
       assert.equal(inflectPerson('Taika', 'allative', { preference: 'no-gradation' }), 'Taikalle');
     });
 
+    it('honors quantitative gradation preferences for foreign feminine names in -ette, -otte, -itte ("Janette", "Charlotte", "Brigitte")', () => {
+      // Default applies standard quantitative gradation
+      assert.equal(inflectPerson('Janette', 'allative'), 'Janetelle');
+      assert.equal(inflectPerson('Janette', 'genitive'), 'Janeten');
+      assert.equal(inflectPerson('Charlotte', 'allative'), 'Charlotelle');
+      assert.equal(inflectPerson('Lotte', 'allative'), 'Lotelle');
+      assert.equal(inflectPerson('Brigitte', 'allative'), 'Brigitelle');
+
+      // "gradation" preference explicitly confirms standard gradation
+      assert.equal(inflectPerson('Janette', 'allative', { preference: 'gradation' }), 'Janetelle');
+      assert.equal(inflectPerson('Janette', 'genitive', { preference: 'gradation' }), 'Janeten');
+      assert.equal(inflectPerson('Brigitte', 'allative', { preference: 'gradation' }), 'Brigitelle');
+
+      // "no-gradation" preserves foreign spelling across all suffixes
+      assert.equal(inflectPerson('Janette', 'allative', { preference: 'no-gradation' }), 'Janettelle');
+      assert.equal(inflectPerson('Janette', 'genitive', { preference: 'no-gradation' }), 'Janetten');
+      assert.equal(inflectPerson('Janette', 'inessive', { preference: 'no-gradation' }), 'Janettessa');
+      assert.equal(inflectPerson('Charlotte', 'allative', { preference: 'no-gradation' }), 'Charlottelle');
+      assert.equal(inflectPerson('Lotte', 'allative', { preference: 'no-gradation' }), 'Lottelle');
+      assert.equal(inflectPerson('Brigitte', 'allative', { preference: 'no-gradation' }), 'Brigittelle');
+      assert.equal(inflectPerson('Brigitte', 'genitive', { preference: 'no-gradation' }), 'Brigitten');
+
+      // Works via unified inflect() and template format()
+      assert.equal(inflect('Janette', 'allative', { preference: 'no-gradation' }), 'Janettelle');
+      assert.equal(inflect('Brigitte', 'allative', { preference: 'no-gradation' }), 'Brigittelle');
+      assert.equal(
+        format('Viesti {$user:allative}', { user: 'Janette' }, { preferences: { user: 'no-gradation' } }),
+        'Viesti Janettelle'
+      );
+      assert.equal(
+        format('Viesti {$user:allative}', { user: 'Brigitte' }, { preferences: { user: 'no-gradation' } }),
+        'Viesti Brigittelle'
+      );
+    });
+
     it('supports getPersonParadigm with preference directly', () => {
       const paradigm = getPersonParadigm('Satu', { preference: 'no-gradation' });
       assert.equal(assembleCase(paradigm, 'genitive'), 'Satun');

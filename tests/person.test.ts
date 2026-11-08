@@ -234,14 +234,20 @@ describe('Irregular & Edge Cases', () => {
     assert.equal(inflectPerson('Miika', 'genitive'), 'Miikan');
   });
 
-  it('inflects foreign feminine names in -tte with quantitative gradation (tt -> t)', () => {
-    // Known limitation & intentional design choice:
-    // Names like Janette, Bernadette can in practice alternate between assimilated Finnish
-    // gradation (Janetelle, Janeten) and unweakened foreign spelling preservation (Janettelle, Janetten).
-    // Currently, taivuta applies standard quantitative tt -> t gradation by default.
+  it('inflects foreign feminine names in -ette, -otte, -itte with quantitative gradation (tt -> t)', () => {
+    // Kotus: Names like Janette, Charlotte, Brigitte alternate between assimilated Finnish
+    // gradation (Janetelle, Charlotelle, Brigitelle) and unweakened foreign spelling preservation.
     assert.equal(inflectPerson('Janette', 'allative'), 'Janetelle');
     assert.equal(inflectPerson('Janette', 'genitive'), 'Janeten');
     assert.equal(inflectPerson('Bernadette', 'allative'), 'Bernadetelle');
+    assert.equal(inflectPerson('Charlotte', 'allative'), 'Charlotelle');
+    assert.equal(inflectPerson('Brigitte', 'allative'), 'Brigitelle');
+
+    assert.equal(inflectPerson('Janette', 'allative', { gradation: false }), 'Janettelle');
+    assert.equal(inflectPerson('Janette', 'genitive', { gradation: false }), 'Janetten');
+    assert.equal(inflectPerson('Bernadette', 'allative', { gradation: false }), 'Bernadettelle');
+    assert.equal(inflectPerson('Charlotte', 'allative', { gradation: false }), 'Charlottelle');
+    assert.equal(inflectPerson('Brigitte', 'allative', { gradation: false }), 'Brigittelle');
   });
 
   it('inflects s-stem names and supports sStem overrides', () => {

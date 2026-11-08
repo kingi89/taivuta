@@ -13,6 +13,9 @@ import { WORD_DERIVED_GIVEN_NAMES } from './ambiguous-names.data.ts';
 // e.g. Taika -> Taian / Taikan. Modern given names (Aki, Mika, Riku, Reko, Jouko) resist k-loss and are unambiguous.
 const QUALITATIVE_GRADATION_REGEX =
   /(?:[aeiouyäö](?:t|p|mp|nt|lt|rt)|[rl]k)[aeiouyäö]$|(?:ai|ei|au|eu|ui|yi|äi|öi|ou|ey|iy|äy|öy)k[aä]$/i;
+// Kotus: Foreign feminine names ending in -ette, -otte, or -itte (Janette, Charlotte, Brigitte, Lotte)
+// alternate between Finnish quantitative gradation (Janetelle) and foreign spelling preservation (Janettelle).
+const FOREIGN_FEMININE_ETTE_REGEX = /(?:ette|otte|itte)$/i;
 const S_STEM_REGEX = /[aeiouyäö]s$/i;
 const FOREIGN_OR_OS_REGEX = /[cxzqw]|os$/i;
 
@@ -38,7 +41,9 @@ function createExamples(
 }
 
 function detectGradationDimension(name: string): AmbiguityDimension | null {
-  if (!QUALITATIVE_GRADATION_REGEX.test(name)) {
+  const isQualitative = QUALITATIVE_GRADATION_REGEX.test(name);
+  const isForeignEtte = name.length >= 5 && FOREIGN_FEMININE_ETTE_REGEX.test(name);
+  if (!isQualitative && !isForeignEtte) {
     return null;
   }
   const defaultChoiceId = /k[aä]$/i.test(name) ? 'no-gradation' : 'gradation';

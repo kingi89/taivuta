@@ -19,7 +19,7 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 | :--- | :--- | :--- | :--- | :--- |
 | `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | P2 | ✅ Completed |
 | `[TASK-003]` | Single-Letter Proper Noun & Acronym Inflection | Linguistic | P1 | 1 increment |
-| `[TASK-002]` | Foreign Feminine -tte Quantitative Gradation (*Janette*) | Linguistic | P2 | 1 increment |
+| `[TASK-002]` | Foreign Feminine -ette/-otte/-itte Quantitative Gradation (*Janette*) | Linguistic | P2 | ✅ Completed |
 | `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | P2 | ✅ Completed |
 
 ---
@@ -40,14 +40,14 @@ This backlog maintains prioritized technical, linguistic, and architectural task
   - Names resisting single *k*-loss (*Aki, Mika, Riku, Reko*) remain unweakened by default.
   - Test suite coverage $\ge 95\%$, complexity $\le 10$.
 
-### [TASK-002] Foreign Feminine -tte Quantitative Gradation
+### [TASK-002] Foreign Feminine -ette/-otte/-itte Quantitative Gradation
 - **Priority**: P2
 - **Category**: Linguistic Accuracy
 - **Target Milestone**: v0.2.0
 - **Affected Components**: `src/morphology/gradation.ts`, `src/preferences/detect.ts`
-- **Kotus Guideline**: Foreign feminine names ending in *-tte/-tti* (*Janette, Bernadette, Juliette*) alternate between standard Finnish quantitative gradation ($tt \to t$: *Janetelle, Janeten*) and foreign spelling/sound preservation ($tt \to tt$: *Janettelle, Janetten*).
+- **Kotus Guideline**: Foreign feminine names ending in *-ette/-otte/-itte* (*Janette, Bernadette, Juliette, Charlotte, Brigitte*) alternate between standard Finnish quantitative gradation ($tt \to t$: *Janetelle, Janeten*) and foreign spelling/sound preservation ($tt \to tt$: *Janettelle, Janetten*).
 - **Current Behavior**: Geminate stop shortening ($tt \to t$) is applied universally; names are marked unambiguous.
-- **Target Behavior**: Detect *-tte/-tti* foreign names as ambiguous; provide options for standard Finnish gradation vs. foreign spelling preservation.
+- **Target Behavior**: Detect *-ette/-otte/-itte* foreign names as ambiguous; provide options for standard Finnish gradation vs. foreign spelling preservation.
 - **Acceptance Criteria**:
   - `inflectPerson('Janette', 'allative', { preference: 'gradation' }) === 'Janetelle'`
   - `inflectPerson('Janette', 'allative', { preference: 'no-gradation' }) === 'Janettelle'`
@@ -85,3 +85,8 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 ## 3. Icebox (P3: Future Explorations)
 
 - **[ICE-001] Bulk Execution Performance Suite**: Author benchmark testing execution speed and allocation pressure over 100,000 name iterations.
+- **[ICE-002] Foreign Given Names and Surnames Ending in -tti**:
+  - **Category**: Linguistic Accuracy
+  - **Context**: Decoupled from `[TASK-002]` to safeguard native Finnish names ending in *-tti* (*Matti*, *Antti*, *Pentti*, *Martti*, *Nuutti*, *Taavetti*, *Aaretti*, *Tytti*), which strictly undergo quantitative gradation ($tt \to t$: *Matin*, *Antin*, *Taavetin*).
+  - **Kotus Guideline**: Foreign surnames ending in *-i* generally resist consonant gradation (*Donizetti : Donizettin, Pavarotti : Pavarottin*), while rare foreign-derived given names (*Anetti*, *Lotti*, *Betti*) may alternate between assimilated Finnish gradation and foreign spelling preservation.
+  - **Goal**: Research and design safe heuristics or curated registries to support foreign *-tti* names without introducing false-positive ambiguity detection for core native Finnish names.

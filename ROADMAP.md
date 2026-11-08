@@ -32,7 +32,7 @@ This document outlines the strategic milestones, architectural direction, and re
 
 ### Milestone 3: Advanced Nominal Paradigms (v0.2.0) — 🔄 Active Target
 - [x] **Kotus Type 9 Nominal Gradation**: Support intervocalic single-$k$ loss ($k \to \emptyset$) for ambiguous word-derived first names (*Taika $\to$ Taian* vs. *Taikan*) with diphthong/hiatus handling.
-- [ ] **Foreign Feminine Geminates**: Support quantitative gradation preferences for foreign names ending in *-tte/-tti* (*Janette $\to$ Janetelle* vs. *Janettelle*).
+- [x] **Foreign Feminine Geminates**: Support quantitative gradation preferences for foreign feminine names ending in *-ette/-otte/-itte* (*Janette $\to$ Janetelle* vs. *Janettelle*).
 
 ### Milestone 4: Production Release v1.0.0 (Release Candidate) — 📋 Planned
 - [ ] Formal API freeze with stable semver guarantees.
