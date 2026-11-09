@@ -39,37 +39,59 @@ export interface NatureNounRule {
   readonly defaultSpatialCase: LocalCaseType;
 }
 
+type RawNatureNounTuple = readonly [
+  suffix: string,
+  weak: string,
+  strong: string,
+  partitive: string,
+  illative: string,
+  harmony: VowelHarmony,
+  defaultSpatialCase: LocalCaseType
+];
+
+const RAW_NATURE_NOUN_RULES: readonly RawNatureNounTuple[] = [
+  ['järvi', 'järve', 'järve', 'järveä', 'järveen', 'front', 'on'],
+  ['joki', 'joe', 'joke', 'jokea', 'jokeen', 'back', 'on'],
+  ['mäki', 'mäe', 'mäke', 'mäkeä', 'mäkeen', 'front', 'on'],
+  ['vesi', 'vede', 'vete', 'vettä', 'veteen', 'front', 'on'],
+  ['saari', 'saare', 'saare', 'saarta', 'saareen', 'back', 'on'],
+  ['koski', 'koske', 'koske', 'koskea', 'koskeen', 'back', 'on'],
+  ['salmi', 'salme', 'salme', 'salmea', 'salmeen', 'back', 'on'],
+  ['niemi', 'nieme', 'nieme', 'niemeä', 'niemeen', 'front', 'on'],
+  ['lahti', 'lahde', 'lahte', 'lahtea', 'lahteen', 'back', 'in'],
+  ['nurmi', 'nurme', 'nurme', 'nurmea', 'nurmeen', 'back', 'in'],
+  ['meri', 'mere', 'mere', 'merta', 'mereen', 'front', 'in'],
+  ['vuori', 'vuore', 'vuore', 'vuorta', 'vuoreen', 'back', 'on'],
+  ['laine', 'lainee', 'lainee', 'lainetta', 'laineeseen', 'back', 'in'],
+  ['rinne', 'rintee', 'rintee', 'rinnettä', 'rinteeseen', 'front', 'in'],
+  ['harju', 'harju', 'harju', 'harjua', 'harjuun', 'back', 'on'],
+  ['kangas', 'kankaa', 'kankaa', 'kangasta', 'kankaaseen', 'back', 'on'],
+  ['suo', 'suo', 'suo', 'suota', 'suohon', 'back', 'on'],
+  ['lampi', 'lamme', 'lampe', 'lampea', 'lampeen', 'back', 'on'],
+  ['nummi', 'numme', 'numme', 'nummea', 'nummeen', 'back', 'on'],
+  ['ranta', 'ranna', 'ranta', 'rantaa', 'rantaan', 'back', 'in'],
+  ['tuuli', 'tuule', 'tuule', 'tuulta', 'tuuleen', 'back', 'in'],
+  ['pilvi', 'pilve', 'pilve', 'pilveä', 'pilveen', 'front', 'in'],
+  ['lumi', 'lume', 'lume', 'lunta', 'lumeen', 'back', 'in'],
+  ['helmi', 'helme', 'helme', 'helmeä', 'helmeen', 'front', 'in'],
+  ['suvi', 'suve', 'suve', 'suvea', 'suveen', 'back', 'in'],
+  ['sini', 'sine', 'sine', 'sineä', 'sineen', 'front', 'in']
+];
+
 /**
  * Universal registry of ancient Finnish nature nouns and landscape formatives.
  */
-export const NATURE_NOUN_RULES: readonly NatureNounRule[] = [
-  { suffix: 'järvi', weak: 'järve', strong: 'järve', partitive: 'järveä', illative: 'järveen', harmony: 'front', defaultSpatialCase: 'on' },
-  { suffix: 'joki', weak: 'joe', strong: 'joke', partitive: 'jokea', illative: 'jokeen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'mäki', weak: 'mäe', strong: 'mäke', partitive: 'mäkeä', illative: 'mäkeen', harmony: 'front', defaultSpatialCase: 'on' },
-  { suffix: 'vesi', weak: 'vede', strong: 'vete', partitive: 'vettä', illative: 'veteen', harmony: 'front', defaultSpatialCase: 'on' },
-  { suffix: 'saari', weak: 'saare', strong: 'saare', partitive: 'saarta', illative: 'saareen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'koski', weak: 'koske', strong: 'koske', partitive: 'koskea', illative: 'koskeen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'salmi', weak: 'salme', strong: 'salme', partitive: 'salmea', illative: 'salmeen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'niemi', weak: 'nieme', strong: 'nieme', partitive: 'niemeä', illative: 'niemeen', harmony: 'front', defaultSpatialCase: 'on' },
-  { suffix: 'lahti', weak: 'lahde', strong: 'lahte', partitive: 'lahtea', illative: 'lahteen', harmony: 'back', defaultSpatialCase: 'in' },
-  { suffix: 'nurmi', weak: 'nurme', strong: 'nurme', partitive: 'nurmea', illative: 'nurmeen', harmony: 'back', defaultSpatialCase: 'in' },
-  { suffix: 'meri', weak: 'mere', strong: 'mere', partitive: 'merta', illative: 'mereen', harmony: 'front', defaultSpatialCase: 'in' },
-  { suffix: 'vuori', weak: 'vuore', strong: 'vuore', partitive: 'vuorta', illative: 'vuoreen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'laine', weak: 'lainee', strong: 'lainee', partitive: 'lainetta', illative: 'laineeseen', harmony: 'back', defaultSpatialCase: 'in' },
-  { suffix: 'rinne', weak: 'rintee', strong: 'rintee', partitive: 'rinnettä', illative: 'rinteeseen', harmony: 'front', defaultSpatialCase: 'in' },
-  { suffix: 'harju', weak: 'harju', strong: 'harju', partitive: 'harjua', illative: 'harjuun', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'kangas', weak: 'kankaa', strong: 'kankaa', partitive: 'kangasta', illative: 'kankaaseen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'suo', weak: 'suo', strong: 'suo', partitive: 'suota', illative: 'suohon', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'lampi', weak: 'lamme', strong: 'lampe', partitive: 'lampea', illative: 'lampeen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'nummi', weak: 'numme', strong: 'numme', partitive: 'nummea', illative: 'nummeen', harmony: 'back', defaultSpatialCase: 'on' },
-  { suffix: 'ranta', weak: 'ranna', strong: 'ranta', partitive: 'rantaa', illative: 'rantaan', harmony: 'back', defaultSpatialCase: 'in' },
-  { suffix: 'tuuli', weak: 'tuule', strong: 'tuule', partitive: 'tuulta', illative: 'tuuleen', harmony: 'back', defaultSpatialCase: 'in' },
-  { suffix: 'pilvi', weak: 'pilve', strong: 'pilve', partitive: 'pilveä', illative: 'pilveen', harmony: 'front', defaultSpatialCase: 'in' },
-  { suffix: 'lumi', weak: 'lume', strong: 'lume', partitive: 'lunta', illative: 'lumeen', harmony: 'back', defaultSpatialCase: 'in' },
-  { suffix: 'helmi', weak: 'helme', strong: 'helme', partitive: 'helmeä', illative: 'helmeen', harmony: 'front', defaultSpatialCase: 'in' },
-  { suffix: 'suvi', weak: 'suve', strong: 'suve', partitive: 'suvea', illative: 'suveen', harmony: 'back', defaultSpatialCase: 'in' },
-  { suffix: 'sini', weak: 'sine', strong: 'sine', partitive: 'sineä', illative: 'sineen', harmony: 'front', defaultSpatialCase: 'in' }
-];
+export const NATURE_NOUN_RULES: readonly NatureNounRule[] = RAW_NATURE_NOUN_RULES.map(
+  ([suffix, weak, strong, partitive, illative, harmony, defaultSpatialCase]) => ({
+    suffix,
+    weak,
+    strong,
+    partitive,
+    illative,
+    harmony,
+    defaultSpatialCase
+  })
+);
 
 function capitalizeForm(base: string, suffixForm: string, isCapitalized: boolean): string {
   if (base) {
