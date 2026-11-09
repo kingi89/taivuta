@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0] - 2026-11-09
+
+### Added
+- **Single-Letter & Acronym Inflection**: Full Kotus-compliant spoken letter name inflection for Latin letters (A–Ö, foreign diacritics, sibilants) with colon placement for initials (`P.:lle`), arbitrary trailing letters (`foo123x:ään`), and punctuation (`...:ssa`).
+- **Kotus Type 9 Nominal Gradation**: Support for intervocalic single-$k$ loss in ambiguous word-derived names (*Taika $\to$ Taian / Taikan*).
+- **Foreign Feminine Geminates**: Quantitative gradation preference options for foreign feminine names ending in *-ette/-otte/-itte* (*Janette $\to$ Janetelle / Janettelle*).
+
+### Fixed
+- **Demo Navigation**: Resolved tab switching and state management issues in the GitHub Pages interactive demo (`BUG-001`).
+
+### Performance
+- **Bundle Footprint**: Optimized nature noun rules representation in `taivuta/morphology`, reducing minified bundle size by 1.57 kB to preserve subpath size budgets.
+
+---
+
 ## [0.1.1] - 2026-11-05
 
 ### Changed

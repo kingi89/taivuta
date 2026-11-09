@@ -13,20 +13,21 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 
 ---
 
-## 1. Active Queue (Milestone v0.2.0)
+## 1. Active Queue (Milestone v0.3.0)
 
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
-| `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | P2 | ✅ Completed |
-| `[TASK-003]` | Single-Letter Proper Noun & Acronym Inflection | Linguistic | P1 | ✅ Completed |
-| `[TASK-002]` | Foreign Feminine -ette/-otte/-itte Quantitative Gradation (*Janette*) | Linguistic | P2 | ✅ Completed |
-| `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | P2 | ✅ Completed |
+| `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic | P1 | 1 increment |
 
-### Upcoming Queue (Milestone v0.3.0)
+### Completed Milestones
 
-| ID | Title | Category | Priority | Est. Scope |
-| :--- | :--- | :--- | :--- | :--- |
-| `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic | P2 | 1 increment |
+#### Milestone v0.2.0 — ✅ Released
+| ID | Title | Category | Status |
+| :--- | :--- | :--- | :--- |
+| `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | ✅ Completed |
+| `[TASK-003]` | Single-Letter Proper Noun & Acronym Inflection | Linguistic | ✅ Completed |
+| `[TASK-002]` | Foreign Feminine -ette/-otte/-itte Quantitative Gradation (*Janette*) | Linguistic | ✅ Completed |
+| `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | ✅ Completed |
 
 ---
 

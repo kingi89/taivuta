@@ -30,11 +30,16 @@ This document outlines the strategic milestones, architectural direction, and re
 - [x] String template formatter (`format()`) and tagged template literal helper (`t`) supporting preference maps.
 - [x] Interactive 3-tab browser demo featuring an onboarding simulation and technical implementation panel.
 
-### Milestone 3: Advanced Nominal Paradigms (v0.2.0) — 🔄 Active Target
+### Milestone 3: Advanced Nominal Paradigms (v0.2.0) — ✅ Completed
 - [x] **Kotus Type 9 Nominal Gradation**: Support intervocalic single-$k$ loss ($k \to \emptyset$) for ambiguous word-derived first names (*Taika $\to$ Taian* vs. *Taikan*) with diphthong/hiatus handling.
 - [x] **Foreign Feminine Geminates**: Support quantitative gradation preferences for foreign feminine names ending in *-ette/-otte/-itte* (*Janette $\to$ Janetelle* vs. *Janettelle*).
+- [x] **Single-Letter Proper Noun & Acronym Inflection**: Phonetic letter name inflection for single Latin letters (A–Ö, foreign diacritics Á, Ø, and Š, Ž), colon attachment after periods (`P.:lle`), arbitrary alphanumeric tokens ending in isolated letters (`foo123x:ään`), and pure punctuation (`...:ssa`).
+- [x] **Bundle Footprint Preservation**: Tuple optimization for `NATURE_NOUN_RULES` to maintain `taivuta/preferences` strictly within the 15 kB budget.
 
-### Milestone 4: Production Release v1.0.0 (Release Candidate) — 📋 Planned
+### Milestone 4: Linguistic Accuracy Refinements (v0.3.0) — 🔄 Active Target
+- [ ] **Liquid-k Given Name Disambiguation (`[BUG-002]`)**: Prevent false-positive qualitative gradation detection for Finnish given names ending in *-rko/-lko* (*Marko*, *Mirko*, *Arko*).
+
+### Milestone 5: Production Release v1.0.0 (Release Candidate) — 📋 Planned
 - [ ] Formal API freeze with stable semver guarantees.
 - [ ] Expanded internationalization guide and Kotus citation cross-reference index.
 - [ ] Production npm packaging, provenance signing, and release validation.
