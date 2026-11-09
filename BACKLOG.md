@@ -21,6 +21,8 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 | `[BUG-003]` | Missing Elative/Ablative Overrides for 20 Irregular Municipalities | Linguistic | P1 | 1 increment |
 | `[BUG-004]` | Compound Place Prefix Inflection Loss in `localFrom` (`Uusikaupunki`, `Isokyrö`) | Linguistic | P1 | 1 increment |
 | `[BUG-007]` | Complete External Case Paradigms for Plural *-inen* Municipalities | Linguistic | P1 | 1 increment |
+| `[BUG-010]` | Compound Toponym Vowel Harmony & *-pää* Head Illative (*Oripää*, *Kankaanpää*, *Sodankylä*, *Kruunupyy*) | Linguistic | P1 | 1 increment |
+| `[BUG-011]` | Toponym Exception Sets for *Mustasaari* (Internal) and *Merikarvia* (External) | Linguistic | P1 | 1 increment |
 | `[BUG-008]` | Correct Mauritius Illative Form to *Mauritiukseen* | Linguistic | P2 | 1 increment |
 | `[BUG-009]` | Add Inessive Override for *Virrat* (*Virroissa*) | Linguistic | P2 | 1 increment |
 | `[TEST-003]` | 11-Case Paradigm Verification for Irregular Municipalities | Testing | P2 | 1 increment |
@@ -160,6 +162,36 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 - **Kotus Guideline**: Finnish municipalities ending in *-inen* (*Kauniainen*, *Joroinen*, *Huittinen*, etc.) are plural toponyms (*Kauniaisten, Kauniaisissa, Kauniaisiin*). Their external cases must also be plural (*Kauniaisille, Kauniaisilla, Kauniaisilta*).
 - **Current Behavior**: Missing external case overrides cause fallback to singular *-selle*: `inflectPlace('Kauniainen', 'allative') === 'Kauniaiselle'`.
 - **Target Behavior**: Provide complete plural external cases (*allative*, *adessive*, *ablative*) for all 11 *-inen* municipalities in `IRREGULAR_PLACES`.
+
+### [BUG-010] Compound Toponym Vowel Harmony & -pää Head Illative
+- **Priority**: P1
+- **Category**: Linguistic Accuracy / Morphology
+- **Target Milestone**: v0.3.0
+- **Affected Components**: `src/morphology/vowels.ts`, `src/place/stem-places.ts`
+- **Kotus Guideline**: In Finnish compound words, vowel harmony is governed strictly by the final component (e.g. *Oripäässä*, *Kankaanpäässä*, *Sodankylässä*, *Kruunupyyssä*). Suffixes must agree with the last constituent stem regardless of front/back vowels in preceding components. Additionally, the compound head *-pää* takes the illative suffix *-hVn* (*päähän* $\to$ *Oripäähän*, *Järvenpäähän*, *Kankaanpäähän*), resisting the default long-vowel *-seen* rule (*Espooseen*).
+- **Current Behavior**:
+  - `inflectPlace('Oripää', 'local') === 'Oripäässa'` (back harmony suffix due to initial *Ori-*)
+  - `inflectPlace('Oripää', 'localTo') === 'Oripääseen'` (erroneous *-seen* illative)
+  - `inflectPlace('Kankaanpää', 'local') === 'Kankaanpäässa'` (back harmony suffix due to *Kankaan-*)
+  - `inflectPlace('Kankaanpää', 'localTo') === 'Kankaanpääseen'` (erroneous *-seen* illative)
+  - `inflectPlace('Järvenpää', 'localTo') === 'Järvenpääseen'` (erroneous *-seen* illative; localCase is front harmony)
+  - `inflectPlace('Sodankylä', 'local') === 'Sodankylässa'` (back harmony suffix due to *Sodan-*)
+  - `inflectPlace('Kruunupyy', 'local') === 'Kruunupyyssa'` (back harmony suffix due to *Kruunu-*)
+  - `inflectPlace('Kruunupyy', 'localTo') === 'Kruunupyyseen'` (Kotus preference: *Kruunupyyhyn*)
+- **Target Behavior**: Correctly detect vowel harmony from final compound heads and form *-hVn* illatives for *-pää* stems.
+
+### [BUG-011] Toponym Exception Sets for Mustasaari (Internal) and Merikarvia (External)
+- **Priority**: P1
+- **Category**: Linguistic Accuracy / Place Classification
+- **Target Milestone**: v0.3.0
+- **Affected Components**: `src/place/municipalities.data.ts` (`ISLAND_INTERNAL_EXCEPTIONS`, `EXTERNAL_CASE_MUNICIPALITIES`)
+- **Kotus Guideline**: Kotus *Asutusnimihakemisto* specifies that *Mustasaari* (ruots. *Korsholm*) takes internal local cases (*Mustasaaressa, Mustasaaresta, Mustasaareen*), resisting the default island *-saari* external rule. Conversely, *Merikarvia* takes external local cases (*Merikarvialla, Merikarvialta, Merikarvialle*), resisting the default inland settlement internal rule.
+- **Current Behavior**:
+  - `detectLocalCase('Mustasaari') === 'on'` (`inflectPlace('Mustasaari', 'local') === 'Mustasaarella'`)
+  - `detectLocalCase('Merikarvia') === 'in'` (`inflectPlace('Merikarvia', 'local') === 'Merikarviassa'`)
+- **Target Behavior**:
+  - `detectLocalCase('Mustasaari') === 'in'` (`inflectPlace('Mustasaari', 'local') === 'Mustasaaressa'`)
+  - `detectLocalCase('Merikarvia') === 'on'` (`inflectPlace('Merikarvia', 'local') === 'Merikarvialla'`)
 
 ### [BUG-008] Correct Mauritius Illative Form to Mauritiukseen
 - **Priority**: P2
