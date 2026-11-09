@@ -36,10 +36,28 @@ This document outlines the strategic milestones, architectural direction, and re
 - [x] **Single-Letter Proper Noun & Acronym Inflection**: Phonetic letter name inflection for single Latin letters (A–Ö, foreign diacritics Á, Ø, and Š, Ž), colon attachment after periods (`P.:lle`), arbitrary alphanumeric tokens ending in isolated letters (`foo123x:ään`), and pure punctuation (`...:ssa`).
 - [x] **Bundle Footprint Preservation**: Tuple optimization for `NATURE_NOUN_RULES` to maintain `taivuta/preferences` strictly within the 15 kB budget.
 
-### Milestone 4: Linguistic Accuracy Refinements (v0.3.0) — 🔄 Active Target
-- [ ] **Liquid-k Given Name Disambiguation (`[BUG-002]`)**: Prevent false-positive qualitative gradation detection for Finnish given names ending in *-rko/-lko* (*Marko*, *Mirko*, *Arko*).
+### Milestone 4: Toponym Spatial Accuracy & Full Case Benchmark (v0.3.0) — 🔄 Active Target
+- [ ] **309-Municipality Triad Benchmark (`[TEST-001]`)**: Expand benchmark fixture and test suite to assert `local` (*missä*), `localFrom` (*mistä*), and `localTo` (*mihin*) on all 309 official Finnish municipalities.
+- [ ] **Missing Elative/Ablative in Irregular Municipalities (`[BUG-003]`)**: Populate missing *-sta/-stä* and *-lta/-ltä* overrides for 20 municipalities (e.g. *Kuortaneelta*, *Keiteleeltä*, *Kempeleestä*, *Alavudelta*, *Pihtiputaalta*).
+- [ ] **Compound Place Prefix Retention in localFrom (`[BUG-004]`)**: Ensure prefix elements inflect in *mistä* cases (*Uudestakaupungista*, *Uudestakaarlepyystä*, *Isostakyröstä*).
+- [ ] **Plural -inen Municipality External Cases (`[BUG-007]`)**: Provide correct plural external cases for 11 municipalities (*Kauniaisille*, *Kauniaisilla*, *Kauniaisilta*).
+- [ ] **Toponym Edge Overrides (`[BUG-008]`, `[BUG-009]`, `[TEST-003]`)**: Correct *Mauritius* illative (*Mauritiukseen*), add *Virrat* inessive (*Virroissa*), and verify 11-case paradigms.
 
-### Milestone 5: Production Release v1.0.0 (Release Candidate) — 📋 Planned
+### Milestone 5: Personal Name Accuracy & Disambiguation (v0.3.1) — 📋 Planned
+- [ ] **Liquid-k Given Name Disambiguation (`[BUG-002]`)**: Prevent false-positive qualitative gradation detection for Finnish given names ending in *-rko/-lko* (*Marko*, *Mirko*, *Arko*).
+- [ ] **Nature Surnames Role Classification & Casing (`[BUG-005]`)**: Prevent people with nature noun surnames (*Matti Niemi*, *Pekka Mäki*) from being classified as places and decapitalized (*Matti niemen*).
+- [ ] **Nature Surnames Default Declension (`[BUG-006]`)**: Ensure standalone (*Niemi*) and hyphenated (*Virtanen-Niemi*) surnames default to nature noun declension (*Niemen*, *Virtanen-Niemen*).
+- [ ] **Unified inflect() End-to-End Matrix (`[TEST-002]`)**: Add comprehensive multi-word and compound nominal tests across the high-level `inflect()` API.
+
+### Milestone 6: Maintainability, Bundle Optimization & Regions (v0.4.0) — 📋 Planned
+- [ ] **Irregular Places Data Compression (`[OPT-001]`)**: Compact `IRREGULAR_PLACES` into stem tuple representations, saving ~2.5 kB.
+- [ ] **Preferences Subpath Isolation (`[OPT-002]`)**: Decouple heavy inflection engine from `taivuta/preferences`, reducing bundle footprint from 14.15 kB to ~6 kB.
+- [ ] **Unified Place Stem Paradigm Resolution (`[REFACTOR-001]`)**: Refactor irregular place inflection to produce complete `StemParadigm` models.
+- [ ] **Entity Classification Pipeline Refactoring (`[REFACTOR-002]`)**: Decompose `classifyProperNoun` into modular, predictable stages.
+- [ ] **Finnish Administrative & Historical Regions (`[TASK-004]`)**: Comprehensive support for all 19 Finnish regions (e.g. *Uusimaa $\to$ Uudellamaalla*, *Varsinais-Suomi*, *Pirkanmaa*).
+- [ ] **Developer Tooling & Scripts Hygiene (`[MAINT-001]`, `[MAINT-003]`)**: Replace inline demo script with `scripts/serve-demo.ts`, wire and document fixture builders.
+
+### Milestone 7: Production Release v1.0.0 (Release Candidate) — 📋 Planned
 - [ ] Formal API freeze with stable semver guarantees.
 - [ ] Expanded internationalization guide and Kotus citation cross-reference index.
 - [ ] Production npm packaging, provenance signing, and release validation.
