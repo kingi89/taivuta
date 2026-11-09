@@ -22,6 +22,12 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 | `[TASK-002]` | Foreign Feminine -ette/-otte/-itte Quantitative Gradation (*Janette*) | Linguistic | P2 | ✅ Completed |
 | `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | P2 | ✅ Completed |
 
+### Upcoming Queue (Milestone v0.3.0)
+
+| ID | Title | Category | Priority | Est. Scope |
+| :--- | :--- | :--- | :--- | :--- |
+| `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic | P2 | 1 increment |
+
 ---
 
 ## 2. Detailed Task Specifications
@@ -79,6 +85,18 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 - **Affected Components**: `demo/index.html`
 - **Current Behavior**: The interactive onboarding simulation and case tester tabs fail to render or update in GitHub Pages.
 - **Target Behavior**: All three tabs (interactive tester, onboarding preview, technical reference) function reliably without runtime errors.
+
+### [BUG-002] Given Name Disambiguation False Positives on Liquid-k Stems (Marko)
+- **Priority**: P2
+- **Category**: Linguistic Accuracy / Preferences
+- **Target Milestone**: v0.3.0
+- **Affected Components**: `src/preferences/detect.ts`
+- **Kotus Guideline**: Modern Finnish given names ending in liquid + *k* clusters (*Marko*, *Mirko*, *Arko*) resist consonant gradation ($rk \to r$) and are unambiguously unweakened (*Markon, Markolle*). While common nouns (*arka* $\to$ *aran*, *pelko* $\to$ *pelon*) undergo qualitative gradation, personal given names with *-rko/-lko* do not alternate.
+- **Current Behavior**: `inflectPerson('Marko', 'genitive')` defaults correctly to `'Markon'`. However, `QUALITATIVE_GRADATION_REGEX` in `src/preferences/detect.ts` matches `[rl]k` stems, and because `Marko` does not end in *-ka/-kä*, `defaultChoiceId` evaluates to `'gradation'`. Consequently, `detectNameDisambiguation('Marko')` falsely marks the name as ambiguous and suggests `'Maron'` and `'Marolle'` as the default choices.
+- **Target Behavior**: Detect *Marko* (and similar non-alternating liquid-*k* given names) as unambiguous (`isAmbiguous: false`), or ensure default choice is `'no-gradation'` (*Markon, Markolle*).
+- **Acceptance Criteria**:
+  - `isAmbiguousName('Marko') === false`
+  - `detectNameDisambiguation('Marko').isAmbiguous === false`
 
 ---
 

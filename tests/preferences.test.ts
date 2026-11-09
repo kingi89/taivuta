@@ -93,6 +93,21 @@ describe('Name Holder Disambiguation Subsystem (taivuta/preferences)', () => {
       assert.equal(joukaOpts[1]?.examples.genitive, 'Joukan');
       assert.equal(joukaOpts[1]?.isDefault, true);
     });
+
+    it('documents known limitation: Marko false-positive qualitative gradation [BUG-002]', () => {
+      // Intentional limitation (BUG-002, scheduled for v0.3.0):
+      // Marko defaults to 'Markon' in inflectPerson(), but detectNameDisambiguation()
+      // currently matches the [rl]k qualitative gradation regex, defaulting to 'gradation' (*Maron).
+      assert.equal(isAmbiguousName('Marko'), true);
+      const res = detectNameDisambiguation('Marko');
+      assert.ok(res);
+      assert.equal(res.defaultOptionId, 'gradation');
+      const gradOpt = res.options.find((opt) => opt.id === 'gradation');
+      const noGradOpt = res.options.find((opt) => opt.id === 'no-gradation');
+      assert.ok(gradOpt && noGradOpt);
+      assert.equal(gradOpt.examples.genitive, 'Maron');
+      assert.equal(noGradOpt.examples.genitive, 'Markon');
+    });
   });
 
   describe('S-Stem vs Vocalic Names', () => {
