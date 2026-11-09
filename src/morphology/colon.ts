@@ -14,7 +14,7 @@
  */
 
 import type { GrammaticalCase } from '../cases/types.ts';
-import { harmonize } from './vowels.ts';
+import { harmonize, isBackSpokenLetter } from './vowels.ts';
 
 /**
  * Checks whether a token represents an abbreviation, handle, or non-alphabetic ending requiring colon suffixation.
@@ -35,9 +35,20 @@ export function needsColon(token: string): boolean {
     return false;
   }
 
-  const lastChar = trimmed[trimmed.length - 1] ?? '';
+  const core = trimmed.replace(/\.+$/, '');
+  if (!core) {
+    // Tokens consisting purely of punctuation/dots (e.g. "...", ".") attach endings with a colon
+    return true;
+  }
+
+  const lastChar = core[core.length - 1] ?? '';
   // Non-Latin characters (digits, symbols, non-Latin scripts like 朧)
   if (!/\p{Script=Latin}/u.test(lastChar)) {
+    return true;
+  }
+
+  // Tokens ending in an isolated single Latin letter (e.g. "X", "E", "foo123x", "bar___y", "abc!xy$z.", "Á", "Ø")
+  if (/(?:^|[^\p{Script=Latin}])\p{Script=Latin}$/u.test(core)) {
     return true;
   }
 
@@ -45,6 +56,69 @@ export function needsColon(token: string): boolean {
   const parts = trimmed.split(/[\s-]+/);
   const lastSegment = parts[parts.length - 1] ?? '';
   return !/[aeiouyäöáéíóúàèìòùâêîôûãõäöüÿøåæœōūāēī]/i.test(lastSegment);
+}
+
+interface LetterPhonology {
+  readonly partitive: string;
+  readonly illative: string;
+}
+
+function normalizeBaseLetter(letter: string): string {
+  if (letter === 'å') {
+    return 'å';
+  }
+  if (letter === 'ø') {
+    return 'ö';
+  }
+  if (letter === 'ü') {
+    return 'y';
+  }
+  return letter.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function resolveVocalicLetterVowel(base: string): string | null {
+  if (/[bcdegptvw]/.test(base)) {
+    return 'e';
+  }
+  if (/[hkoå]/.test(base)) {
+    return 'o';
+  }
+  if (base === 'j') {
+    return 'i';
+  }
+  if (base === 'q') {
+    return 'u';
+  }
+  return /[aeiouyäö]/.test(base) ? base : null;
+}
+
+/**
+ * Resolves the phonological partitive and illative endings for a Latin letter
+ * according to Kotus spoken letter-name standards.
+ *
+ * @param letter - Single letter character (case-insensitive).
+ * @returns Phonological suffix pair, or null if unrecognized.
+ */
+function getLetterPhonology(letter: string): LetterPhonology | null {
+  const lowerLetter = letter.toLowerCase();
+  if (/[flmnrsxš]/.test(lowerLetter)) {
+    return { partitive: 'ää', illative: 'ään' };
+  }
+  if (/[zž]/.test(lowerLetter)) {
+    return { partitive: 'aa', illative: 'aan' };
+  }
+
+  const base = normalizeBaseLetter(lowerLetter);
+  const vowel = resolveVocalicLetterVowel(base);
+  if (!vowel) {
+    return null;
+  }
+
+  const isBack = isBackSpokenLetter(lowerLetter);
+  return {
+    partitive: isBack ? 'ta' : 'tä',
+    illative: `h${vowel}n`
+  };
 }
 
 const COLON_BASE_ENDINGS: Record<GrammaticalCase, string | null> = {
@@ -99,5 +173,17 @@ export function inflectColonWord(
   if (!baseSuffix) {
     return token;
   }
+
+  const core = token.trim().replace(/\.+$/, '');
+  const lastChar = core.slice(-1);
+
+  if (targetCase === 'partitive' || targetCase === 'illative') {
+    const phonology = getLetterPhonology(lastChar);
+    if (phonology) {
+      const suffix = targetCase === 'partitive' ? phonology.partitive : phonology.illative;
+      return `${token}:${resolveHarmonizedSuffix(suffix, token, options?.harmony)}`;
+    }
+  }
+
   return `${token}:${resolveHarmonizedSuffix(baseSuffix, token, options?.harmony)}`;
 }

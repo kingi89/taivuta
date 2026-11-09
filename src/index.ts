@@ -32,6 +32,7 @@ export function getStatus(): { name: string; version: string; ready: boolean } {
 export {
   getVowelHarmony,
   harmonize,
+  isBackSpokenLetter,
   weakenConsonants,
   analyzeStem,
   createStemParadigm,

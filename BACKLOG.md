@@ -18,7 +18,7 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
 | `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | P2 | ✅ Completed |
-| `[TASK-003]` | Single-Letter Proper Noun & Acronym Inflection | Linguistic | P1 | 1 increment |
+| `[TASK-003]` | Single-Letter Proper Noun & Acronym Inflection | Linguistic | P1 | ✅ Completed |
 | `[TASK-002]` | Foreign Feminine -ette/-otte/-itte Quantitative Gradation (*Janette*) | Linguistic | P2 | ✅ Completed |
 | `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | P2 | ✅ Completed |
 
