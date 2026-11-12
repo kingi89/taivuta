@@ -57,10 +57,6 @@ const ILLATIVE_LIMITATIONS: Record<string, string> = {
 };
 
 const LOCAL_FROM_LIMITATIONS: Record<string, string> = {
-  // BUG-004: Compound place prefix inflection loss in localFrom
-  Isokyrö: 'Isokyrösta',
-  Uusikaarlepyy: 'Uusikaarlepyysta',
-  Uusikaupunki: 'Uusikaupungista',
   // BUG-010: Compound vowel harmony
   Kankaanpää: 'Kankaanpäästa',
   Kruunupyy: 'Kruunupyysta',
@@ -199,7 +195,16 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `localFrom inflection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 299);
+    assert.equal(passed, 302);
+  });
+
+  it('correctly inflects compound place names with inflecting adjective prefixes [BUG-004]', () => {
+    assert.equal(inflectPlace('Uusikaupunki', 'localFrom'), 'Uudestakaupungista');
+    assert.equal(inflectPlace('Uusikaupunki', 'elative'), 'Uudestakaupungista');
+    assert.equal(inflectPlace('Isokyrö', 'localFrom'), 'Isostakyröstä');
+    assert.equal(inflectPlace('Isokyrö', 'elative'), 'Isostakyröstä');
+    assert.equal(inflectPlace('Uusikaarlepyy', 'localFrom'), 'Uudestakaarlepyystä');
+    assert.equal(inflectPlace('Uusikaarlepyy', 'elative'), 'Uudestakaarlepyystä');
   });
 
   it('correctly inflects irregular municipalities into explicit elative and ablative forms [BUG-003]', () => {

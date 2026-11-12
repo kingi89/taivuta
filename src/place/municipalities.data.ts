@@ -333,6 +333,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Uudenkaupungin',
     partitive: 'Uuttakaupunkia',
     inessive: 'Uudessakaupungissa',
+    elative: 'Uudestakaupungista',
     illative: 'Uuteenkaupunkiin'
   }],
   ['Uusikaarlepyy', {
@@ -340,6 +341,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Uudenkaarlepyyn',
     partitive: 'Uuttakaarlepyytä',
     inessive: 'Uudessakaarlepyyssä',
+    elative: 'Uudestakaarlepyystä',
     illative: 'Uuteenkaarlepyyhyn'
   }],
   ['Isokyrö', {
@@ -347,6 +349,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Isonkyrön',
     partitive: 'Isoakyröä',
     inessive: 'Isossakyrössä',
+    elative: 'Isostakyröstä',
     illative: 'Isoonkyröön'
   }],
   ['Kangasala', {
