@@ -185,6 +185,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Getan',
     partitive: 'Getaa',
     inessive: 'Getassa',
+    elative: 'Getasta',
     illative: 'Getaan'
   }],
   ['Kumlinge', {
@@ -206,12 +207,14 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
   ['Kirkkonummi', {
     localCaseType: 'on',
     adessive: 'Kirkkonummella',
+    ablative: 'Kirkkonummelta',
     genitive: 'Kirkkonummen',
     partitive: 'Kirkkonummea',
     allative: 'Kirkkonummelle'
   }],
   ['Korsnäs', {
     inessive: 'Korsnäsissä',
+    elative: 'Korsnäsistä',
     genitive: 'Korsnäsin',
     partitive: 'Korsnäsiä',
     illative: 'Korsnäsiin'
@@ -219,6 +222,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
   ['Enontekiö', {
     localCaseType: 'on',
     adessive: 'Enontekiöllä',
+    ablative: 'Enontekiöltä',
     genitive: 'Enontekiön',
     partitive: 'Enontekiötä',
     allative: 'Enontekiölle'
@@ -226,6 +230,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
   ['Keitele', {
     localCaseType: 'on',
     adessive: 'Keiteleellä',
+    ablative: 'Keiteleeltä',
     genitive: 'Keiteleen',
     partitive: 'Keitelettä',
     allative: 'Keiteleelle',
@@ -234,6 +239,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
   ['Kuortane', {
     localCaseType: 'on',
     adessive: 'Kuortaneella',
+    ablative: 'Kuortaneelta',
     genitive: 'Kuortaneen',
     partitive: 'Kuortanetta',
     allative: 'Kuortaneelle',
@@ -263,6 +269,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
   ['Loppi', {
     localCaseType: 'on',
     adessive: 'Lopella',
+    ablative: 'Lopelta',
     genitive: 'Lopen',
     partitive: 'Loppea',
     allative: 'Lopelle'
@@ -270,6 +277,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
   ['Muhos', {
     localCaseType: 'on',
     adessive: 'Muhoksella',
+    ablative: 'Muhokselta',
     genitive: 'Muhoksen',
     partitive: 'Muhosta',
     allative: 'Muhokselle'
@@ -284,6 +292,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
   ['Pälkäne', {
     localCaseType: 'on',
     adessive: 'Pälkäneellä',
+    ablative: 'Pälkäneeltä',
     genitive: 'Pälkäneen',
     partitive: 'Pälkänettä',
     allative: 'Pälkäneelle',
@@ -299,6 +308,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
   ['Savitaipale', {
     localCaseType: 'on',
     adessive: 'Savitaipaleella',
+    ablative: 'Savitaipaleelta',
     genitive: 'Savitaipaleen',
     partitive: 'Savitaipaletta',
     allative: 'Savitaipaleelle',
@@ -344,6 +354,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Kangasalan',
     partitive: 'Kangasalaa',
     adessive: 'Kangasalla',
+    ablative: 'Kangasalta',
     allative: 'Kangasalle'
   }],
   ['Alavus', {
@@ -351,6 +362,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Alavuden',
     partitive: 'Alavutta',
     adessive: 'Alavudella',
+    ablative: 'Alavudelta',
     allative: 'Alavudelle'
   }],
   ['Kaustinen', {
@@ -381,6 +393,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Pihtiputaan',
     partitive: 'Pihtipudasta',
     adessive: 'Pihtiputaalla',
+    ablative: 'Pihtiputaalta',
     allative: 'Pihtiputaalle'
   }],
   ['Punkalaidun', {
@@ -388,6 +401,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Punkalaitumen',
     partitive: 'Punkalaidunta',
     adessive: 'Punkalaitumella',
+    ablative: 'Punkalaitumelta',
     allative: 'Punkalaitumelle'
   }],
   ['Virrat', {
@@ -405,6 +419,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Rautalammin',
     partitive: 'Rautalampia',
     adessive: 'Rautalammilla',
+    ablative: 'Rautalammilta',
     allative: 'Rautalammille'
   }],
   ['Toholampi', {
@@ -412,6 +427,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Toholammin',
     partitive: 'Toholampia',
     adessive: 'Toholammilla',
+    ablative: 'Toholammilta',
     allative: 'Toholammille'
   }],
   ['Tampere', {
@@ -430,24 +446,28 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     genitive: 'Kempeleen',
     partitive: 'Kempelettä',
     inessive: 'Kempeleessä',
+    elative: 'Kempeleestä',
     illative: 'Kempeleeseen'
   }],
   ['Kannus', {
     genitive: 'Kannuksen',
     partitive: 'Kannusta',
     inessive: 'Kannuksessa',
+    elative: 'Kannuksesta',
     illative: 'Kannukseen'
   }],
   ['Nurmes', {
     genitive: 'Nurmeksen',
     partitive: 'Nurmesta',
     inessive: 'Nurmeksessa',
+    elative: 'Nurmeksesta',
     illative: 'Nurmekseen'
   }],
   ['Varkaus', {
     genitive: 'Varkauden',
     partitive: 'Varkautta',
     inessive: 'Varkaudessa',
+    elative: 'Varkaudesta',
     illative: 'Varkauteen'
   }],
   ['Huittinen', {

@@ -57,26 +57,6 @@ const ILLATIVE_LIMITATIONS: Record<string, string> = {
 };
 
 const LOCAL_FROM_LIMITATIONS: Record<string, string> = {
-  // BUG-003: Missing elative/ablative overrides for 20 irregular municipalities
-  Alavus: 'Alavusilta',
-  Enontekiö: 'Enontekiölta',
-  Geta: 'Gedasta',
-  Kangasala: 'Kangasalalta',
-  Kannus: 'Kannusista',
-  Keitele: 'Keiteleltä',
-  Kempele: 'Kempelestä',
-  Korsnäs: 'Korsnäsista',
-  Kuortane: 'Kuortanelta',
-  Loppi: 'Lopilta',
-  Muhos: 'Muhosilta',
-  Nurmes: 'Nurmesista',
-  Pihtipudas: 'Pihtipudasilta',
-  Punkalaidun: 'Punkalaidunilta',
-  Pälkäne: 'Pälkäneltä',
-  Rautalampi: 'Rautalammelta',
-  Savitaipale: 'Savitaipalelta',
-  Toholampi: 'Toholammelta',
-  Varkaus: 'Varkausista',
   // BUG-004: Compound place prefix inflection loss in localFrom
   Isokyrö: 'Isokyrösta',
   Uusikaarlepyy: 'Uusikaarlepyysta',
@@ -219,7 +199,30 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `localFrom inflection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 280);
+    assert.equal(passed, 299);
+  });
+
+  it('correctly inflects irregular municipalities into explicit elative and ablative forms [BUG-003]', () => {
+    assert.equal(inflectPlace('Kuortane', 'ablative'), 'Kuortaneelta');
+    assert.equal(inflectPlace('Keitele', 'ablative'), 'Keiteleeltä');
+    assert.equal(inflectPlace('Kempele', 'elative'), 'Kempeleestä');
+    assert.equal(inflectPlace('Pälkäne', 'ablative'), 'Pälkäneeltä');
+    assert.equal(inflectPlace('Savitaipale', 'ablative'), 'Savitaipaleelta');
+    assert.equal(inflectPlace('Alavus', 'ablative'), 'Alavudelta');
+    assert.equal(inflectPlace('Kannus', 'elative'), 'Kannuksesta');
+    assert.equal(inflectPlace('Muhos', 'ablative'), 'Muhokselta');
+    assert.equal(inflectPlace('Nurmes', 'elative'), 'Nurmeksesta');
+    assert.equal(inflectPlace('Varkaus', 'elative'), 'Varkaudesta');
+    assert.equal(inflectPlace('Kangasala', 'ablative'), 'Kangasalta');
+    assert.equal(inflectPlace('Geta', 'elative'), 'Getasta');
+    assert.equal(inflectPlace('Pihtipudas', 'ablative'), 'Pihtiputaalta');
+    assert.equal(inflectPlace('Punkalaidun', 'ablative'), 'Punkalaitumelta');
+    assert.equal(inflectPlace('Rautalampi', 'ablative'), 'Rautalammilta');
+    assert.equal(inflectPlace('Toholampi', 'ablative'), 'Toholammilta');
+    assert.equal(inflectPlace('Loppi', 'ablative'), 'Lopelta');
+    assert.equal(inflectPlace('Enontekiö', 'ablative'), 'Enontekiöltä');
+    assert.equal(inflectPlace('Korsnäs', 'elative'), 'Korsnäsistä');
+    assert.equal(inflectPlace('Kirkkonummi', 'ablative'), 'Kirkkonummelta');
   });
 
   it('accurately handles specific morphological edge cases (partitive and illative)', () => {
