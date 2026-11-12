@@ -39,7 +39,7 @@ This document outlines the strategic milestones, architectural direction, and re
 ### Milestone 4: Toponym Spatial Accuracy & Full Case Benchmark (v0.3.0) — 🔄 Active Target
 - [x] **309-Municipality Triad Benchmark (`[TEST-001]`)**: Expand benchmark fixture and test suite to assert `local` (*missä*), `localFrom` (*mistä*), and `localTo` (*mihin*) on all 309 official Finnish municipalities.
 - [x] **Missing Elative/Ablative in Irregular Municipalities (`[BUG-003]`)**: Populate missing *-sta/-stä* and *-lta/-ltä* overrides for 20 municipalities (e.g. *Kuortaneelta*, *Keiteleeltä*, *Kempeleestä*, *Alavudelta*, *Pihtiputaalta*).
-- [ ] **Compound Place Prefix Retention in localFrom (`[BUG-004]`)**: Ensure prefix elements inflect in *mistä* cases (*Uudestakaupungista*, *Uudestakaarlepyystä*, *Isostakyröstä*).
+- [x] **Compound Place Prefix Retention in localFrom (`[BUG-004]`)**: Ensure prefix elements inflect in *mistä* cases (*Uudestakaupungista*, *Uudestakaarlepyystä*, *Isostakyröstä*).
 - [ ] **Plural -inen Municipality External Cases (`[BUG-007]`)**: Provide correct plural external cases for 11 municipalities (*Kauniaisille*, *Kauniaisilla*, *Kauniaisilta*).
 - [ ] **Toponym Edge Overrides (`[BUG-008]`, `[BUG-009]`, `[TEST-003]`)**: Correct *Mauritius* illative (*Mauritiukseen*), add *Virrat* inessive (*Virroissa*), and verify 11-case paradigms.
 
