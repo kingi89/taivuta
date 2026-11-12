@@ -17,8 +17,8 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
-| `[TEST-001]` | Full 309-Municipality Triad Benchmark (`missä`, `mistä`, `mihin`) | Testing / Data | P1 | 1 increment |
-| `[BUG-003]` | Missing Elative/Ablative Overrides for 20 Irregular Municipalities | Linguistic | P1 | 1 increment |
+| `[TEST-001]` | Full 309-Municipality Triad Benchmark (`missä`, `mistä`, `mihin`) | Testing / Data | P1 | ✅ Completed |
+| `[BUG-003]` | Missing Elative/Ablative Overrides for 20 Irregular Municipalities | Linguistic | P1 | ✅ Completed |
 | `[BUG-004]` | Compound Place Prefix Inflection Loss in `localFrom` (`Uusikaupunki`, `Isokyrö`) | Linguistic | P1 | 1 increment |
 | `[BUG-007]` | Complete External Case Paradigms for Plural *-inen* Municipalities | Linguistic | P1 | 1 increment |
 | `[BUG-010]` | Compound Toponym Vowel Harmony & *-pää* Head Illative (*Oripää*, *Kankaanpää*, *Sodankylä*, *Kruunupyy*) | Linguistic | P1 | 1 increment |
