@@ -42,7 +42,7 @@ This document outlines the strategic milestones, architectural direction, and re
 - [x] **Compound Place Prefix Retention in localFrom (`[BUG-004]`)**: Ensure prefix elements inflect in *mistä* cases (*Uudestakaupungista*, *Uudestakaarlepyystä*, *Isostakyröstä*).
 - [x] **Plural -inen Municipality External Cases (`[BUG-007]`)**: Provide correct plural external cases for 11 municipalities (*Kauniaisille*, *Kauniaisilla*, *Kauniaisilta*).
 - [x] **Compound Vowel Harmony & -pää/-pyy Illatives (`[BUG-010]`)**: Resolve vowel harmony from final compound heads and form *-hVn* illatives (*Oripäähän*, *Kankaanpäähän*, *Järvenpäähän*, *Kruunupyyhyn*, *Sodankylässä*).
-- [ ] **Toponym Exception Sets for Mustasaari & Merikarvia (`[BUG-011]`)**: Classify *Mustasaari* as internal (*Mustasaaressa*) and *Merikarvia* as external (*Merikarvialla*).
+- [x] **Toponym Exception Sets for Mustasaari & Merikarvia (`[BUG-011]`)**: Classify *Mustasaari* as internal (*Mustasaaressa*) and *Merikarvia* as external (*Merikarvialla*).
 - [ ] **Toponym Edge Overrides (`[BUG-008]`, `[BUG-009]`, `[TEST-003]`)**: Correct *Mauritius* illative (*Mauritiukseen*), add *Virrat* inessive (*Virroissa*), and verify 11-case paradigms.
 
 ### Milestone 5: Personal Name Accuracy & Disambiguation (v0.3.1) — 📋 Planned
