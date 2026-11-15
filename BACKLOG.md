@@ -21,7 +21,7 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 | `[BUG-003]` | Missing Elative/Ablative Overrides for 20 Irregular Municipalities | Linguistic | P1 | ✅ Completed |
 | `[BUG-004]` | Compound Place Prefix Inflection Loss in `localFrom` (`Uusikaupunki`, `Isokyrö`) | Linguistic | P1 | ✅ Completed |
 | `[BUG-007]` | Complete External Case Paradigms for Plural *-inen* Municipalities | Linguistic | P1 | ✅ Completed |
-| `[BUG-010]` | Compound Toponym Vowel Harmony & *-pää* Head Illative (*Oripää*, *Kankaanpää*, *Sodankylä*, *Kruunupyy*) | Linguistic | P1 | 1 increment |
+| `[BUG-010]` | Compound Toponym Vowel Harmony & *-pää* Head Illative (*Oripää*, *Kankaanpää*, *Sodankylä*, *Kruunupyy*) | Linguistic | P1 | ✅ Completed |
 | `[BUG-011]` | Toponym Exception Sets for *Mustasaari* (Internal) and *Merikarvia* (External) | Linguistic | P1 | 1 increment |
 | `[BUG-008]` | Correct Mauritius Illative Form to *Mauritiukseen* | Linguistic | P2 | 1 increment |
 | `[BUG-009]` | Add Inessive Override for *Virrat* (*Virroissa*) | Linguistic | P2 | 1 increment |
