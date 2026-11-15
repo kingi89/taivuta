@@ -67,7 +67,8 @@ describe('Unified Nature Noun Registry & Toponymic Formatives', () => {
     assert.equal(detectLocalCase('Siikajoki'), 'on');
     assert.equal(detectLocalCase('Puijonmäki'), 'on');
     assert.equal(detectLocalCase('Kuusankoski'), 'on');
-    assert.equal(detectLocalCase('Mustasaari'), 'on');
+    assert.equal(detectLocalCase('Viitasaari'), 'on');
+    assert.equal(detectLocalCase('Mustasaari'), 'in');
     assert.equal(detectLocalCase('Otaniemi'), 'on');
     assert.equal(detectLocalCase('Kontiolahti'), 'in');
     assert.equal(detectLocalCase('Rautasalmi'), 'on');
@@ -88,7 +89,8 @@ describe('Unified Nature Noun Registry & Toponymic Formatives', () => {
     assert.equal(inflectPlace('Lahti', 'local'), 'Lahdessa');
     assert.equal(inflectPlace('Kontiolahti', 'local'), 'Kontiolahdessa');
     assert.equal(inflectPlace('Alajärvi', 'local'), 'Alajärvellä');
-    assert.equal(inflectPlace('Mustasaari', 'local'), 'Mustasaarella');
+    assert.equal(inflectPlace('Viitasaari', 'local'), 'Viitasaarella');
+    assert.equal(inflectPlace('Mustasaari', 'local'), 'Mustasaaressa');
     assert.equal(inflectPlace('Kuusankoski', 'local'), 'Kuusankoskella');
   });
 

@@ -11,31 +11,6 @@ import { MUNICIPALITY_TEST_CASES } from './fixtures/municipalities.fixture.ts';
 import { detectLocalCase, inflectPlace } from '../src/place/inflect-place.ts';
 import { inflect, inflectPerson } from '../src/index.ts';
 
-// Documented intentional limitations tracked in BACKLOG.md
-const LOCAL_CASE_TYPE_LIMITATIONS: Record<string, string> = {
-  // BUG-011: Toponym exception sets (Mustasaari in, Merikarvia on)
-  Mustasaari: 'on',
-  Merikarvia: 'in'
-};
-
-const LOCAL_CASE_LIMITATIONS: Record<string, string> = {
-  // BUG-011: Toponym exception sets
-  Mustasaari: 'Mustasaarella',
-  Merikarvia: 'Merikarviassa'
-};
-
-const LOCAL_TO_LIMITATIONS: Record<string, string> = {
-  // BUG-011: Toponym exception sets
-  Mustasaari: 'Mustasaarelle',
-  Merikarvia: 'Merikarviaan'
-};
-
-const LOCAL_FROM_LIMITATIONS: Record<string, string> = {
-  // BUG-011: Toponym exception sets
-  Mustasaari: 'Mustasaarelta',
-  Merikarvia: 'Merikarviasta'
-};
-
 describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 Municipalities)', () => {
   it('achieves high accuracy on local case selection (in vs. on) for all 308 municipalities', () => {
     let passed = 0;
@@ -43,11 +18,6 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
 
     for (const tc of MUNICIPALITY_TEST_CASES) {
       const actualType = detectLocalCase(tc.name);
-      const expectedLimitation = LOCAL_CASE_TYPE_LIMITATIONS[tc.name];
-      if (expectedLimitation !== undefined) {
-        assert.equal(actualType, expectedLimitation, `Limitation regression for ${tc.name}`);
-        continue;
-      }
       if (actualType === tc.localCaseType) {
         passed++;
       } else {
@@ -61,7 +31,7 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `Local case detection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 306);
+    assert.equal(passed, 308);
   });
 
   it('correctly inflects all 308 municipalities into their primary local case form (missä)', () => {
@@ -70,11 +40,6 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
 
     for (const tc of MUNICIPALITY_TEST_CASES) {
       const actual = inflectPlace(tc.name, 'local');
-      const expectedLimitation = LOCAL_CASE_LIMITATIONS[tc.name];
-      if (expectedLimitation !== undefined) {
-        assert.equal(actual, expectedLimitation, `Limitation regression for ${tc.name}`);
-        continue;
-      }
       if (actual === tc.localCase) {
         passed++;
       } else {
@@ -88,7 +53,7 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `Primary local case inflection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 306);
+    assert.equal(passed, 308);
   });
 
   it('correctly inflects all 308 municipalities into genitive', () => {
@@ -119,11 +84,6 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
 
     for (const tc of MUNICIPALITY_TEST_CASES) {
       const actual = inflectPlace(tc.name, 'localTo');
-      const expectedLimitation = LOCAL_TO_LIMITATIONS[tc.name];
-      if (expectedLimitation !== undefined) {
-        assert.equal(actual, expectedLimitation, `Limitation regression for ${tc.name}`);
-        continue;
-      }
       if (actual === tc.localTo) {
         passed++;
       } else {
@@ -137,7 +97,7 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `localTo inflection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 306);
+    assert.equal(passed, 308);
   });
 
   it('correctly inflects all 308 municipalities into source local case (mistä / localFrom)', () => {
@@ -146,11 +106,6 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
 
     for (const tc of MUNICIPALITY_TEST_CASES) {
       const actual = inflectPlace(tc.name, 'localFrom');
-      const expectedLimitation = LOCAL_FROM_LIMITATIONS[tc.name];
-      if (expectedLimitation !== undefined) {
-        assert.equal(actual, expectedLimitation, `Limitation regression for ${tc.name}`);
-        continue;
-      }
       if (actual === tc.localFrom) {
         passed++;
       } else {
@@ -164,7 +119,7 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `localFrom inflection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 306);
+    assert.equal(passed, 308);
   });
 
   it('correctly inflects compound place names with inflecting adjective prefixes [BUG-004]', () => {
@@ -263,6 +218,20 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
     assert.equal(inflectPlace('Kruunupyy', 'localTo'), 'Kruunupyyhyn');
     assert.equal(inflectPlace('Kruunupyy', 'partitive'), 'Kruunupyytä');
     assert.equal(inflectPlace('Kruunupyy', 'illative'), 'Kruunupyyhyn');
+  });
+
+  it('correctly classifies and inflects Mustasaari (internal) and Merikarvia (external) [BUG-011]', () => {
+    assert.equal(detectLocalCase('Mustasaari'), 'in');
+    assert.equal(inflectPlace('Mustasaari', 'local'), 'Mustasaaressa');
+    assert.equal(inflectPlace('Mustasaari', 'localFrom'), 'Mustasaaresta');
+    assert.equal(inflectPlace('Mustasaari', 'localTo'), 'Mustasaareen');
+    assert.equal(inflect('Mustasaari', 'local'), 'Mustasaaressa');
+
+    assert.equal(detectLocalCase('Merikarvia'), 'on');
+    assert.equal(inflectPlace('Merikarvia', 'local'), 'Merikarvialla');
+    assert.equal(inflectPlace('Merikarvia', 'localFrom'), 'Merikarvialta');
+    assert.equal(inflectPlace('Merikarvia', 'localTo'), 'Merikarvialle');
+    assert.equal(inflect('Merikarvia', 'local'), 'Merikarvialla');
   });
 
   it('accurately handles specific morphological edge cases (partitive and illative)', () => {

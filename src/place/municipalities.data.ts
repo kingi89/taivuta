@@ -52,6 +52,7 @@ export const EXTERNAL_CASE_MUNICIPALITIES: ReadonlySet<string> = new Set([
   'Loimaa',
   'Loppi',
   'Luumäki',
+  'Merikarvia',
   'Muhos',
   'Multia',
   'Nokia',
@@ -95,6 +96,7 @@ export const EXTERNAL_CASE_MUNICIPALITIES: ReadonlySet<string> = new Set([
  */
 export const ISLAND_INTERNAL_EXCEPTIONS: ReadonlySet<string> = new Set([
   'Pietarsaari',
+  'Mustasaari',
   'Hailuoto',
   'Luoto'
 ]);
