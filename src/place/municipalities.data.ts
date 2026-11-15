@@ -159,7 +159,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     adessive: 'Mauritiuksella',
     ablative: 'Mauritiukselta',
     allative: 'Mauritiukselle',
-    illative: 'Mauritiukselle'
+    illative: 'Mauritiukseen'
   }],
   ['Koski Tl', {
     localCaseType: 'on',

@@ -419,4 +419,13 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflectPlace('Ahvenanmaa', 'localTo'), 'Ahvenanmaalle');
     assert.equal(inflectPlace('Ahvenanmaa', 'genitive'), 'Ahvenanmaan');
   });
+
+  it('correctly inflects Mauritius into illative Mauritiukseen while preserving external localTo [BUG-008]', () => {
+    assert.equal(inflectPlace('Mauritius', 'illative'), 'Mauritiukseen');
+    assert.equal(inflectPlace('Mauritius', 'localTo'), 'Mauritiukselle');
+    assert.equal(inflectPlace('Mauritius', 'local'), 'Mauritiuksella');
+    assert.equal(inflectPlace('Mauritius', 'localFrom'), 'Mauritiukselta');
+    assert.equal(inflectPlace('Mauritius', 'genitive'), 'Mauritiuksen');
+    assert.equal(inflectPlace('Mauritius', 'partitive'), 'Mauritiusta');
+  });
 });
