@@ -19,49 +19,18 @@ const LOCAL_CASE_TYPE_LIMITATIONS: Record<string, string> = {
 };
 
 const LOCAL_CASE_LIMITATIONS: Record<string, string> = {
-  // BUG-010: Compound vowel harmony
-  Kankaanpää: 'Kankaanpäässa',
-  Kruunupyy: 'Kruunupyyssa',
-  Oripää: 'Oripäässa',
-  Sodankylä: 'Sodankylässa',
   // BUG-011: Toponym exception sets
   Mustasaari: 'Mustasaarella',
   Merikarvia: 'Merikarviassa'
 };
 
 const LOCAL_TO_LIMITATIONS: Record<string, string> = {
-  // BUG-010: Compound head -pää takes -hVn illative (*-pääseen vs -päähän)
-  Järvenpää: 'Järvenpääseen',
-  Kankaanpää: 'Kankaanpääseen',
-  Oripää: 'Oripääseen',
-  Kruunupyy: 'Kruunupyyseen', // Kotus preference: Kruunupyyhyn
   // BUG-011: Toponym exception sets
   Mustasaari: 'Mustasaarelle',
   Merikarvia: 'Merikarviaan'
 };
 
-const PARTITIVE_LIMITATIONS: Record<string, string> = {
-  // BUG-010: Compound vowel harmony
-  Kankaanpää: 'Kankaanpääta',
-  Kruunupyy: 'Kruunupyyta',
-  Oripää: 'Oripääta',
-  Sodankylä: 'Sodankyläa'
-};
-
-const ILLATIVE_LIMITATIONS: Record<string, string> = {
-  // BUG-010: Compound head -pää takes -hVn illative (*-pääseen vs -päähän)
-  Järvenpää: 'Järvenpääseen',
-  Kankaanpää: 'Kankaanpääseen',
-  Oripää: 'Oripääseen',
-  Kruunupyy: 'Kruunupyyseen'
-};
-
 const LOCAL_FROM_LIMITATIONS: Record<string, string> = {
-  // BUG-010: Compound vowel harmony
-  Kankaanpää: 'Kankaanpäästa',
-  Kruunupyy: 'Kruunupyysta',
-  Oripää: 'Oripäästa',
-  Sodankylä: 'Sodankylästa',
   // BUG-011: Toponym exception sets
   Mustasaari: 'Mustasaarelta',
   Merikarvia: 'Merikarviasta'
@@ -119,7 +88,7 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `Primary local case inflection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 302);
+    assert.equal(passed, 306);
   });
 
   it('correctly inflects all 308 municipalities into genitive', () => {
@@ -168,7 +137,7 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `localTo inflection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 302);
+    assert.equal(passed, 306);
   });
 
   it('correctly inflects all 308 municipalities into source local case (mistä / localFrom)', () => {
@@ -195,7 +164,7 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
       `localFrom inflection failed unexpectedly on ${unexpectedFailures.length} municipalities:\n` +
         unexpectedFailures.map((f) => `  ${f.name}: expected ${f.expected}, got ${f.actual}`).join('\n')
     );
-    assert.equal(passed, 302);
+    assert.equal(passed, 306);
   });
 
   it('correctly inflects compound place names with inflecting adjective prefixes [BUG-004]', () => {
@@ -269,17 +238,42 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
     assert.equal(inflectPlace('Kirkkonummi', 'ablative'), 'Kirkkonummelta');
   });
 
+  it('correctly resolves compound toponym vowel harmony and -pää/-pyy illatives [BUG-010]', () => {
+    assert.equal(inflectPlace('Oripää', 'local'), 'Oripäässä');
+    assert.equal(inflectPlace('Oripää', 'localFrom'), 'Oripäästä');
+    assert.equal(inflectPlace('Oripää', 'localTo'), 'Oripäähän');
+    assert.equal(inflectPlace('Oripää', 'partitive'), 'Oripäätä');
+    assert.equal(inflectPlace('Oripää', 'illative'), 'Oripäähän');
+
+    assert.equal(inflectPlace('Kankaanpää', 'local'), 'Kankaanpäässä');
+    assert.equal(inflectPlace('Kankaanpää', 'localFrom'), 'Kankaanpäästä');
+    assert.equal(inflectPlace('Kankaanpää', 'localTo'), 'Kankaanpäähän');
+    assert.equal(inflectPlace('Kankaanpää', 'partitive'), 'Kankaanpäätä');
+    assert.equal(inflectPlace('Kankaanpää', 'illative'), 'Kankaanpäähän');
+
+    assert.equal(inflectPlace('Järvenpää', 'localTo'), 'Järvenpäähän');
+    assert.equal(inflectPlace('Järvenpää', 'illative'), 'Järvenpäähän');
+
+    assert.equal(inflectPlace('Sodankylä', 'local'), 'Sodankylässä');
+    assert.equal(inflectPlace('Sodankylä', 'localFrom'), 'Sodankylästä');
+    assert.equal(inflectPlace('Sodankylä', 'partitive'), 'Sodankylää');
+
+    assert.equal(inflectPlace('Kruunupyy', 'local'), 'Kruunupyyssä');
+    assert.equal(inflectPlace('Kruunupyy', 'localFrom'), 'Kruunupyystä');
+    assert.equal(inflectPlace('Kruunupyy', 'localTo'), 'Kruunupyyhyn');
+    assert.equal(inflectPlace('Kruunupyy', 'partitive'), 'Kruunupyytä');
+    assert.equal(inflectPlace('Kruunupyy', 'illative'), 'Kruunupyyhyn');
+  });
+
   it('accurately handles specific morphological edge cases (partitive and illative)', () => {
     for (const tc of MUNICIPALITY_TEST_CASES) {
       if (tc.partitive) {
         const actualPartitive = inflectPlace(tc.name, 'partitive');
-        const expectedPartitive = PARTITIVE_LIMITATIONS[tc.name] ?? tc.partitive;
-        assert.equal(actualPartitive, expectedPartitive, `Partitive mismatch for ${tc.name}`);
+        assert.equal(actualPartitive, tc.partitive, `Partitive mismatch for ${tc.name}`);
       }
       if (tc.illative) {
         const actualIllative = inflectPlace(tc.name, 'illative');
-        const expectedIllative = ILLATIVE_LIMITATIONS[tc.name] ?? tc.illative;
-        assert.equal(actualIllative, expectedIllative, `Illative mismatch for ${tc.name}`);
+        assert.equal(actualIllative, tc.illative, `Illative mismatch for ${tc.name}`);
       }
     }
   });

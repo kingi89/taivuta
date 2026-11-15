@@ -4,7 +4,8 @@ import {
   getVowelHarmony,
   harmonize,
   weakenConsonants,
-  analyzeStem
+  analyzeStem,
+  inflect
 } from '../src/index.ts';
 
 describe('Vowel Harmony (getVowelHarmony & harmonize)', () => {
@@ -49,6 +50,20 @@ describe('Vowel Harmony (getVowelHarmony & harmonize)', () => {
 
     // Space-separated compound
     assert.equal(getVowelHarmony('Uusi Seelanti'), 'back');
+
+    // Unhyphenated compound words: last harmony-bearing vowel governs generally [BUG-010]
+    assert.equal(getVowelHarmony('Yrjömatti'), 'back');
+    assert.equal(getVowelHarmony('Oripää'), 'front');
+    assert.equal(getVowelHarmony('Kankaanpää'), 'front');
+    assert.equal(getVowelHarmony('Sodankylä'), 'front');
+    assert.equal(getVowelHarmony('Kruunupyy'), 'front');
+    assert.equal(getVowelHarmony('Kukkapää'), 'front');
+
+    // Documented limitation: unhyphenated compound with back-vowel prefix and neutral-only (e/i) head
+    assert.equal(getVowelHarmony('Uusipaavalniemi'), 'back');
+    assert.equal(getVowelHarmony('Ainoheikki'), 'back');
+    // Place/nature-noun lookup handles -niemi explicitly as an internal suffix rule:
+    assert.equal(inflect('Uusipaavalniemi', 'local'), 'Uusipaavalniemellä');
   });
 
   it('correctly harmonizes case suffixes according to stem harmony', () => {

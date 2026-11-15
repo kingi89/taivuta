@@ -116,6 +116,8 @@ describe('Polysyllabic Names & Compound Stems (Gradation Anchoring)', () => {
     assert.equal(inflectPerson('Keltakumpu', 'adessive', { role: 'surname' }), 'Keltakummulla');
     assert.equal(inflectPerson('Kallioranta', 'genitive', { role: 'surname' }), 'Kalliorannan');
     assert.equal(inflectPerson('Kukkapää', 'genitive', { role: 'surname' }), 'Kukkapään');
+    assert.equal(inflectPerson('Kukkapää', 'adessive', { role: 'surname' }), 'Kukkapäällä');
+    assert.equal(inflectPerson('Yrjömatti', 'adessive'), 'Yrjömatilla');
   });
 });
 

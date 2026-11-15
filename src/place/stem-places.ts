@@ -82,11 +82,9 @@ function resolveVocalicPlaceParadigm(
   }
 
   if (/(?:aa|ää|oo|öö|uu|yy|ii|ee)$/i.test(place)) {
-    const illativeEnd = place.toLowerCase().endsWith('maa')
-      ? 'han'
-      : place === 'Ii'
-        ? 'hin'
-        : 'seen';
+    const illativeEnd = /(?:maa|pää|pyy)$/i.test(place) || place === 'Ii'
+      ? `h${place.slice(-1).toLowerCase()}n`
+      : 'seen';
     return createStemParadigm(place, {
       strong: place,
       weak: place,

@@ -21,11 +21,11 @@ export type VowelHarmony = 'front' | 'back';
  * Accented variants with macrons, acutes, graves, and tildes retain back tongue position.
  */
 const BACK_VOWELS = new Set([
-  'a', 'o', 'u',
+  'a', 'o', 'u', 'å',
   'á', 'à', 'â', 'ã', 'ā',
   'ó', 'ò', 'ô', 'õ', 'ō',
   'ú', 'ù', 'û', 'ū',
-  'A', 'O', 'U',
+  'A', 'O', 'U', 'Å',
   'Á', 'À', 'Â', 'Ã', 'Ā',
   'Ó', 'Ò', 'Ô', 'Õ', 'Ō',
   'Ú', 'Ù', 'Û', 'Ū'
@@ -84,43 +84,48 @@ function getLastComponent(word: string): string {
 }
 
 function scanVowels(component: string): 'back' | 'front' | null {
-  // Foreign names ending in German diphthong -stein pronounced /ai/ (e.g. Liechtenstein) take back harmony
+  // Foreign names ending in the German diphthong -stein pronounced /ai/ (e.g. Liechtenstein)
+  // take back harmony regardless of orthographic 'e' and 'i'.
   if (component.toLowerCase().endsWith('stein')) {
     return 'back';
   }
 
-  let hasBack = false;
-  let hasFront = false;
-  let hasAring = false;
+  // In foreign names where a back vowel (a, o, u) is followed in the final syllable by a
+  // single -y pronounced /i/ (e.g. Tony, Paraguay, Uruguay), ignore the trailing -y glide
+  // so the preceding back vowel governs. Native Finnish long -yy (Kruunupyy) is preserved.
+  const target = /[aou][^aeiouyäö]*y$/i.test(component)
+    ? component.slice(0, -1)
+    : component;
 
-  for (const char of component) {
+  // Scan harmony-bearing vowels: back (a, o, u, å) vs. front (ä, ö, y), ignoring neutral
+  // vowels (e, i). Tracking the last match handles both simple stems (where back and front
+  // vowels never mix) and unhyphenated compounds or loanwords (Yrjömatti -> 'back',
+  // Oripää / Sodankylä / Vårdö -> 'front'), where the final constituent's vowel governs.
+  let lastHarmony: 'back' | 'front' | null = null;
+
+  for (const char of target) {
     if (BACK_VOWELS.has(char)) {
-      hasBack = true;
+      lastHarmony = 'back';
     } else if (FRONT_VOWELS.has(char)) {
-      hasFront = true;
-    } else if (char === 'å' || char === 'Å') {
-      hasAring = true;
+      lastHarmony = 'front';
     }
   }
 
-  if (hasBack) return 'back';
-  if (hasFront) return 'front';
-  if (hasAring) return 'back';
-  return null;
+  return lastHarmony;
 }
 
 /**
  * Determines whether a word requires front vowel harmony ('ä', 'ö', 'y')
  * or back vowel harmony ('a', 'o', 'u') in its case suffixes.
  *
- * Rule precedence:
- * 1. For compound names (hyphen or space separated), the last component governs.
- * 2. If the component ends in an isolated letter, that letter's spoken name governs.
- * 3. If the component contains any back vowel (a, o, u), it takes back harmony.
- * 4. If it contains front vowels (ä, ö, y) and no back vowels, it takes front harmony.
- * 5. Swedish å behaves as back vowel /o/ unless combined with front vowels (e.g. Vårdö -> Vårdössä).
- * 6. If it contains only neutral vowels (e, i), Finnish defaults to front harmony (e.g. "Helsingissä", "Villellä").
- * 7. For vowel-less acronyms, the spoken name of the final letter determines harmony.
+ * Harmony is governed by the last harmony-bearing vowel of the final word component,
+ * defaulting to 'front' when only neutral vowels ('e', 'i') are present, or using the
+ * spoken name of the final letter for isolated letters and vowel-less abbreviations.
+ *
+ * Note: Because unhyphenated compound words cannot be split reliably without a lexicon,
+ * compounds whose initial element contains a back vowel ('a', 'o', 'u') and whose final
+ * element contains only neutral vowels ('e', 'i') resolve to 'back' (e.g. "Uusipaavalniemi"
+ * when evaluated outside nature-noun suffix matching, or "Ainoheikki").
  *
  * @param word - The word or name to evaluate.
  * @returns 'front' or 'back' vowel harmony.
@@ -130,33 +135,37 @@ function scanVowels(component: string): 'back' | 'front' | null {
  * getVowelHarmony("Turku");        // "back" (Turussa)
  * getVowelHarmony("Helsinki");     // "front" (Helsingissä)
  * getVowelHarmony("Marja-Liisa");  // "front" (governed by "Liisa")
+ * getVowelHarmony("Yrjömatti");    // "back" (governed by "a" in "matti")
+ * getVowelHarmony("Oripää");       // "front" (governed by "ä" in "pää")
  * ```
  */
 export function getVowelHarmony(word: string): VowelHarmony {
+  // Step 1: For space- or hyphen-separated compounds, only the final word component governs.
   const component = getLastComponent(word);
 
-  // Single letters and tokens ending in an isolated letter (e.g. "X", "E", "foo123x", "bar___y", "3D", "P.", "Á")
-  // are governed by the spoken name of that final letter.
+  // Step 2: Single letters and tokens ending in an isolated letter (e.g. "X", "E", "foo123x",
+  // "3D", "P.", "Á") take the harmony of that final letter's spoken Finnish name.
   const isolatedLetterMatch = /(?:^|[^\p{Script=Latin}])(\p{Script=Latin})\.?$/u.exec(component);
   if (isolatedLetterMatch) {
     const letter = isolatedLetterMatch[1] ?? '';
     return isBackSpokenLetter(letter) ? 'back' : 'front';
   }
 
+  // Step 3: Resolve from harmony-bearing vowels (a/o/u/å vs. ä/ö/y) in the component.
   const scanned = scanVowels(component);
   if (scanned) {
     return scanned;
   }
 
-  // For acronyms/abbreviations without vowels, the spoken name of the final letter determines harmony:
-  // A, H, K, O, Q, U, Z, Ž, Å take back vowel harmony (e.g. HJK:ssa, HZ:lla).
+  // Step 4: For vowel-less acronyms/abbreviations, use the spoken name of the final letter
+  // (A, H, K, O, Q, U, Z, Ž, Å take back harmony, e.g. HJK:ssa, HZ:lla).
   const lastChar = component[component.length - 1] ?? '';
   if (BACK_SPOKEN_LETTER_NAMES.has(lastChar)) {
     return 'back';
   }
 
-  // Words with only neutral vowels (e, i) take front vowel harmony in Finnish.
-  // Kotus guideline: Sanat, joissa on vain e- ja i-vokaaleja, ovat etuvokaalisia.
+  // Step 5: Words containing only neutral vowels (e, i) take front vowel harmony in Finnish
+  // (Kotus guideline: Sanat, joissa on vain e- ja i-vokaaleja, ovat etuvokaalisia).
   return 'front';
 }
 
