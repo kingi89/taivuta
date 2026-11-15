@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2026-11-15
+
+### Added
+- **Full Municipality Spatial Triad Benchmark**: Expanded the Finnish municipality test suite and JSON fixture to verify `local` (*missä*), `localFrom` (*mistä*), `localTo` (*mihin*), and `genitive` across all 308 municipalities at 100% accuracy.
+
+### Fixed
+- **Compound Vowel Harmony Resolution**: Resolved vowel harmony from the final harmony-bearing vowel across compound proper nouns (*Sodankylässä*, *Kruunupyyssä*, *Oripäässä*, *Kankaanpäässä*, *Yrjömatilla*).
+- **Toponym *-pää* & *-pyy* Illatives**: Formed Kotus Type 18 *-hVn* illative suffixes for place names ending in *-pää* and *-pyy* (*Järvenpäähän*, *Kankaanpäähän*, *Oripäähän*, *Kruunupyyhyn*).
+- **Compound Place Prefix Inflection in `localFrom`**: Preserved congruent adjective prefix inflection in elative/*mistä* forms (*Uudestakaupungista*, *Uudestakaarlepyystä*, *Isostakyröstä*).
+- **Plural *-inen* Municipality External Cases**: Added plural external local case overrides (`adessive`, `ablative`, `allative`) for all 11 internal-case plural *-inen* municipalities (*Kauniaisilla*, *Kauniaisilta*, *Kauniaisille*, etc.).
+- **Municipality & Toponym Local Case Exceptions**: Classified *Mustasaari* under internal local cases (*Mustasaaressa*) and *Merikarvia* under external local cases (*Merikarvialla*), populated missing elative/ablative overrides for 20 irregular municipalities (*Kuortaneelta*, *Alavudelta*, *Kempeleestä*, *Pihtiputaalta*, etc.), added *Virrat* inessive/elative overrides (*Virroissa*, *Virroista*), and corrected *Mauritius* illative (*Mauritiukseen*).
+
+---
+
 ## [0.2.0] - 2026-11-09
 
 ### Added

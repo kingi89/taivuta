@@ -37,7 +37,7 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 
 ### Completed Milestones
 
-#### Milestone v0.3.0 — ✅ Completed
+#### Milestone v0.3.0 — ✅ Released
 | ID | Title | Category | Status |
 | :--- | :--- | :--- | :--- |
 | `[TEST-001]` | Full 309-Municipality Triad Benchmark (`missä`, `mistä`, `mihin`) | Testing / Data | ✅ Completed |
