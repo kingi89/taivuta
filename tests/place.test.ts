@@ -207,6 +207,45 @@ describe('Official Finnish Municipalities Benchmark (Full Spatial Triad on 308 M
     assert.equal(inflectPlace('Uusikaarlepyy', 'elative'), 'Uudestakaarlepyystä');
   });
 
+  it('correctly inflects all 11 internal-case plural -inen municipalities into plural external cases [BUG-007]', () => {
+    const pluralInenCases: ReadonlyArray<readonly [string, string, string, string]> = [
+      ['Huittinen', 'Huittisilla', 'Huittisilta', 'Huittisille'],
+      ['Ikaalinen', 'Ikaalisilla', 'Ikaalisilta', 'Ikaalisille'],
+      ['Jokioinen', 'Jokioisilla', 'Jokioisilta', 'Jokioisille'],
+      ['Joroinen', 'Joroisilla', 'Joroisilta', 'Joroisille'],
+      ['Kaskinen', 'Kaskisilla', 'Kaskisilta', 'Kaskisille'],
+      ['Kauniainen', 'Kauniaisilla', 'Kauniaisilta', 'Kauniaisille'],
+      ['Kuhmoinen', 'Kuhmoisilla', 'Kuhmoisilta', 'Kuhmoisille'],
+      ['Nousiainen', 'Nousiaisilla', 'Nousiaisilta', 'Nousiaisille'],
+      ['Oulainen', 'Oulaisilla', 'Oulaisilta', 'Oulaisille'],
+      ['Pornainen', 'Pornaisilla', 'Pornaisilta', 'Pornaisille'],
+      ['Siikainen', 'Siikaisilla', 'Siikaisilta', 'Siikaisille']
+    ];
+
+    for (const [name, adessive, ablative, allative] of pluralInenCases) {
+      assert.equal(inflectPlace(name, 'adessive'), adessive);
+      assert.equal(inflectPlace(name, 'ablative'), ablative);
+      assert.equal(inflectPlace(name, 'allative'), allative);
+    }
+
+    assert.equal(inflect('Kauniainen', 'allative'), 'Kauniaisille');
+    assert.equal(inflectPlace('Kauniainen', 'local', { localCase: 'on' }), 'Kauniaisilla');
+  });
+
+  it('inflects the sole singular -inen municipality outlier Kaustinen in singular [BUG-007]', () => {
+    assert.equal(inflectPlace('Kaustinen', 'local'), 'Kaustisella');
+    assert.equal(inflectPlace('Kaustinen', 'localFrom'), 'Kaustiselta');
+    assert.equal(inflectPlace('Kaustinen', 'localTo'), 'Kaustiselle');
+    assert.equal(inflectPlace('Kaustinen', 'adessive'), 'Kaustisella');
+    assert.equal(inflectPlace('Kaustinen', 'ablative'), 'Kaustiselta');
+    assert.equal(inflectPlace('Kaustinen', 'allative'), 'Kaustiselle');
+    assert.equal(inflectPlace('Kaustinen', 'inessive'), 'Kaustisessa');
+    assert.equal(inflectPlace('Kaustinen', 'elative'), 'Kaustisesta');
+    assert.equal(inflectPlace('Kaustinen', 'illative'), 'Kaustiseen');
+    assert.equal(inflectPlace('Kaustinen', 'genitive'), 'Kaustisen');
+    assert.equal(inflectPlace('Kaustinen', 'partitive'), 'Kaustista');
+  });
+
   it('correctly inflects irregular municipalities into explicit elative and ablative forms [BUG-003]', () => {
     assert.equal(inflectPlace('Kuortane', 'ablative'), 'Kuortaneelta');
     assert.equal(inflectPlace('Keitele', 'ablative'), 'Keiteleeltä');
