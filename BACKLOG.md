@@ -13,21 +13,7 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 
 ---
 
-## 1. Active Queue (Milestone v0.3.0: Place Name Fixes & Toponym Benchmark)
-
-| ID | Title | Category | Priority | Est. Scope |
-| :--- | :--- | :--- | :--- | :--- |
-| `[TEST-001]` | Full 309-Municipality Triad Benchmark (`missä`, `mistä`, `mihin`) | Testing / Data | P1 | ✅ Completed |
-| `[BUG-003]` | Missing Elative/Ablative Overrides for 20 Irregular Municipalities | Linguistic | P1 | ✅ Completed |
-| `[BUG-004]` | Compound Place Prefix Inflection Loss in `localFrom` (`Uusikaupunki`, `Isokyrö`) | Linguistic | P1 | ✅ Completed |
-| `[BUG-007]` | Complete External Case Paradigms for Plural *-inen* Municipalities | Linguistic | P1 | ✅ Completed |
-| `[BUG-010]` | Compound Toponym Vowel Harmony & *-pää* Head Illative (*Oripää*, *Kankaanpää*, *Sodankylä*, *Kruunupyy*) | Linguistic | P1 | ✅ Completed |
-| `[BUG-011]` | Toponym Exception Sets for *Mustasaari* (Internal) and *Merikarvia* (External) | Linguistic | P1 | ✅ Completed |
-| `[BUG-008]` | Correct Mauritius Illative Form to *Mauritiukseen* | Linguistic | P2 | 1 increment |
-| `[BUG-009]` | Add Inessive Override for *Virrat* (*Virroissa*) | Linguistic | P2 | 1 increment |
-| `[TEST-003]` | 11-Case Paradigm Verification for Irregular Municipalities | Testing | P2 | 1 increment |
-
-### Upcoming Queue (Milestone v0.3.1: Person Name Fixes)
+## 1. Active Queue (Milestone v0.3.1: Person Name Fixes)
 
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
@@ -43,12 +29,25 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 | `[OPT-001]` | Municipality Override Table Compression to Stem Tuples | Performance | P1 | 1 increment |
 | `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | Architecture | P1 | 1 increment |
 | `[REFACTOR-001]` | Unify Place Paradigm Resolution on `StemParadigm` Model | Architecture | P1 | 1 increment |
+| `[TEST-003]` | 11-Case Paradigm Verification for Irregular Municipalities | Testing | P2 | 1 increment |
 | `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P2 | 1 increment |
 | `[TASK-004]` | Finnish Administrative & Historical Regions Support (*Uusimaa*, *Varsinais-Suomi*) | Linguistic | P1 | 1–2 increments |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | Maintainability | P2 | 1 increment |
 | `[MAINT-003]` | Add `package.json` Scripts and Documentation for Fixture Builders | Maintainability | P2 | 1 increment |
 
 ### Completed Milestones
+
+#### Milestone v0.3.0 — ✅ Completed
+| ID | Title | Category | Status |
+| :--- | :--- | :--- | :--- |
+| `[TEST-001]` | Full 309-Municipality Triad Benchmark (`missä`, `mistä`, `mihin`) | Testing / Data | ✅ Completed |
+| `[BUG-003]` | Missing Elative/Ablative Overrides for 20 Irregular Municipalities | Linguistic | ✅ Completed |
+| `[BUG-004]` | Compound Place Prefix Inflection Loss in `localFrom` (`Uusikaupunki`, `Isokyrö`) | Linguistic | ✅ Completed |
+| `[BUG-007]` | Complete External Case Paradigms for Plural *-inen* Municipalities | Linguistic | ✅ Completed |
+| `[BUG-010]` | Compound Toponym Vowel Harmony & *-pää* Head Illative (*Oripää*, *Kankaanpää*, *Sodankylä*, *Kruunupyy*) | Linguistic | ✅ Completed |
+| `[BUG-011]` | Toponym Exception Sets for *Mustasaari* (Internal) and *Merikarvia* (External) | Linguistic | ✅ Completed |
+| `[BUG-008]` | Correct Mauritius Illative Form to *Mauritiukseen* | Linguistic | ✅ Completed |
+| `[BUG-009]` | Add Inessive Override & Fix Elative Form for *Virrat* (*Virroissa*, *Virroista*) | Linguistic | ✅ Completed |
 
 #### Milestone v0.2.0 — ✅ Released
 | ID | Title | Category | Status |
@@ -201,18 +200,18 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 - **Current Behavior**: `Mauritius` has `illative: 'Mauritiukselle'` (copy-pasted allative form).
 - **Target Behavior**: `inflectPlace('Mauritius', 'illative') === 'Mauritiukseen'`.
 
-### [BUG-009] Add Inessive Override for Virrat
+### [BUG-009] Add Inessive Override & Fix Elative Form for Virrat
 - **Priority**: P2
 - **Category**: Linguistic Accuracy
 - **Target Milestone**: v0.3.0
 - **Affected Components**: `src/place/municipalities.data.ts`
-- **Current Behavior**: `inflectPlace('Virrat', 'inessive') === 'Virratissa'` because internal cases are missing.
-- **Target Behavior**: `inflectPlace('Virrat', 'inessive') === 'Virroissa'`.
+- **Current Behavior**: `inflectPlace('Virrat', 'inessive') === 'Virratissa'` because `inessive` is missing, and `elative` is `'Virroilta'` (copy-pasted ablative form).
+- **Target Behavior**: `inflectPlace('Virrat', 'inessive') === 'Virroissa'` and `inflectPlace('Virrat', 'elative') === 'Virroista'`.
 
 ### [TEST-003] 11-Case Paradigm Verification for Irregular Municipalities
 - **Priority**: P2
 - **Category**: Testing
-- **Target Milestone**: v0.3.0
+- **Target Milestone**: v0.4.0 (scheduled alongside `[REFACTOR-001]`)
 - **Affected Components**: `tests/place.test.ts`
 - **Target Behavior**: Add unit test verifying that all 11 grammatical cases for irregular municipalities (*Tampere*, *Kauniainen*, *Virrat*, *Kuortane*, *Alavus*, *Uusikaupunki*) produce expected forms without unexpected vocalic fallbacks.
 
