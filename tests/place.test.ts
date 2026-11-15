@@ -428,4 +428,18 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflectPlace('Mauritius', 'genitive'), 'Mauritiuksen');
     assert.equal(inflectPlace('Mauritius', 'partitive'), 'Mauritiusta');
   });
+
+  it('correctly inflects Virrat into internal local cases alongside external local cases [BUG-009]', () => {
+    assert.equal(inflectPlace('Virrat', 'inessive'), 'Virroissa');
+    assert.equal(inflectPlace('Virrat', 'elative'), 'Virroista');
+    assert.equal(inflectPlace('Virrat', 'illative'), 'Virtoihin');
+    assert.equal(inflectPlace('Virrat', 'adessive'), 'Virroilla');
+    assert.equal(inflectPlace('Virrat', 'ablative'), 'Virroilta');
+    assert.equal(inflectPlace('Virrat', 'allative'), 'Virroille');
+    assert.equal(inflectPlace('Virrat', 'local'), 'Virroilla');
+    assert.equal(inflectPlace('Virrat', 'localFrom'), 'Virroilta');
+    assert.equal(inflectPlace('Virrat', 'localTo'), 'Virroille');
+    assert.equal(inflectPlace('Virrat', 'genitive'), 'Virtojen');
+    assert.equal(inflectPlace('Virrat', 'partitive'), 'Virtoja');
+  });
 });

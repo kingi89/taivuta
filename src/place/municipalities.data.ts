@@ -413,10 +413,11 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     localCaseType: 'on',
     genitive: 'Virtojen',
     partitive: 'Virtoja',
+    inessive: 'Virroissa',
     adessive: 'Virroilla',
     ablative: 'Virroilta',
     allative: 'Virroille',
-    elative: 'Virroilta',
+    elative: 'Virroista',
     illative: 'Virtoihin'
   }],
   ['Rautalampi', {
