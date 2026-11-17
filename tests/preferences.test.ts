@@ -160,6 +160,87 @@ describe('Name Holder Disambiguation Subsystem (taivuta/preferences)', () => {
     });
   });
 
+  describe('Hyphenated & Compound Personal Names [BUG-014]', () => {
+    it('detects word-derived ambiguity on final hyphenated component ("Anna-Tuuli", "Suvi-Tuuli", "Meri-Helmi")', () => {
+      for (const name of ['Anna-Tuuli', 'Suvi-Tuuli', 'Meri-Helmi', 'Taika-Tuuli']) {
+        const res = detectNameDisambiguation(name);
+        assert.ok(res, `${name} should be ambiguous`);
+        assert.equal(res.dimensions[0]?.key, 'vocalic-variant');
+        assert.equal(res.defaultOptionId, 'nominative');
+      }
+
+      const annaTuuli = getNamePreferenceOptions('Anna-Tuuli');
+      assert.equal(annaTuuli[0]?.label, 'Anna-Tuulin, Anna-Tuulille');
+      assert.equal(annaTuuli[0]?.isDefault, true);
+      assert.equal(annaTuuli[1]?.label, 'Anna-Tuulen, Anna-Tuulelle');
+      assert.equal(annaTuuli[1]?.isDefault, false);
+    });
+
+    it('detects gradation and foreign -ette/-otte ambiguity on final hyphenated component', () => {
+      const marjaSatu = detectNameDisambiguation('Marja-Satu');
+      assert.ok(marjaSatu);
+      assert.equal(marjaSatu.defaultOptionId, 'gradation');
+      assert.equal(marjaSatu.options[0]?.label, 'Marja-Sadun, Marja-Sadulle');
+      assert.equal(marjaSatu.options[1]?.label, 'Marja-Satun, Marja-Satulle');
+
+      const juhaSampo = getNamePreferenceOptions('Juha-Sampo');
+      assert.equal(juhaSampo[0]?.examples.genitive, 'Juha-Sammon');
+      assert.equal(juhaSampo[1]?.examples.genitive, 'Juha-Sampon');
+
+      const ainoTaika = detectNameDisambiguation('Aino-Taika');
+      assert.ok(ainoTaika);
+      assert.equal(ainoTaika.defaultOptionId, 'no-gradation');
+      assert.equal(ainoTaika.options.find((o) => o.isDefault)?.examples.genitive, 'Aino-Taikan');
+
+      const anneCharlotte = getNamePreferenceOptions('Anne-Charlotte');
+      assert.equal(anneCharlotte[0]?.examples.allative, 'Anne-Charlotelle');
+      assert.equal(anneCharlotte[1]?.examples.allative, 'Anne-Charlottelle');
+    });
+
+    it('prevents prefix contamination in hyphenated s-stem defaults and monosyllabic guards', () => {
+      const alexMatias = detectNameDisambiguation('Alex-Matias');
+      assert.ok(alexMatias);
+      assert.equal(alexMatias.defaultOptionId, 's-stem');
+      assert.equal(alexMatias.options[0]?.examples.genitive, 'Alex-Matiaksen');
+
+      const carlJohannes = detectNameDisambiguation('Carl-Johannes');
+      assert.ok(carlJohannes);
+      assert.equal(carlJohannes.defaultOptionId, 's-stem');
+      assert.equal(carlJohannes.options[0]?.examples.genitive, 'Carl-Johanneksen');
+
+      const janLucas = detectNameDisambiguation('Jan-Lucas');
+      assert.ok(janLucas);
+      assert.equal(janLucas.defaultOptionId, 'vocalic');
+      assert.equal(janLucas.options.find((o) => o.isDefault)?.examples.genitive, 'Jan-Lucasin');
+
+      assert.equal(isAmbiguousName('Jan-Kas'), false);
+    });
+
+    it('treats hyphenated names unambiguous when only the non-inflecting prefix is ambiguous', () => {
+      assert.equal(isAmbiguousName('Satu-Emilia'), false);
+      assert.equal(isAmbiguousName('Tuuli-Emilia'), false);
+      assert.equal(detectNameDisambiguation('SATU-X'), null);
+      assert.equal(detectNameDisambiguation('AB-CD'), null);
+    });
+
+    it('supports multi-hyphen names by inspecting only the trailing segment ("Tripla-Nimi-Tuuli")', () => {
+      const tripleTuuli = detectNameDisambiguation('Tripla-Nimi-Tuuli');
+      assert.ok(tripleTuuli);
+      assert.equal(tripleTuuli.dimensions[0]?.key, 'vocalic-variant');
+      assert.equal(tripleTuuli.defaultOptionId, 'nominative');
+      assert.equal(tripleTuuli.options[0]?.label, 'Tripla-Nimi-Tuulin, Tripla-Nimi-Tuulille');
+      assert.equal(tripleTuuli.options[1]?.label, 'Tripla-Nimi-Tuulen, Tripla-Nimi-Tuulelle');
+
+      const tripleSatu = detectNameDisambiguation('Aino-Marja-Satu');
+      assert.ok(tripleSatu);
+      assert.equal(tripleSatu.defaultOptionId, 'gradation');
+      assert.equal(tripleSatu.options[0]?.examples.genitive, 'Aino-Marja-Sadun');
+      assert.equal(tripleSatu.options[1]?.examples.genitive, 'Aino-Marja-Satun');
+
+      assert.equal(isAmbiguousName('Satu-Tuuli-Emilia'), false);
+    });
+  });
+
   describe('FULL-UPPERCASE Handles (Acronym vs Word)', () => {
     it('detects ambiguity for "KELA"', () => {
       const res = detectNameDisambiguation('KELA');

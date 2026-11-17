@@ -98,9 +98,14 @@ function detectVocalicVariantDimension(name: string): AmbiguityDimension | null 
   };
 }
 
-function detectAcronymDimension(name: string): AmbiguityDimension | null {
-  const isAllCaps = name.length >= 2 && name === name.toUpperCase() && /[A-ZÅÄÖ]/.test(name);
-  if (!isAllCaps || /\d/.test(name) || !/[AEIOUYÅÄÖ]/.test(name)) {
+function extractInflectingHead(name: string): string {
+  const lastHyphen = name.lastIndexOf('-');
+  return lastHyphen >= 0 ? name.slice(lastHyphen + 1) : name;
+}
+
+function detectAcronymDimension(name: string, head: string): AmbiguityDimension | null {
+  const isAllCaps = head.length >= 2 && name === name.toUpperCase() && /[A-ZÅÄÖ]/.test(head);
+  if (!isAllCaps || /\d/.test(name) || !/[AEIOUYÅÄÖ]/.test(head)) {
     return null;
   }
   const choices: readonly DimensionChoice[] = [
@@ -226,21 +231,15 @@ function buildCartesianOptions(name: string, dimensions: readonly AmbiguityDimen
  * ```
  */
 function collectDimensions(name: string): AmbiguityDimension[] {
-  const detectors = [
-    detectGradationDimension,
-    detectSStemDimension,
-    detectVocalicVariantDimension,
-    detectAcronymDimension,
-    detectSymbolHarmonyDimension
+  const head = extractInflectingHead(name);
+  const candidates = [
+    detectGradationDimension(head),
+    detectSStemDimension(head),
+    detectVocalicVariantDimension(head),
+    detectAcronymDimension(name, head),
+    detectSymbolHarmonyDimension(name)
   ];
-  const dims: AmbiguityDimension[] = [];
-  for (const detect of detectors) {
-    const dim = detect(name);
-    if (dim) {
-      dims.push(dim);
-    }
-  }
-  return dims;
+  return candidates.filter((dim): dim is AmbiguityDimension => dim !== null);
 }
 
 export function detectNameDisambiguation(name: string): NameDisambiguation | null {
