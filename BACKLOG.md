@@ -23,8 +23,8 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[BUG-014]` | Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*) | Linguistic / Preferences | P2 | ✅ Completed |
 | `[BUG-006]` | Default Nature Noun Declension for Standalone and Hyphenated Surnames | Linguistic | P1 | ✅ Completed |
 | `[BUG-012]` | Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc | Documentation | P2 | ✅ Completed |
-| `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | 1 increment |
-| `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P1 | (with `BUG-005`) |
+| `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | ✅ Completed |
+| `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P1 | ✅ Completed |
 | `[BUG-013]` | Forward `givenName`/`surname` Roles and Place Preferences in `inflect()` & `format()` | API / Templates | P1 | 1 increment |
 | `[TEST-002]` | Unified `inflect()` End-to-End Test Matrix for Ambiguous & Compound Nominals | Testing | P1 | (with `BUG-013`) |
 | `[BUG-016]` | Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*) | Linguistic | P2 | 1 increment |
@@ -60,12 +60,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.1)
-
-### `[BUG-005]` & `[REFACTOR-002]` Entity Role Classification Pipeline and Casing for Multi-Word Names
-- **Priority**: P1 | **Affected Components**: `src/cases/classify.ts`, `src/morphology/nature-nouns.ts`
-- **Kotus Guideline**: Capitalized multi-word personal names (*Matti Niemi*, *Pekka Mäki*) represent people and inflect on the surname with preserved capitalization (*Matti Niemen*, *Pekka Mäen*).
-- **Current Behavior**: `classifyProperNoun` checks `matchNatureNoun(trimmed)` before multi-token person checks, routing `'Matti Niemi'` to `inflectPlace`, and `capitalizeForm` in `nature-nouns.ts` lowercases the suffix when `base` is non-empty (`'Matti niemen'`).
-- **Acceptance Criteria**: Decompose `classifyProperNoun` into clear pipeline stages so multi-word personal names classify as `'person'`, preserve casing in `nature-nouns.ts`, and satisfy `inflect('Matti Niemi', 'genitive') === 'Matti Niemen'`.
 
 ### `[BUG-013]` & `[TEST-002]` Forward `givenName`/`surname` Roles & Place Preferences in `inflect()` & `format()`
 - **Priority**: P1 | **Affected Components**: `src/cases/types.ts`, `src/cases/inflect.ts`, `src/template/format.ts`, `tests/person.test.ts`, `tests/place.test.ts`
