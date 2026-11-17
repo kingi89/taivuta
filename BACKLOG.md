@@ -19,8 +19,8 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
-| `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic / Preferences | P1 | 1 increment |
-| `[BUG-014]` | Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*) | Linguistic / Preferences | P2 | (with `BUG-002`) |
+| `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic / Preferences | P1 | ✅ Completed |
+| `[BUG-014]` | Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*) | Linguistic / Preferences | P2 | 1 increment |
 | `[BUG-006]` | Default Nature Noun Declension for Standalone and Hyphenated Surnames | Linguistic | P1 | 1 increment |
 | `[BUG-012]` | Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc | Documentation | P2 | (with `BUG-006`) |
 | `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | 1 increment |
@@ -59,12 +59,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.1)
-
-### `[BUG-002]` Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*)
-- **Priority**: P1 | **Affected Components**: `src/preferences/detect.ts`
-- **Kotus Guideline**: Modern Finnish given names ending in liquid + *k* clusters (*Marko*, *Mirko*, *Arko*) resist consonant gradation ($rk \to r$) and are unambiguously unweakened (*Markon, Markolle*).
-- **Current Behavior**: `QUALITATIVE_GRADATION_REGEX` matches `[rl]k[aeiouyäö]$` and defaults non-*-ka/-kä* stems to `'gradation'`, causing `detectNameDisambiguation('Marko')` to return `isAmbiguous: true` with `'Maron, Marolle'` as default.
-- **Acceptance Criteria**: `isAmbiguousName('Marko') === false` and `detectNameDisambiguation('Marko') === null`.
 
 ### `[BUG-014]` Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*)
 - **Priority**: P2 | **Affected Components**: `src/preferences/detect.ts`
