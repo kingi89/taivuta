@@ -366,6 +366,74 @@ describe('Irregular & Edge Cases', () => {
     assert.equal(inflectPerson('Vainio', 'genitive', { role: 'surname' }), 'Vainion');
   });
 
+  it('defaults standalone, compound, and hyphenated nature surnames to nature declension [BUG-006]', () => {
+    // Standalone nature surnames inflect via nature stems without explicit { role: 'surname' }
+    assert.equal(inflectPerson('Niemi', 'genitive'), 'Niemen');
+    assert.equal(inflectPerson('Niemi', 'partitive'), 'Niemeä');
+    assert.equal(inflectPerson('Niemi', 'illative'), 'Niemeen');
+    assert.equal(inflectPerson('Mäki', 'genitive'), 'Mäen');
+    assert.equal(inflectPerson('Saari', 'genitive'), 'Saaren');
+    assert.equal(inflectPerson('Saari', 'partitive'), 'Saarta');
+    assert.equal(inflectPerson('Lahti', 'genitive'), 'Lahden');
+    assert.equal(inflectPerson('Koski', 'genitive'), 'Kosken');
+    assert.equal(inflectPerson('Salmi', 'genitive'), 'Salmen');
+    assert.equal(inflectPerson('Nurmi', 'genitive'), 'Nurmen');
+    assert.equal(inflectPerson('Laine', 'genitive'), 'Laineen');
+    assert.equal(inflectPerson('Laine', 'partitive'), 'Lainetta');
+    assert.equal(inflectPerson('Rinne', 'genitive'), 'Rinteen');
+    assert.equal(inflectPerson('Järvi', 'genitive'), 'Järven');
+    assert.equal(inflectPerson('Joki', 'genitive'), 'Joen');
+
+    // Unhyphenated compound nature surnames match when role is omitted
+    assert.equal(inflectPerson('Alajärvi', 'genitive'), 'Alajärven');
+    assert.equal(inflectPerson('Elorinne', 'genitive'), 'Elorinteen');
+    assert.equal(inflectPerson('Puijonmäki', 'genitive'), 'Puijonmäen');
+
+    // Hyphenated surnames ending in nature nouns inflect via nature stems by default
+    assert.equal(inflectPerson('Virtanen-Niemi', 'genitive'), 'Virtanen-Niemen');
+    assert.equal(inflectPerson('Virtanen-Niemi', 'partitive'), 'Virtanen-Niemeä');
+    assert.equal(inflectPerson('Korhonen-Mäki', 'genitive'), 'Korhonen-Mäen');
+    assert.equal(inflectPerson('Lahtinen-Saari', 'partitive'), 'Lahtinen-Saarta');
+    assert.equal(inflectPerson('Mäkinen-Laine', 'genitive'), 'Mäkinen-Laineen');
+    assert.equal(inflectPerson('Saarinen-Lahti', 'adessive'), 'Saarinen-Lahdella');
+
+    // Word-derived given names and -meri given names retain nominative -i defaults
+    assert.equal(inflectPerson('Tuuli', 'genitive'), 'Tuulin');
+    assert.equal(inflectPerson('Meri', 'genitive'), 'Merin');
+    assert.equal(inflectPerson('Suvi', 'genitive'), 'Suvin');
+    assert.equal(inflectPerson('Helmi', 'genitive'), 'Helmin');
+    assert.equal(inflectPerson('Sini', 'genitive'), 'Sinin');
+    assert.equal(inflectPerson('Lumi', 'genitive'), 'Lumin');
+    assert.equal(inflectPerson('Pilvi', 'genitive'), 'Pilvin');
+    assert.equal(inflectPerson('Elmeri', 'genitive'), 'Elmerin');
+    assert.equal(inflectPerson('Anna-Tuuli', 'genitive'), 'Anna-Tuulin');
+
+    // Explicit overrides work in both directions
+    assert.equal(inflectPerson('Tuuli', 'genitive', { role: 'surname' }), 'Tuulen');
+    assert.equal(inflectPerson('Meri', 'partitive', { vocalicStemVariant: 'inflected' }), 'Merta');
+    assert.equal(inflectPerson('Anna-Tuuli', 'genitive', { vocalicStemVariant: 'inflected' }), 'Anna-Tuulen');
+    assert.equal(inflectPerson('Niemi', 'genitive', { role: 'givenName' }), 'Niemin');
+    assert.equal(inflectPerson('Niemi', 'genitive', { vocalicStemVariant: 'nominative' }), 'Niemin');
+  });
+
+  it('documents known limitation: foreign given names with nature-noun suffixes [ICE-003]', () => {
+    // Intentional limitation (ICE-003, backlog): When role is omitted, unanchored surname nature suffixes
+    // (-laine, -rinne, -joki) match rare foreign given names ending in those substrings.
+    // Callers with foreign given names can force given-name inflection via { role: 'givenName' }.
+    assert.equal(inflectPerson('Elaine', 'genitive'), 'Elaineen');
+    assert.equal(inflectPerson('Elaine', 'partitive'), 'Elainetta');
+    assert.equal(inflectPerson('Madelaine', 'genitive'), 'Madelaineen');
+    assert.equal(inflectPerson('Corinne', 'genitive'), 'Corinteen');
+    assert.equal(inflectPerson('Corinne', 'partitive'), 'Corinnettä');
+    assert.equal(inflectPerson('Njoki', 'genitive'), 'Njoen');
+
+    assert.equal(inflectPerson('Elaine', 'genitive', { role: 'givenName' }), 'Elainen');
+    assert.equal(inflectPerson('Elaine', 'partitive', { role: 'givenName' }), 'Elainea');
+    assert.equal(inflectPerson('Corinne', 'genitive', { role: 'givenName' }), 'Corinnen');
+    assert.equal(inflectPerson('Corinne', 'partitive', { role: 'givenName' }), 'Corinnea');
+    assert.equal(inflectPerson('Njoki', 'genitive', { role: 'givenName' }), 'Njokin');
+  });
+
   it('handles empty input gracefully', () => {
     assert.equal(inflectPerson('', 'genitive'), '');
     assert.equal(inflectPerson('   ', 'partitive'), '');
@@ -439,5 +507,9 @@ describe('Canonical Person StemParadigm (getPersonParadigm)', () => {
     assert.equal(niemi.weakVocalicStem, 'Nieme');
     assert.equal(niemi.partitive, 'Niemeä');
     assert.equal(niemi.illative, 'Niemeen');
+
+    const niemiDefault = getPersonParadigm('Niemi');
+    assert.equal(niemiDefault.weakVocalicStem, 'Nieme');
+    assert.equal(niemiDefault.partitive, 'Niemeä');
   });
 });

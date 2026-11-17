@@ -2,8 +2,8 @@
  * High-level person name inflection engine for Finnish given names, surnames, and full names.
  *
  * Implements Finnish naming conventions:
- * - Multi-word full names (e.g. "Matti Virtanen"): By default, only the surname is inflected
- *   ("Matti Virtasen"). If { inflectAll: true } is set, all components are inflected ("Matin Virtasen").
+ * - Multi-word full names (e.g. "Matti Virtanen"): Only the surname receives case endings
+ *   ("Matti Virtasen").
  * - Hyphenated compound names (e.g. "Marja-Liisa"): The final component receives case endings
  *   ("Marja-Liisan", "Juha-Pekan").
  * - Modern first names resist single k/p/t gradation (Aki -> Akin, Riku -> Rikun).

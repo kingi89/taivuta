@@ -164,6 +164,18 @@ function resolveVocalicPersonParadigm(
   });
 }
 
+const GIVEN_NAME_NATURE_SUFFIX_REGEX = /(?:tuuli|meri|pilvi|helmi|suvi|lumi|sini)$/i;
+
+function shouldMatchNatureNoun(name: string, options: InflectPersonOptions): boolean {
+  if (options.vocalicStemVariant === 'inflected' || options.role === 'surname') {
+    return true;
+  }
+  if (options.vocalicStemVariant === 'nominative' || options.role === 'givenName') {
+    return false;
+  }
+  return !GIVEN_NAME_NATURE_SUFFIX_REGEX.test(name);
+}
+
 /**
  * Builds the canonical morphological StemParadigm for a Finnish person name.
  *
@@ -186,7 +198,7 @@ export function getPersonParadigm(
 ): StemParadigm {
   const effectiveOptions = resolvePersonPreference(options);
 
-  if (effectiveOptions.role === 'surname' || effectiveOptions.vocalicStemVariant === 'inflected') {
+  if (shouldMatchNatureNoun(name, effectiveOptions)) {
     const nature = matchNatureNoun(name);
     if (nature) {
       return nature;
