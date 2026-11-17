@@ -1,6 +1,6 @@
 # taivuta Development Backlog
 
-This backlog maintains prioritized technical, linguistic, and architectural tasks for the `taivuta` project.
+This backlog tracks prioritized technical, linguistic, and architectural tasks for the `taivuta` project. For completed release history, see [`CHANGELOG.md`](CHANGELOG.md) and [`ROADMAP.md`](ROADMAP.md).
 
 ---
 
@@ -8,296 +8,96 @@ This backlog maintains prioritized technical, linguistic, and architectural task
 
 - **P0: Critical Hotfix**: Security vulnerability, broken build/CI, bundle budget breach, or benchmark regression. Handled immediately.
 - **P1: Milestone Essential**: Committed deliverable for the active milestone in [`ROADMAP.md`](ROADMAP.md). Blocks milestone release.
-- **P2: Strategic Enhancement**: High-value feature or linguistic edge case scheduled for the upcoming milestone.
+- **P2: Strategic Enhancement**: High-value feature or linguistic edge case scheduled for an upcoming milestone.
 - **P3: Icebox**: Exploratory thoughts, experimental features, or non-urgent optimizations.
 
 ---
 
-## 1. Active Queue (Milestone v0.3.1: Person Name Fixes)
+## 1. Milestone Queues
+
+### Active Queue — Milestone v0.3.1: Personal Name Accuracy, Disambiguation & Templates
 
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
-| `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic | P1 | 1 increment |
-| `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | 1 increment |
+| `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic / Preferences | P1 | 1 increment |
+| `[BUG-014]` | Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*) | Linguistic / Preferences | P2 | (with `BUG-002`) |
 | `[BUG-006]` | Default Nature Noun Declension for Standalone and Hyphenated Surnames | Linguistic | P1 | 1 increment |
-| `[TEST-002]` | Unified `inflect()` End-to-End Test Matrix for Ambiguous & Compound Nominals | Testing | P1 | 1 increment |
+| `[BUG-012]` | Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc | Documentation | P2 | (with `BUG-006`) |
+| `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | 1 increment |
+| `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P1 | (with `BUG-005`) |
+| `[BUG-013]` | Forward `givenName`/`surname` Roles and Place Preferences in `inflect()` & `format()` | API / Templates | P1 | 1 increment |
+| `[TEST-002]` | Unified `inflect()` End-to-End Test Matrix for Ambiguous & Compound Nominals | Testing | P1 | (with `BUG-013`) |
 
-### Planned Queue (Milestone v0.4.0: Maintainability, Architecture & Regions)
+### Planned Queue — Milestone v0.3.2: Preferences Bundle Isolation, CI & Tooling Hygiene
 
-| ID | Title | Category | Priority | Est. Scope |
-| :--- | :--- | :--- | :--- | :--- |
-| `[OPT-001]` | Municipality Override Table Compression to Stem Tuples | Performance | P1 | 1 increment |
-| `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | Architecture | P1 | 1 increment |
-| `[REFACTOR-001]` | Unify Place Paradigm Resolution on `StemParadigm` Model | Architecture | P1 | 1 increment |
-| `[TEST-003]` | 11-Case Paradigm Verification for Irregular Municipalities | Testing | P2 | 1 increment |
-| `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P2 | 1 increment |
-| `[TASK-004]` | Finnish Administrative & Historical Regions Support (*Uusimaa*, *Varsinais-Suomi*) | Linguistic | P1 | 1–2 increments |
-| `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | Maintainability | P2 | 1 increment |
-| `[MAINT-003]` | Add `package.json` Scripts and Documentation for Fixture Builders | Maintainability | P2 | 1 increment |
-
-### Completed Milestones
-
-#### Milestone v0.3.0 — ✅ Released
-| ID | Title | Category | Status |
+| ID | Title | Priority | Target Outcome & Constraints |
 | :--- | :--- | :--- | :--- |
-| `[TEST-001]` | Full 309-Municipality Triad Benchmark (`missä`, `mistä`, `mihin`) | Testing / Data | ✅ Completed |
-| `[BUG-003]` | Missing Elative/Ablative Overrides for 20 Irregular Municipalities | Linguistic | ✅ Completed |
-| `[BUG-004]` | Compound Place Prefix Inflection Loss in `localFrom` (`Uusikaupunki`, `Isokyrö`) | Linguistic | ✅ Completed |
-| `[BUG-007]` | Complete External Case Paradigms for Plural *-inen* Municipalities | Linguistic | ✅ Completed |
-| `[BUG-010]` | Compound Toponym Vowel Harmony & *-pää* Head Illative (*Oripää*, *Kankaanpää*, *Sodankylä*, *Kruunupyy*) | Linguistic | ✅ Completed |
-| `[BUG-011]` | Toponym Exception Sets for *Mustasaari* (Internal) and *Merikarvia* (External) | Linguistic | ✅ Completed |
-| `[BUG-008]` | Correct Mauritius Illative Form to *Mauritiukseen* | Linguistic | ✅ Completed |
-| `[BUG-009]` | Add Inessive Override & Fix Elative Form for *Virrat* (*Virroissa*, *Virroista*) | Linguistic | ✅ Completed |
+| `[CI-001]` | Upgrade GitHub Actions to `@v6` & Gate Demo Deploy on `check` | P1 | Replace `actions/checkout@v4` and `actions/setup-node@v4` with `@v6` in `ci.yml` and `deploy-demo.yml` to resolve Node 20 deprecation warnings; run `npm run check` before building in `deploy-demo.yml`. |
+| `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | Add `'scripts/**/*.ts'` to `eslint.config.js` and verify `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`) match in `scripts/verify-bundle.ts`. |
+| `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
+| `[MAINT-003]` | Wire `build:countries-fixture` & Document Fixture Pipeline | P2 | Add `build:countries-fixture` script to `package.json` alongside `build:municipalities-fixture` and document dataset regeneration in `data/README.md`. |
+| `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | Generate disambiguation examples in `src/preferences/detect.ts` without bundling the full `taivuta/person` and `taivuta/morphology` engines, reducing `taivuta/preferences` from ~14.16 kB to ~6 kB. |
 
-#### Milestone v0.2.0 — ✅ Released
-| ID | Title | Category | Status |
+### Planned Queue — Milestone v0.4.0: Algorithmic Place Paradigms & Finnish Regions
+
+| ID | Title | Priority | Target Outcome & Constraints |
 | :--- | :--- | :--- | :--- |
-| `[TASK-001]` | Kotus Type 9 Intervocalic Single-k Loss (*Taika*) | Linguistic | ✅ Completed |
-| `[TASK-003]` | Single-Letter Proper Noun & Acronym Inflection | Linguistic | ✅ Completed |
-| `[TASK-002]` | Foreign Feminine -ette/-otte/-itte Quantitative Gradation (*Janette*) | Linguistic | ✅ Completed |
-| `[BUG-001]` | GitHub Pages Demo First Two Tabs Malfunctioning | Web Demo | ✅ Completed |
+| `[REFACTOR-001]` | Unify Place Paradigm Resolution on `StemParadigm` Model | P1 | Resolve irregular and specialized toponyms into canonical `StemParadigm` models in `src/place/` instead of per-case string lookups. |
+| `[OPT-001]` | Algorithmic Generation for Recurring Irregular Place Classes | P1 | Algorithmically generate paradigms for Type 78 lengthened *-e* stems (*Kuortane*, *Keitele*, *Tampere*), Type 39–41 *-s* stems (*Alavus*, *Kannus*), plural *-inen* municipalities (*Kauniainen*), and unhyphenated inflecting-prefix compounds (*Uusikaupunki*), leaving only true exceptions in `IRREGULAR_PLACES`. |
+| `[BUG-015]` | Secondary Case Coverage for Geopolitical State Compounds | P2 | Support `adessive`, `ablative`, `allative`, `essive`, and `translative` for plural archipelagos (*Filippiinit*) and state compounds (*Dominikaaninen tasavalta*, *Yhdistynyt kuningaskunta*) in `src/place/state-places.ts` using a bundle-size-neutral mechanism. |
+| `[TEST-003]` | 11-Case Paradigm Verification for Irregular & Algorithmic Places | P2 | Verify all 11 grammatical cases in `tests/place.test.ts` across representative irregular, algorithmic, and state-compound toponyms. |
+| `[TASK-004]` | Finnish Administrative & Historical Regions Support | P1 | Full spatial (`local`, `localFrom`, `localTo`) and grammatical case support and 100% fixture benchmark for all 19 Finnish regions (*Uusimaa $\to$ Uudellamaalla*, *Varsinais-Suomi $\to$ Varsinais-Suomessa*, *Pirkanmaa $\to$ Pirkanmaalla*, *Ahvenanmaa*, *Kainuu*). |
+
+### Planned Queue — Milestone v0.5.0: Comprehensive User Documentation & Verification
+
+| ID | Title | Priority | Target Outcome & Constraints |
+| :--- | :--- | :--- | :--- |
+| `[DOC-001]` | Synchronize `ARCHITECTURE.md` with Current Engine Implementation | P2 | Update `StemParadigm` interface documentation, supported 11+3 case inventory, final-syllable regex gradation explanation, and `-lahti` internal local case classification in `ARCHITECTURE.md`. |
+| `[DOC-002]` | Author Comprehensive User & Preferences Guides (`docs/`) | P1 | Create `docs/user-guide.md` (all cases, options, template syntax, role hints) and `docs/preferences-guide.md` (onboarding UX and persistence recipes), linked from `README.md`. |
+| `[TEST-004]` | Automated Documentation Example Verification (`scripts/verify-docs.ts`) | P2 | Add a zero-dependency script wired into `npm run check` that extracts and validates code examples from `README.md`, `docs/*.md`, and TSDoc `@example` blocks. |
 
 ---
 
-## 2. Detailed Task Specifications
+## 2. Active Milestone Specifications (v0.3.1)
 
-### [TASK-001] Kotus Type 9 Intervocalic Single-k Loss
-- **Priority**: P2
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.2.0
-- **Affected Components**: `src/morphology/gradation.ts`, `src/preferences/detect.ts`
-- **Kotus Guideline**: Nouns belonging to Kotus nominal type 9 (*kala*) with single intervocalic *k* undergo qualitative gradation ($k \to \emptyset$), creating a vowel hiatus or diphthong (*Taika $\to$ Taian, Taialle*). While modern given names resist single *k*-loss (*Aki $\to$ Akin, Reko $\to$ Rekon*), word-derived names like *Taika* can take either form.
-- **Current Behavior**: Single *k* only weakens after liquids (*rk, lk*). *Taika* inflects solely as *Taikan/Taikalle* and is classified as unambiguous.
-- **Target Behavior**: Detect *Taika* as ambiguous; offer weak grade (*Taian, Taialle*) and strong grade (*Taikan, Taikalle*).
-- **Acceptance Criteria**:
-  - `inflectPerson('Taika', 'genitive', { preference: 'gradation' }) === 'Taian'`
-  - `inflectPerson('Taika', 'genitive', { preference: 'no-gradation' }) === 'Taikan'`
-  - Names resisting single *k*-loss (*Aki, Mika, Riku, Reko*) remain unweakened by default.
-  - Test suite coverage $\ge 95\%$, complexity $\le 10$.
+### `[BUG-002]` Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*)
+- **Priority**: P1 | **Affected Components**: `src/preferences/detect.ts`
+- **Kotus Guideline**: Modern Finnish given names ending in liquid + *k* clusters (*Marko*, *Mirko*, *Arko*) resist consonant gradation ($rk \to r$) and are unambiguously unweakened (*Markon, Markolle*).
+- **Current Behavior**: `QUALITATIVE_GRADATION_REGEX` matches `[rl]k[aeiouyäö]$` and defaults non-*-ka/-kä* stems to `'gradation'`, causing `detectNameDisambiguation('Marko')` to return `isAmbiguous: true` with `'Maron, Marolle'` as default.
+- **Acceptance Criteria**: `isAmbiguousName('Marko') === false` and `detectNameDisambiguation('Marko') === null`.
 
-### [TASK-002] Foreign Feminine -ette/-otte/-itte Quantitative Gradation
-- **Priority**: P2
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.2.0
-- **Affected Components**: `src/morphology/gradation.ts`, `src/preferences/detect.ts`
-- **Kotus Guideline**: Foreign feminine names ending in *-ette/-otte/-itte* (*Janette, Bernadette, Juliette, Charlotte, Brigitte*) alternate between standard Finnish quantitative gradation ($tt \to t$: *Janetelle, Janeten*) and foreign spelling/sound preservation ($tt \to tt$: *Janettelle, Janetten*).
-- **Current Behavior**: Geminate stop shortening ($tt \to t$) is applied universally; names are marked unambiguous.
-- **Target Behavior**: Detect *-ette/-otte/-itte* foreign names as ambiguous; provide options for standard Finnish gradation vs. foreign spelling preservation.
-- **Acceptance Criteria**:
-  - `inflectPerson('Janette', 'allative', { preference: 'gradation' }) === 'Janetelle'`
-  - `inflectPerson('Janette', 'allative', { preference: 'no-gradation' }) === 'Janettelle'`
+### `[BUG-014]` Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*)
+- **Priority**: P2 | **Affected Components**: `src/preferences/detect.ts`
+- **Kotus Guideline**: In hyphenated Finnish given names (*Marja-Satu*, *Anna-Tuuli*), only the final component inflects (*Marja-Sadun* / *Marja-Satun*), inheriting the ambiguity of its head name.
+- **Current Behavior**: `detectVocalicVariantDimension` checks `WORD_DERIVED_GIVEN_NAMES.has(name.toLowerCase())` against the full unsplit string, missing hyphenated compounds such as `'Anna-Tuuli'`.
+- **Acceptance Criteria**: `detectNameDisambiguation('Anna-Tuuli')` and `detectNameDisambiguation('Marja-Satu')` detect the final component's ambiguity and generate properly prefixed option examples.
 
-### [TASK-003] Single-Letter Proper Noun & Acronym Inflection
-- **Priority**: P1
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.2.0
-- **Affected Components**: `src/morphology/colon.ts`, `src/morphology/vowels.ts`, `src/person/stem-person.ts`
-- **Kotus Guideline**: Single-letter proper nouns, initials, and letter designations are read by their spoken letter names (e.g. *X* = "äks", *E* = "ee", *H* = "hoo", *K* = "koo") and require a colon before case suffixes (*X:ään, E:hen, H:hon*).
-- **Current Behavior**:
-  - `inflectPerson('X', 'illative')` outputs `'X:iin'` (incorrect vowel harmony/linking vowel; should be `'X:ään'`).
-  - `inflectPerson('E', 'illative')` outputs `'EEn'` (missing colon and proper *hVn* suffixation; should be `'E:hen'`).
-- **Target Behavior**:
-  - Systematically map single letters (A–Ö, foreign Latin letters) to their phonetic letter-name stems and vowel harmony classes.
-  - Require colon suffixation for single-letter tokens by default.
-  - Produce correct case forms across all cases (e.g. *X:ään, X:ää, X:ssä; E:hen, E:tä, E:ssä; H:hon, H:ta, H:ssa*).
-- **Acceptance Criteria**:
-  - `inflectPerson('X', 'illative') === 'X:ään'`
-  - `inflectPerson('E', 'illative') === 'E:hen'`
-  - `inflectPerson('X', 'inessive') === 'X:ssä'`
-  - `inflectPerson('H', 'illative') === 'H:hon'`
-  - Single letter names have complete TSDoc coverage and test suite coverage $\ge 95\%$.
+### `[BUG-006]` Default Nature Noun Declension for Standalone and Hyphenated Surnames
+- **Priority**: P1 | **Affected Components**: `src/person/stem-person.ts`, `src/person/inflect-person.ts`
+- **Kotus Guideline**: Finnish surnames derived from nature nouns (*Niemi*, *Mäki*, *Saari*, *Lahti*, *Koski*, *Salmi*, *Järvi*) inflect via their traditional vowel-alternating stems (*Niemen*, *Mäen*), whereas word-derived given names (*Tuuli*, *Meri*, *Suvi*, *Lumi*, *Pilvi*, *Helmi*, *Sini*) default to nominative *-i* stems unless `{ vocalicStemVariant: 'inflected' }` or `{ role: 'surname' }` is specified.
+- **Current Behavior**: `getPersonParadigm` only calls `matchNatureNoun(name)` when `role === 'surname'` or `vocalicStemVariant === 'inflected'`, causing `inflectPerson('Niemi', 'genitive')` and `inflectPerson('Virtanen-Niemi', 'genitive')` to return `'Niemin'` and `'Virtanen-Niemin'`.
+- **Acceptance Criteria**: `inflectPerson('Niemi', 'genitive') === 'Niemen'`, `inflectPerson('Virtanen-Niemi', 'genitive') === 'Virtanen-Niemen'`, while `inflectPerson('Tuuli', 'genitive') === 'Tuulin'` unless `role: 'surname'` or `vocalicStemVariant: 'inflected'`.
 
-### [BUG-001] GitHub Pages Demo First Two Tabs Malfunctioning
-- **Priority**: P2
-- **Category**: Web Demo
-- **Target Milestone**: v0.2.0
-- **Affected Components**: `demo/index.html`
-- **Current Behavior**: The interactive onboarding simulation and case tester tabs fail to render or update in GitHub Pages.
-- **Target Behavior**: All three tabs (interactive tester, onboarding preview, technical reference) function reliably without runtime errors.
+### `[BUG-012]` Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc
+- **Priority**: P2 | **Affected Components**: `src/person/inflect-person.ts`
+- **Problem**: Lines 5–6 of `src/person/inflect-person.ts` document an `{ inflectAll: true }` option (`"Matin Virtasen"`) that does not exist in `InflectPersonOptions` and has no valid use case for personal names.
+- **Acceptance Criteria**: Remove the unimplemented `{ inflectAll: true }` sentence from `src/person/inflect-person.ts`.
 
-### [BUG-002] Given Name Disambiguation False Positives on Liquid-k Stems (Marko)
-- **Priority**: P1
-- **Category**: Linguistic Accuracy / Preferences
-- **Target Milestone**: v0.3.1
-- **Affected Components**: `src/preferences/detect.ts`
-- **Kotus Guideline**: Modern Finnish given names ending in liquid + *k* clusters (*Marko*, *Mirko*, *Arko*) resist consonant gradation ($rk \to r$) and are unambiguously unweakened (*Markon, Markolle*). While common nouns (*arka* $\to$ *aran*, *pelko* $\to$ *pelon*) undergo qualitative gradation, personal given names with *-rko/-lko* do not alternate.
-- **Current Behavior**: `inflectPerson('Marko', 'genitive')` defaults correctly to `'Markon'`. However, `QUALITATIVE_GRADATION_REGEX` in `src/preferences/detect.ts` matches `[rl]k` stems, and because `Marko` does not end in *-ka/-kä*, `defaultChoiceId` evaluates to `'gradation'`. Consequently, `detectNameDisambiguation('Marko')` falsely marks the name as ambiguous and suggests `'Maron'` and `'Marolle'` as the default choices.
-- **Target Behavior**: Detect *Marko* (and similar non-alternating liquid-*k* given names) as unambiguous (`isAmbiguous: false`), or ensure default choice is `'no-gradation'` (*Markon, Markolle*).
-- **Acceptance Criteria**:
-  - `isAmbiguousName('Marko') === false`
-  - `detectNameDisambiguation('Marko').isAmbiguous === false`
+### `[BUG-005]` & `[REFACTOR-002]` Entity Role Classification Pipeline and Casing for Multi-Word Names
+- **Priority**: P1 | **Affected Components**: `src/cases/classify.ts`, `src/morphology/nature-nouns.ts`
+- **Kotus Guideline**: Capitalized multi-word personal names (*Matti Niemi*, *Pekka Mäki*) represent people and inflect on the surname with preserved capitalization (*Matti Niemen*, *Pekka Mäen*).
+- **Current Behavior**: `classifyProperNoun` checks `matchNatureNoun(trimmed)` before multi-token person checks, routing `'Matti Niemi'` to `inflectPlace`, and `capitalizeForm` in `nature-nouns.ts` lowercases the suffix when `base` is non-empty (`'Matti niemen'`).
+- **Acceptance Criteria**: Decompose `classifyProperNoun` into clear pipeline stages so multi-word personal names classify as `'person'`, preserve casing in `nature-nouns.ts`, and satisfy `inflect('Matti Niemi', 'genitive') === 'Matti Niemen'`.
 
-### [TEST-001] Full 309-Municipality Triad Benchmark (missä, mistä, mihin)
-- **Priority**: P1
-- **Category**: Testing / Linguistic Accuracy
-- **Target Milestone**: v0.3.0
-- **Affected Components**: `tests/fixtures/municipalities.fixture.ts`, `tests/place.test.ts`
-- **Context**: The existing municipal fixture only tests `local` (*missä*) and `genitive`. It omits `localFrom` (*mistä*) and `localTo` (*mihin*) across the 309 official municipalities, creating a major blind spot where 20 municipalities had broken *mistä* forms without failing tests.
-- **Target Behavior**: Expand `tests/fixtures/municipalities.fixture.ts` and `tests/place.test.ts` to assert all three spatial cases (`local`, `localFrom`, `localTo`) for 100% of Finnish municipalities.
-
-### [BUG-003] Missing Elative and Ablative Overrides for 20 Irregular Municipalities
-- **Priority**: P1
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.3.0
-- **Affected Components**: `src/place/municipalities.data.ts`, `src/place/inflect-place.ts`
-- **Kotus Guideline**: Toponyms with stem lengthening (Type 78 / *hame*, e.g. *Kuortane : Kuortaneella : Kuortaneelta*), consonant gradation resistance (*Geta : Getassa : Getasta*), or *s*-stem alternation (*Alavus : Alavudella : Alavudelta*, *Kannus : Kannuksessa : Kannuksesta*) retain their inflected stems across all local cases.
-- **Current Behavior**: Overrides define only `inessive` or `adessive`. Unmapped `elative` or `ablative` cases fall back to naive vocalic stems: *Kuortanelta* (missing double-e), *Alavusilta* (broken *s*-stem), *Kannusista*, *Kempelestä*, *Pihtipudasilta*, *Lopilta*, etc.
-- **Target Behavior**: Supply correct `elative` and `ablative` forms for all 20 affected municipalities in `IRREGULAR_PLACES`.
-
-### [BUG-004] Compound Place Prefix Inflection Loss in localFrom (Uusikaupunki, Isokyrö)
-- **Priority**: P1
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.3.0
-- **Affected Components**: `src/place/municipalities.data.ts`
-- **Kotus Guideline**: Finnish compound place names whose first element is an inflecting adjective (*Uusi-*, *Iso-*) must inflect both parts across all cases: *Uudessakaupungissa $\to$ Uudestakaupungista*, *Isossakyrössä $\to$ Isostakyröstä*, *Uudessakaarlepyyssä $\to$ Uudestakaarlepyystä*.
-- **Current Behavior**: `IRREGULAR_PLACES` omits `elative`. `localFrom` inflects only the head word while prefix remains in nominative: `'Uusikaupungista'`, `'Isokyrösta'`, `'Uusikaarlepyysta'`.
-- **Target Behavior**: Populate complete compound overrides for *Uusikaupunki*, *Isokyrö*, and *Uusikaarlepyy*.
-
-### [BUG-007] Complete External Case Paradigms for Plural -inen Municipalities
-- **Priority**: P1
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.3.0
-- **Affected Components**: `src/place/municipalities.data.ts`
-- **Kotus Guideline**: Finnish municipalities ending in *-inen* (*Kauniainen*, *Joroinen*, *Huittinen*, etc.) are plural toponyms (*Kauniaisten, Kauniaisissa, Kauniaisiin*). Their external cases must also be plural (*Kauniaisille, Kauniaisilla, Kauniaisilta*).
-- **Current Behavior**: Missing external case overrides cause fallback to singular *-selle*: `inflectPlace('Kauniainen', 'allative') === 'Kauniaiselle'`.
-- **Target Behavior**: Provide complete plural external cases (*allative*, *adessive*, *ablative*) for all 11 *-inen* municipalities in `IRREGULAR_PLACES`.
-
-### [BUG-010] Compound Toponym Vowel Harmony & -pää Head Illative
-- **Priority**: P1
-- **Category**: Linguistic Accuracy / Morphology
-- **Target Milestone**: v0.3.0
-- **Affected Components**: `src/morphology/vowels.ts`, `src/place/stem-places.ts`
-- **Kotus Guideline**: In Finnish compound words, vowel harmony is governed strictly by the final component (e.g. *Oripäässä*, *Kankaanpäässä*, *Sodankylässä*, *Kruunupyyssä*). Suffixes must agree with the last constituent stem regardless of front/back vowels in preceding components. Additionally, the compound head *-pää* takes the illative suffix *-hVn* (*päähän* $\to$ *Oripäähän*, *Järvenpäähän*, *Kankaanpäähän*), resisting the default long-vowel *-seen* rule (*Espooseen*).
-- **Current Behavior**:
-  - `inflectPlace('Oripää', 'local') === 'Oripäässa'` (back harmony suffix due to initial *Ori-*)
-  - `inflectPlace('Oripää', 'localTo') === 'Oripääseen'` (erroneous *-seen* illative)
-  - `inflectPlace('Kankaanpää', 'local') === 'Kankaanpäässa'` (back harmony suffix due to *Kankaan-*)
-  - `inflectPlace('Kankaanpää', 'localTo') === 'Kankaanpääseen'` (erroneous *-seen* illative)
-  - `inflectPlace('Järvenpää', 'localTo') === 'Järvenpääseen'` (erroneous *-seen* illative; localCase is front harmony)
-  - `inflectPlace('Sodankylä', 'local') === 'Sodankylässa'` (back harmony suffix due to *Sodan-*)
-  - `inflectPlace('Kruunupyy', 'local') === 'Kruunupyyssa'` (back harmony suffix due to *Kruunu-*)
-  - `inflectPlace('Kruunupyy', 'localTo') === 'Kruunupyyseen'` (Kotus preference: *Kruunupyyhyn*)
-- **Target Behavior**: Correctly detect vowel harmony from final compound heads and form *-hVn* illatives for *-pää* stems.
-
-### [BUG-011] Toponym Exception Sets for Mustasaari (Internal) and Merikarvia (External)
-- **Priority**: P1
-- **Category**: Linguistic Accuracy / Place Classification
-- **Target Milestone**: v0.3.0
-- **Affected Components**: `src/place/municipalities.data.ts` (`ISLAND_INTERNAL_EXCEPTIONS`, `EXTERNAL_CASE_MUNICIPALITIES`)
-- **Kotus Guideline**: Kotus *Asutusnimihakemisto* specifies that *Mustasaari* (ruots. *Korsholm*) takes internal local cases (*Mustasaaressa, Mustasaaresta, Mustasaareen*), resisting the default island *-saari* external rule. Conversely, *Merikarvia* takes external local cases (*Merikarvialla, Merikarvialta, Merikarvialle*), resisting the default inland settlement internal rule.
-- **Current Behavior**:
-  - `detectLocalCase('Mustasaari') === 'on'` (`inflectPlace('Mustasaari', 'local') === 'Mustasaarella'`)
-  - `detectLocalCase('Merikarvia') === 'in'` (`inflectPlace('Merikarvia', 'local') === 'Merikarviassa'`)
-- **Target Behavior**:
-  - `detectLocalCase('Mustasaari') === 'in'` (`inflectPlace('Mustasaari', 'local') === 'Mustasaaressa'`)
-  - `detectLocalCase('Merikarvia') === 'on'` (`inflectPlace('Merikarvia', 'local') === 'Merikarvialla'`)
-
-### [BUG-008] Correct Mauritius Illative Form to Mauritiukseen
-- **Priority**: P2
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.3.0
-- **Affected Components**: `src/place/municipalities.data.ts`
-- **Current Behavior**: `Mauritius` has `illative: 'Mauritiukselle'` (copy-pasted allative form).
-- **Target Behavior**: `inflectPlace('Mauritius', 'illative') === 'Mauritiukseen'`.
-
-### [BUG-009] Add Inessive Override & Fix Elative Form for Virrat
-- **Priority**: P2
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.3.0
-- **Affected Components**: `src/place/municipalities.data.ts`
-- **Current Behavior**: `inflectPlace('Virrat', 'inessive') === 'Virratissa'` because `inessive` is missing, and `elative` is `'Virroilta'` (copy-pasted ablative form).
-- **Target Behavior**: `inflectPlace('Virrat', 'inessive') === 'Virroissa'` and `inflectPlace('Virrat', 'elative') === 'Virroista'`.
-
-### [TEST-003] 11-Case Paradigm Verification for Irregular Municipalities
-- **Priority**: P2
-- **Category**: Testing
-- **Target Milestone**: v0.4.0 (scheduled alongside `[REFACTOR-001]`)
-- **Affected Components**: `tests/place.test.ts`
-- **Target Behavior**: Add unit test verifying that all 11 grammatical cases for irregular municipalities (*Tampere*, *Kauniainen*, *Virrat*, *Kuortane*, *Alavus*, *Uusikaupunki*) produce expected forms without unexpected vocalic fallbacks.
-
-### [BUG-005] Entity Role Classification and Casing for Multi-Word Names with Nature Surnames
-- **Priority**: P1
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.3.1
-- **Affected Components**: `src/cases/classify.ts`, `src/morphology/nature-nouns.ts`
-- **Kotus Guideline**: Capitalized multi-word personal names (*Matti Niemi*, *Pekka Mäki*, *Antti Koski*) represent human beings and must be inflected as person names with preserved capitalization (*Matti Niemen*, *Pekka Mäen*).
-- **Current Behavior**: `classifyProperNoun` matches nature nouns before multi-token person checks, classifying full names as places and decapitalizing surnames: `inflect('Matti Niemi', 'genitive') === 'Matti niemen'`.
-- **Target Behavior**: Correct role routing and casing so `inflect('Matti Niemi', 'genitive') === 'Matti Niemen'`.
-
-### [BUG-006] Default Nature Noun Declension for Standalone and Hyphenated Surnames
-- **Priority**: P1
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.3.1
-- **Affected Components**: `src/person/stem-person.ts`, `src/person/inflect-person.ts`
-- **Kotus Guideline**: Finnish surnames derived from ancient nature nouns (*Niemi*, *Mäki*, *Saari*, *Lahti*, *Koski*, *Salmi*, *Järvi*) inflect via their traditional vowel-alternating stems (*Niemen*, *Mäen*, *Saaren*), including in standalone and hyphenated surname compounds (*Virtanen-Niemen*).
-- **Current Behavior**: `getPersonParadigm` only matches nature nouns when `{ role: 'surname' }` is passed explicitly; otherwise defaults to vocalic given name inflection (*Niemin*, *Mäkin*, *Virtanen-Niemin*).
-- **Target Behavior**: Standalone nature nouns and hyphenated surnames default to nature noun declension in person contexts.
-
-### [TEST-002] Unified inflect() End-to-End Test Matrix for Ambiguous & Compound Nominals
-- **Priority**: P1
-- **Category**: Testing
-- **Target Milestone**: v0.3.1
-- **Affected Components**: `tests/person.test.ts`, `tests/place.test.ts`
-- **Target Behavior**: Add end-to-end test matrix asserting `inflect()` behavior across multi-word names, nature surnames, hyphenated compounds, and mixed person/place nominals.
-
-### [OPT-001] Municipality Override Table Compression to Stem Tuples
-- **Priority**: P1
-- **Category**: Performance / Bundle Footprint
-- **Target Milestone**: v0.4.0
-- **Affected Components**: `src/place/municipalities.data.ts`
-- **Context**: `IRREGULAR_PLACES` stores ~50 objects with repeated property keys. Storing them as compact tuple representations `[name, stem, defaultLocalCase, flags]` will save ~2.0–3.0 kB across minified bundles while preventing case omissions.
-
-### [OPT-002] Decouple Heavy Inflection Engine from taivuta/preferences Subpath
-- **Priority**: P1
-- **Category**: Architecture / Bundle Footprint
-- **Target Milestone**: v0.4.0
-- **Affected Components**: `src/preferences/detect.ts`
-- **Context**: `taivuta/preferences` bundles `taivuta/person` and `taivuta/morphology` solely for example strings in `createExamples()`, reaching 14.15 kB (near the 15 kB budget). Decoupling example generation will drop the subpath to ~6 kB.
-
-### [REFACTOR-001] Unify Place Paradigm Resolution on StemParadigm Model
-- **Priority**: P1
-- **Category**: Architecture
-- **Target Milestone**: v0.4.0
-- **Affected Components**: `src/place/stem-places.ts`, `src/place/inflect-place.ts`
-- **Context**: Refactor irregular place inflection to resolve into complete canonical `StemParadigm` models instead of query-by-query string lookups.
-
-### [REFACTOR-002] Decompose classifyProperNoun into Discrete Pipeline Stages
-- **Priority**: P2
-- **Category**: Architecture
-- **Target Milestone**: v0.4.0
-- **Affected Components**: `src/cases/classify.ts`
-- **Context**: Separate multi-word personal name detection, known geographic datasets, and morphological heuristics into modular pipeline steps.
-
-### [TASK-004] Finnish Administrative & Historical Regions Support
-- **Priority**: P1
-- **Category**: Linguistic Accuracy
-- **Target Milestone**: v0.4.0
-- **Affected Components**: `src/place/state-places.ts`, `src/place/municipalities.data.ts`
-- **Kotus Guideline**: Finnish regions (maakunnat) have defined local case preferences and irregular declensions: *Uusimaa $\to$ Uudellamaalla / Uudeltamaalta / Uudellemaalle*, *Varsinais-Suomi $\to$ Varsinais-Suomessa*, *Pirkanmaa $\to$ Pirkanmaalla*, *Ahvenanmaa $\to$ Ahvenanmaalla*, *Kainuu $\to$ Kainuussa*.
-- **Target Behavior**: Full spatial and grammatical case support for all 19 Finnish regions with 100% test fixture coverage.
-
-### [MAINT-001] Replace Inline Demo Script in package.json with scripts/serve-demo.ts
-- **Priority**: P2
-- **Category**: Maintainability
-- **Target Milestone**: v0.4.0
-- **Affected Components**: `package.json`, `scripts/serve-demo.ts`
-- **Target Behavior**: Replace the 200-character inline Node one-liner in `package.json` with a dedicated, typed, linted `scripts/serve-demo.ts` file.
-
-### [MAINT-003] Add package.json Scripts and Documentation for Fixture Builders
-- **Priority**: P2
-- **Category**: Maintainability
-- **Target Milestone**: v0.4.0
-- **Affected Components**: `package.json`, `data/README.md`
-- **Target Behavior**: Wire fixture generation scripts (`build-countries-fixture.ts`, `build-municipalities-fixture.ts`) into `package.json` scripts and document their workflows.
+### `[BUG-013]` & `[TEST-002]` Forward `givenName`/`surname` Roles & Place Preferences in `inflect()` & `format()`
+- **Priority**: P1 | **Affected Components**: `src/cases/types.ts`, `src/cases/inflect.ts`, `src/template/format.ts`, `tests/person.test.ts`, `tests/place.test.ts`
+- **Problem**: `format('{$n:genitive:surname}', ...)` passes `role: 'surname'` to `inflect()`, which discards `'givenName'` and `'surname'` roles when calling `inflectPerson()`. Additionally, `FormatOptions.preferences` and `inflect()` do not support `PlacePreferenceParams` (`localCase`).
+- **Acceptance Criteria**: `InflectOptions.role` accepts `'givenName' | 'surname'`, `inflect()` and `format()` forward sub-roles and place `localCase` preferences, and end-to-end tests (`[TEST-002]`) cover multi-word names, nature surnames, compounds, and template role hints.
 
 ---
 
 ## 3. Icebox (P3: Future Explorations)
 
-- **[OPT-003] Consolidate Spoken Letter & Latin Phonology Primitives**: Consolidate shared Latin letter sets, diacritic regexes, and sibilant arrays between `vowels.ts` and `colon.ts` to reduce code duplication.
-- **[ICE-001] Bulk Execution Performance Suite**: Author benchmark testing execution speed and allocation pressure over 100,000 name iterations.
-- **[ICE-002] Foreign Given Names and Surnames Ending in -tti**:
-  - **Category**: Linguistic Accuracy
-  - **Context**: Decoupled from `[TASK-002]` to safeguard native Finnish names ending in *-tti* (*Matti*, *Antti*, *Pentti*, *Martti*, *Nuutti*, *Taavetti*, *Aaretti*, *Tytti*), which strictly undergo quantitative gradation ($tt \to t$: *Matin*, *Antin*, *Taavetin*).
-  - **Kotus Guideline**: Foreign surnames ending in *-i* generally resist consonant gradation (*Donizetti : Donizettin, Pavarotti : Pavarottin*), while rare foreign-derived given names (*Anetti*, *Lotti*, *Betti*) may alternate between assimilated Finnish gradation and foreign spelling preservation.
-  - **Goal**: Research and design safe heuristics or curated registries to support foreign *-tti* names without introducing false-positive ambiguity detection for core native Finnish names.
+- **`[OPT-003]` Consolidate Spoken Letter & Latin Phonology Primitives**: Consolidate shared Latin letter sets, diacritic regexes, and sibilant arrays between `vowels.ts` and `colon.ts`.
+- **`[ICE-001]` Bulk Execution Performance Suite**: Benchmark execution speed and allocation pressure over 100,000 name iterations for `v1.0.0`.
+- **`[ICE-002]` Foreign Given Names and Surnames Ending in `-tti`**: Research safe heuristics or curated registries for foreign *-tti* names (*Donizetti*, *Pavarotti*, *Anetti*) without false-positive gradation resistance on native Finnish *-tti* names (*Matti*, *Antti*, *Pentti*, *Martti*, *Tytti*).

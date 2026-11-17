@@ -41,25 +41,31 @@ This document outlines the strategic milestones, architectural direction, and re
 - [x] **Compound Vowel Harmony & -pää/-pyy Illatives**: Resolve vowel harmony from the final harmony-bearing vowel across compound words (*Sodankylässä*, *Yrjömatilla*) and form Kotus Type 18 *-hVn* illatives for *-pää* and *-pyy* stems (*Järvenpäähän*, *Kankaanpäähän*, *Oripäähän*, *Kruunupyyhyn*).
 - [x] **Expanded Municipality & Toponym Paradigms**: Support congruent prefix inflection in `localFrom` (*Uudestakaupungista*, *Isostakyröstä*), plural external cases for *-inen* municipalities (*Kauniaisille*, *Kauniaisilla*, *Kauniaisilta*), and complete local case coverage across irregular toponyms (*Kuortaneelta*, *Alavudelta*, *Virroissa*, *Mustasaaressa*, *Merikarvialla*, *Mauritiukseen*).
 
-### Milestone 5: Personal Name Accuracy & Disambiguation (v0.3.1) — 🔄 Active Target
-- [ ] **Liquid-k Given Name Disambiguation (`[BUG-002]`)**: Prevent false-positive qualitative gradation detection for Finnish given names ending in *-rko/-lko* (*Marko*, *Mirko*, *Arko*).
-- [ ] **Nature Surnames Role Classification & Casing (`[BUG-005]`)**: Prevent people with nature noun surnames (*Matti Niemi*, *Pekka Mäki*) from being classified as places and decapitalized (*Matti niemen*).
-- [ ] **Nature Surnames Default Declension (`[BUG-006]`)**: Ensure standalone (*Niemi*) and hyphenated (*Virtanen-Niemi*) surnames default to nature noun declension (*Niemen*, *Virtanen-Niemen*).
-- [ ] **Unified inflect() End-to-End Matrix (`[TEST-002]`)**: Add comprehensive multi-word and compound nominal tests across the high-level `inflect()` API.
+### Milestone 5: Personal Name Accuracy, Disambiguation & Templates (v0.3.1) — 🔄 Active Target
+- [ ] **Given Name & Hyphenated Disambiguation (`[BUG-002]`, `[BUG-014]`)**: Prevent false-positive qualitative gradation detection for *-rko/-lko* given names (*Marko*, *Mirko*, *Arko*) and support hyphenated name disambiguation (*Marja-Satu*).
+- [ ] **Nature Surnames Default Declension & TSDoc Cleanup (`[BUG-006]`, `[BUG-012]`)**: Default standalone (*Niemi*) and hyphenated (*Virtanen-Niemi*) nature surnames to nature noun declension (*Niemen*, *Virtanen-Niemen*) and remove unimplemented `{ inflectAll: true }` TSDoc text.
+- [ ] **Entity Role Classification Pipeline & Casing (`[BUG-005]`, `[REFACTOR-002]`)**: Decompose `classifyProperNoun` into discrete pipeline stages so multi-word personal names (*Matti Niemi*) classify as people with preserved capitalization (*Matti Niemen*).
+- [ ] **Template Role Forwarding & End-to-End Matrix (`[BUG-013]`, `[TEST-002]`)**: Forward `givenName`/`surname` role hints and place `localCase` preferences through `inflect()` and `format()`, verified by an end-to-end multi-word and compound test matrix.
 
-### Milestone 6: Maintainability, Bundle Optimization & Regions (v0.4.0) — 📋 Planned
-- [ ] **Irregular Places Data Compression (`[OPT-001]`)**: Compact `IRREGULAR_PLACES` into stem tuple representations, saving ~2.5 kB.
-- [ ] **Preferences Subpath Isolation (`[OPT-002]`)**: Decouple heavy inflection engine from `taivuta/preferences`, reducing bundle footprint from 14.15 kB to ~6 kB.
-- [ ] **Unified Place Stem Paradigm Resolution & 11-Case Verification (`[REFACTOR-001]`, `[TEST-003]`)**: Refactor irregular place inflection to produce complete `StemParadigm` models and verify full 11-case paradigms.
-- [ ] **Entity Classification Pipeline Refactoring (`[REFACTOR-002]`)**: Decompose `classifyProperNoun` into modular, predictable stages.
-- [ ] **Finnish Administrative & Historical Regions (`[TASK-004]`)**: Comprehensive support for all 19 Finnish regions (e.g. *Uusimaa $\to$ Uudellamaalla*, *Varsinais-Suomi*, *Pirkanmaa*).
-- [ ] **Developer Tooling & Scripts Hygiene (`[MAINT-001]`, `[MAINT-003]`)**: Replace inline demo script with `scripts/serve-demo.ts`, wire and document fixture builders.
+### Milestone 6: Preferences Bundle Isolation, CI & Tooling Hygiene (v0.3.2) — 📋 Planned
+- [ ] **GitHub Actions Modernization & Quality Gates (`[CI-001]`, `[MAINT-004]`)**: Upgrade workflows from `@v4` to `@v6` actions, run `npm run check` in demo deployment, lint `scripts/**/*.ts`, and enforce automated version parity in `scripts/verify-bundle.ts`.
+- [ ] **Developer Tooling & Fixture Scripts (`[MAINT-001]`, `[MAINT-003]`)**: Replace the inline `package.json` demo server one-liner with `scripts/serve-demo.ts`, wire `build:countries-fixture`, and document fixture workflows in `data/README.md`.
+- [ ] **Preferences Subpath Isolation (`[OPT-002]`)**: Decouple the heavy inflection engine from `taivuta/preferences`, reducing its bundle footprint from ~14.16 kB to ~6 kB.
 
-### Milestone 7: Production Release v1.0.0 (Release Candidate) — 📋 Planned
+### Milestone 7: Algorithmic Place Paradigms & Finnish Regions (v0.4.0) — 📋 Planned
+- [ ] **Algorithmic Place Paradigm Generation (`[REFACTOR-001]`, `[OPT-001]`)**: Replace recurring static entries in `IRREGULAR_PLACES` (Type 78 lengthened *-e* stems, Type 39–41 *-s* stems, plural *-inen* municipalities, and unhyphenated inflecting-prefix compounds) with algorithmic `StemParadigm` resolvers and compact overrides for true exceptions.
+- [ ] **State Compound Secondary Cases & 11-Case Paradigm Suite (`[BUG-015]`, `[TEST-003]`)**: Resolve missing secondary cases (`adessive`, `ablative`, `allative`, `essive`, `translative`) for geopolitical state compounds without bundle bloat, and verify all 11 cases across irregular/algorithmic places.
+- [ ] **Finnish Administrative & Historical Regions (`[TASK-004]`)**: Comprehensive spatial and grammatical case support and benchmark coverage for all 19 Finnish regions (e.g. *Uusimaa $\to$ Uudellamaalla*, *Varsinais-Suomi $\to$ Varsinais-Suomessa*, *Pirkanmaa $\to$ Pirkanmaalla*).
+
+### Milestone 8: Comprehensive User Documentation & Verification (v0.5.0) — 📋 Planned
+- [ ] **Architecture Documentation Synchronization (`[DOC-001]`)**: Align `ARCHITECTURE.md` with current `StemParadigm` fields, supported 11+3 case inventory, final-syllable gradation anchoring, and `-lahti` internal local case rules.
+- [ ] **Comprehensive User & Preferences Guides (`[DOC-002]`)**: Author `docs/user-guide.md` (complete case reference, options, template syntax, and role hints) and `docs/preferences-guide.md` (onboarding UX and persistence recipes), linked from `README.md`.
+- [ ] **Automated Documentation Verification (`[TEST-004]`)**: Add `scripts/verify-docs.ts` to `npm run check` to validate code examples across markdown guides and TSDoc blocks.
+
+### Milestone 9: Production Release v1.0.0 (Release Candidate) — 📋 Planned
 - [ ] Formal API freeze with stable semver guarantees.
-- [ ] Expanded internationalization guide and Kotus citation cross-reference index.
 - [ ] Production npm packaging, provenance signing, and release validation.
-- [ ] Performance benchmark verifying sub-millisecond execution over 100,000 name iterations.
+- [ ] Performance benchmark verifying sub-millisecond execution over 100,000 name iterations (`[ICE-001]`).
 
 ---
 
