@@ -20,7 +20,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | ID | Title | Category | Priority | Est. Scope |
 | :--- | :--- | :--- | :--- | :--- |
 | `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic / Preferences | P1 | ✅ Completed |
-| `[BUG-014]` | Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*) | Linguistic / Preferences | P2 | 1 increment |
+| `[BUG-014]` | Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*) | Linguistic / Preferences | P2 | ✅ Completed |
 | `[BUG-006]` | Default Nature Noun Declension for Standalone and Hyphenated Surnames | Linguistic | P1 | 1 increment |
 | `[BUG-012]` | Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc | Documentation | P2 | (with `BUG-006`) |
 | `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | 1 increment |
@@ -60,12 +60,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.1)
-
-### `[BUG-014]` Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*)
-- **Priority**: P2 | **Affected Components**: `src/preferences/detect.ts`
-- **Kotus Guideline**: In hyphenated Finnish given names (*Marja-Satu*, *Anna-Tuuli*), only the final component inflects (*Marja-Sadun* / *Marja-Satun*), inheriting the ambiguity of its head name.
-- **Current Behavior**: `detectVocalicVariantDimension` checks `WORD_DERIVED_GIVEN_NAMES.has(name.toLowerCase())` against the full unsplit string, missing hyphenated compounds such as `'Anna-Tuuli'`.
-- **Acceptance Criteria**: `detectNameDisambiguation('Anna-Tuuli')` and `detectNameDisambiguation('Marja-Satu')` detect the final component's ambiguity and generate properly prefixed option examples.
 
 ### `[BUG-006]` Default Nature Noun Declension for Standalone and Hyphenated Surnames
 - **Priority**: P1 | **Affected Components**: `src/person/stem-person.ts`, `src/person/inflect-person.ts`
