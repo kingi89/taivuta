@@ -7,6 +7,7 @@ import * as assert from 'node:assert/strict';
 
 import { decomposeCompound } from '../src/morphology/index.ts';
 import { classifyProperNoun } from '../src/cases/classify.ts';
+import { detectEntityRole, inflect } from '../src/cases/inflect.ts';
 
 describe('Compound Token Decomposition (decomposeCompound)', () => {
   it('correctly decomposes inflecting prefixes with requested case', () => {
@@ -72,10 +73,30 @@ describe('Entity Classification (classifyProperNoun)', () => {
     assert.equal(classifyProperNoun('Yhdistyneet arabiemiraatit'), 'place');
     assert.equal(classifyProperNoun('Yhdistynyt kuningaskunta'), 'place');
     assert.equal(classifyProperNoun('Pohjois-Karjala'), 'place');
+    assert.equal(classifyProperNoun('Trinidad ja Tobago'), 'place');
+    assert.equal(classifyProperNoun('Dominikaaninen tasavalta'), 'place');
 
-    // Surnames with toponymic roots match geographic patterns by design
+    // Single-word surnames with toponymic roots match geographic patterns by design
     assert.equal(classifyProperNoun('Karhuvaara'), 'place');
     assert.equal(classifyProperNoun('Ylä-Anttila'), 'place');
+  });
+
+  it('classifies multi-word, hyphenated, and word-derived personal names as person', () => {
+    assert.equal(classifyProperNoun('Matti Niemi', 'on'), 'person');
+    assert.equal(classifyProperNoun('Pekka Mäki', 'on'), 'person');
+    assert.equal(classifyProperNoun('Juha Saari', 'on'), 'person');
+    assert.equal(classifyProperNoun('Mikko Lahti'), 'person');
+    assert.equal(classifyProperNoun('Virtanen-Niemi', 'on'), 'person');
+    assert.equal(classifyProperNoun('Anna-Tuuli'), 'person');
+    assert.equal(classifyProperNoun('Elmeri'), 'person');
+
+    assert.equal(detectEntityRole('Matti Niemi'), 'person');
+    assert.equal(detectEntityRole('Pekka Mäki'), 'person');
+    assert.equal(detectEntityRole('Juha Saari'), 'person');
+    assert.equal(detectEntityRole('Mikko Lahti'), 'person');
+    assert.equal(detectEntityRole('Virtanen-Niemi'), 'person');
+    assert.equal(detectEntityRole('Anna-Tuuli'), 'person');
+    assert.equal(detectEntityRole('Elmeri'), 'person');
   });
 
   it('classifies personal names and unannotated base forms as person', () => {
@@ -87,6 +108,22 @@ describe('Entity Classification (classifyProperNoun)', () => {
     assert.equal(classifyProperNoun('John Smith'), 'person');
     // Words without toponymic suffixes or spatial hints default safely to person
     assert.equal(classifyProperNoun('Helsinki'), 'person');
+  });
+
+  it('documents intentional limitation for standalone Iso- and Uusi- surnames without explicit role ([ICE-004])', () => {
+    // Known limitation ([ICE-004]): Standalone hyphenated surnames starting with Iso- or Uusi-
+    // match place prefix rules (designed for Iso-Britannia / Uusi-Seelanti) when no role is specified,
+    // causing decomposeCompound() to inflect the prefix congruently.
+    assert.equal(classifyProperNoun('Iso-Anttila'), 'place');
+    assert.equal(classifyProperNoun('Uusi-Pietilä'), 'place');
+    assert.equal(inflect('Iso-Anttila', 'genitive'), 'Ison-Anttilan');
+    assert.equal(inflect('Uusi-Pietilä', 'genitive'), 'Uuden-Pietilän');
+
+    // Passing an explicit person role or a multi-word full name preserves the uninflected prefix:
+    assert.equal(inflect('Iso-Anttila', 'genitive', { role: 'person' }), 'Iso-Anttilan');
+    assert.equal(inflect('Uusi-Pietilä', 'genitive', { role: 'person' }), 'Uusi-Pietilän');
+    assert.equal(inflect('Matti Iso-Anttila', 'genitive'), 'Matti Iso-Anttilan');
+    assert.equal(inflect('Liisa Uusi-Pietilä', 'genitive'), 'Liisa Uusi-Pietilän');
   });
 
   it('handles empty input safely', () => {

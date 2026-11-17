@@ -94,13 +94,12 @@ export const NATURE_NOUN_RULES: readonly NatureNounRule[] = RAW_NATURE_NOUN_RULE
 );
 
 function capitalizeForm(base: string, suffixForm: string, isCapitalized: boolean): string {
-  if (base) {
+  if (!isCapitalized) {
     return `${base}${suffixForm}`;
   }
-  if (!isCapitalized) {
-    return suffixForm;
-  }
-  return (suffixForm[0]?.toUpperCase() ?? '') + suffixForm.slice(1);
+  const firstLetter = suffixForm[0]?.toUpperCase() ?? '';
+  const restOfSuffix = suffixForm.slice(1);
+  return `${base}${firstLetter}${restOfSuffix}`;
 }
 
 /**
@@ -125,15 +124,17 @@ export function matchNatureNoun(name: string): StemParadigm | null {
 
   for (const rule of NATURE_NOUN_RULES) {
     if (lower.endsWith(rule.suffix)) {
-      const base = trimmed.slice(0, -rule.suffix.length);
-      const isCap = !base && trimmed[0] === trimmed[0]?.toUpperCase();
+      const suffixIndex = trimmed.length - rule.suffix.length;
+      const base = trimmed.slice(0, suffixIndex);
+      const matchedSuffix = trimmed.slice(suffixIndex);
+      const isCapitalized = matchedSuffix[0] !== matchedSuffix[0]?.toLowerCase();
       return createStemParadigm(
         trimmed,
         {
-          strong: capitalizeForm(base, rule.strong, isCap),
-          weak: capitalizeForm(base, rule.weak, isCap),
-          partitive: capitalizeForm(base, rule.partitive, isCap),
-          illative: capitalizeForm(base, rule.illative, isCap)
+          strong: capitalizeForm(base, rule.strong, isCapitalized),
+          weak: capitalizeForm(base, rule.weak, isCapitalized),
+          partitive: capitalizeForm(base, rule.partitive, isCapitalized),
+          illative: capitalizeForm(base, rule.illative, isCapitalized)
         },
         {
           defaultSpatialCase: rule.defaultSpatialCase,

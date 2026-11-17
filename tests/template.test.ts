@@ -157,4 +157,18 @@ describe('t Tagged Template Literal Function', () => {
     const user = 'Kari-Pekka';
     assert.equal(customEngine.t`Moi ${[user, 'allative']}!`, 'Moi Kari-Pekalle!');
   });
+
+  it('correctly classifies and inflects multi-word and hyphenated personal names with nature surnames', () => {
+    const mattiNiemi = 'Matti Niemi';
+    const pekkaMaki = 'Pekka Mäki';
+    const virtanenNiemi = 'Virtanen-Niemi';
+    assert.equal(inflect(mattiNiemi, 'genitive'), 'Matti Niemen');
+    assert.equal(inflect(pekkaMaki, 'genitive'), 'Pekka Mäen');
+    assert.equal(inflect(virtanenNiemi, 'genitive'), 'Virtanen-Niemen');
+    assert.equal(format('Tämä on {$user:genitive} tili.', { user: mattiNiemi }), 'Tämä on Matti Niemen tili.');
+    assert.equal(t`Lähetä viesti ${[mattiNiemi, 'allative']}!`, 'Lähetä viesti Matti Niemelle!');
+    assert.equal(t`Tapasin ${[pekkaMaki, 'genitive']}.`, 'Tapasin Pekka Mäen.');
+    assert.equal(format('Viesti {$user:localTo}', { user: mattiNiemi }), 'Viesti Matti Niemelle');
+    assert.equal(format('Hei {$user:allative}!', { user: virtanenNiemi }), 'Hei Virtanen-Niemelle!');
+  });
 });

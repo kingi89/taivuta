@@ -105,6 +105,29 @@ describe('Unified Nature Noun Registry & Toponymic Formatives', () => {
     assert.equal(inflectNatureNounSurname('Niemi', 'adessive', stem), 'Niemellä');
   });
 
+  it('preserves suffix capitalization for multi-word, hyphenated, and lowercase tokens', () => {
+    const mattiNiemi = matchNatureNoun('Matti Niemi');
+    assert.ok(mattiNiemi);
+    assert.equal(mattiNiemi.weakVocalicStem, 'Matti Nieme');
+    assert.equal(mattiNiemi.partitive, 'Matti Niemeä');
+    assert.equal(mattiNiemi.illative, 'Matti Niemeen');
+    assert.equal(assembleCase(mattiNiemi, 'genitive'), 'Matti Niemen');
+
+    const virtanenNiemi = matchNatureNoun('Virtanen-Niemi');
+    assert.ok(virtanenNiemi);
+    assert.equal(virtanenNiemi.weakVocalicStem, 'Virtanen-Nieme');
+    assert.equal(assembleCase(virtanenNiemi, 'genitive'), 'Virtanen-Niemen');
+
+    const isoJarvi = matchNatureNoun('Iso-Järvi');
+    assert.ok(isoJarvi);
+    assert.equal(isoJarvi.weakVocalicStem, 'Iso-Järve');
+    assert.equal(assembleCase(isoJarvi, 'local'), 'Iso-Järvellä');
+
+    const lowerNiemi = matchNatureNoun('niemi');
+    assert.ok(lowerNiemi);
+    assert.equal(lowerNiemi.weakVocalicStem, 'nieme');
+  });
+
   it('returns null safely for empty or non-matching inputs', () => {
     assert.equal(matchNatureNoun(''), null);
     assert.equal(matchNatureNoun('Helsinki'), null);
