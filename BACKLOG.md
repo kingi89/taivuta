@@ -21,8 +21,8 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | :--- | :--- | :--- | :--- | :--- |
 | `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic / Preferences | P1 | ✅ Completed |
 | `[BUG-014]` | Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*) | Linguistic / Preferences | P2 | ✅ Completed |
-| `[BUG-006]` | Default Nature Noun Declension for Standalone and Hyphenated Surnames | Linguistic | P1 | 1 increment |
-| `[BUG-012]` | Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc | Documentation | P2 | (with `BUG-006`) |
+| `[BUG-006]` | Default Nature Noun Declension for Standalone and Hyphenated Surnames | Linguistic | P1 | ✅ Completed |
+| `[BUG-012]` | Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc | Documentation | P2 | ✅ Completed |
 | `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | 1 increment |
 | `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P1 | (with `BUG-005`) |
 | `[BUG-013]` | Forward `givenName`/`surname` Roles and Place Preferences in `inflect()` & `format()` | API / Templates | P1 | 1 increment |
@@ -60,17 +60,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.1)
-
-### `[BUG-006]` Default Nature Noun Declension for Standalone and Hyphenated Surnames
-- **Priority**: P1 | **Affected Components**: `src/person/stem-person.ts`, `src/person/inflect-person.ts`
-- **Kotus Guideline**: Finnish surnames derived from nature nouns (*Niemi*, *Mäki*, *Saari*, *Lahti*, *Koski*, *Salmi*, *Järvi*) inflect via their traditional vowel-alternating stems (*Niemen*, *Mäen*), whereas word-derived given names (*Tuuli*, *Meri*, *Suvi*, *Lumi*, *Pilvi*, *Helmi*, *Sini*) default to nominative *-i* stems unless `{ vocalicStemVariant: 'inflected' }` or `{ role: 'surname' }` is specified.
-- **Current Behavior**: `getPersonParadigm` only calls `matchNatureNoun(name)` when `role === 'surname'` or `vocalicStemVariant === 'inflected'`, causing `inflectPerson('Niemi', 'genitive')` and `inflectPerson('Virtanen-Niemi', 'genitive')` to return `'Niemin'` and `'Virtanen-Niemin'`.
-- **Acceptance Criteria**: `inflectPerson('Niemi', 'genitive') === 'Niemen'`, `inflectPerson('Virtanen-Niemi', 'genitive') === 'Virtanen-Niemen'`, while `inflectPerson('Tuuli', 'genitive') === 'Tuulin'` unless `role: 'surname'` or `vocalicStemVariant: 'inflected'`.
-
-### `[BUG-012]` Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc
-- **Priority**: P2 | **Affected Components**: `src/person/inflect-person.ts`
-- **Problem**: Lines 5–6 of `src/person/inflect-person.ts` document an `{ inflectAll: true }` option (`"Matin Virtasen"`) that does not exist in `InflectPersonOptions` and has no valid use case for personal names.
-- **Acceptance Criteria**: Remove the unimplemented `{ inflectAll: true }` sentence from `src/person/inflect-person.ts`.
 
 ### `[BUG-005]` & `[REFACTOR-002]` Entity Role Classification Pipeline and Casing for Multi-Word Names
 - **Priority**: P1 | **Affected Components**: `src/cases/classify.ts`, `src/morphology/nature-nouns.ts`
