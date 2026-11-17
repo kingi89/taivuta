@@ -27,6 +27,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P1 | (with `BUG-005`) |
 | `[BUG-013]` | Forward `givenName`/`surname` Roles and Place Preferences in `inflect()` & `format()` | API / Templates | P1 | 1 increment |
 | `[TEST-002]` | Unified `inflect()` End-to-End Test Matrix for Ambiguous & Compound Nominals | Testing | P1 | (with `BUG-013`) |
+| `[BUG-016]` | Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*) | Linguistic | P2 | 1 increment |
 
 ### Planned Queue — Milestone v0.3.2: Preferences Bundle Isolation, CI & Tooling Hygiene
 
@@ -87,6 +88,12 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 - **Priority**: P1 | **Affected Components**: `src/cases/types.ts`, `src/cases/inflect.ts`, `src/template/format.ts`, `tests/person.test.ts`, `tests/place.test.ts`
 - **Problem**: `format('{$n:genitive:surname}', ...)` passes `role: 'surname'` to `inflect()`, which discards `'givenName'` and `'surname'` roles when calling `inflectPerson()`. Additionally, `FormatOptions.preferences` and `inflect()` do not support `PlacePreferenceParams` (`localCase`).
 - **Acceptance Criteria**: `InflectOptions.role` accepts `'givenName' | 'surname'`, `inflect()` and `format()` forward sub-roles and place `localCase` preferences, and end-to-end tests (`[TEST-002]`) cover multi-word names, nature surnames, compounds, and template role hints.
+
+### `[BUG-016]` Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*)
+- **Priority**: P2 | **Affected Components**: `src/morphology/stem.ts`, `src/person/stem-person.ts`
+- **Kotus Guideline**: Finnish feminine/mythological names ending in the derivational suffix *-tar/-tär* (*Ilmatar*, *Kuutar*, *Suometar*, *Päivätär*, *Aallotar*, *Sulotar*, *Ainotar*, *Valotar*, *Onnetar*, *Otavatar*, *Tuuletar*, *Suvetar*, *Hallatar*) and matronymics/patronymics ending in *-tytär* (*Matintytär*, *Saduntytär*) belong to Kotus nominal type 32 (*sisar*) with reverse quantitative gradation ($t \to tt$): vocalic stem *-ttare-/-ttäre-* (*Ilmattaren*, *Ilmattarella*, *Ilmattareen*) and consonant-stem partitive *-tarta/-tärtä* (*Ilmatarta*). Conversely, foreign consonant-final names ending in *-tar* (*Petar*, *Dimitar*, *Mukhtar*, *Sattar*, *Ottar*, *Ishtar*) take regular epenthetic *-i-* (*Petarin*, *Petarilla*).
+- **Current Behavior**: `analyzeStem()` treats all `-tar/-tär` names as foreign consonant stems with linking vowel `-i-`, producing `*Ilmatarin`, `*Ilmatarilla`, `*Ilmataria`, `*Ilmatariin`.
+- **Acceptance Criteria**: `inflectPerson('Ilmatar', 'adessive') === 'Ilmattarella'`, `inflectPerson('Ilmatar', 'genitive') === 'Ilmattaren'`, `inflectPerson('Ilmatar', 'partitive') === 'Ilmatarta'`, `inflectPerson('Ilmatar', 'illative') === 'Ilmattareen'`, `inflectPerson('Päivätär', 'adessive') === 'Päivättärellä'`, and `inflectPerson('Petar', 'adessive') === 'Petarilla'`.
 
 ---
 
