@@ -8,11 +8,12 @@ import type {
 import { inflectPerson } from '../person/index.ts';
 import { WORD_DERIVED_GIVEN_NAMES } from './ambiguous-names.data.ts';
 
-// Matches qualitative gradation patterns (stops mp, nt, lt, rt, single t/p, liquid + k, and Kotus type 9 diphthong + k).
+// Matches qualitative gradation patterns (stops mp, nt, lt, rt, single t/p, and Kotus type 9 diphthong + k).
 // Kotus: Nouns of nominal type 9 (kala) with single intervocalic k undergo qualitative gradation (k -> Ø),
-// e.g. Taika -> Taian / Taikan. Modern given names (Aki, Mika, Riku, Reko, Jouko) resist k-loss and are unambiguous.
+// e.g. Taika -> Taian / Taikan. Modern given names with single intervocalic k (Aki, Mika, Riku, Reko, Jouko)
+// or liquid + k clusters (Marko, Jyrki, Mirka, Helka, Milka, Mirko) resist k-loss and are unambiguous.
 const QUALITATIVE_GRADATION_REGEX =
-  /(?:[aeiouyäö](?:t|p|mp|nt|lt|rt)|[rl]k)[aeiouyäö]$|(?:ai|ei|au|eu|ui|yi|äi|öi|ou|ey|iy|äy|öy)k[aä]$/i;
+  /[aeiouyäö](?:t|p|mp|nt|lt|rt)[aeiouyäö]$|(?:ai|ei|au|eu|ui|yi|äi|öi|ou|ey|iy|äy|öy)k[aä]$/i;
 // Kotus: Foreign feminine names ending in -ette, -otte, or -itte (Janette, Charlotte, Brigitte, Lotte)
 // alternate between Finnish quantitative gradation (Janetelle) and foreign spelling preservation (Janettelle).
 const FOREIGN_FEMININE_ETTE_REGEX = /(?:ette|otte|itte)$/i;
