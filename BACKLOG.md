@@ -27,7 +27,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P1 | ✅ Completed |
 | `[BUG-013]` | Forward `givenName`/`surname` Roles and Place Preferences in `inflect()` & `format()` | API / Templates | P1 | ✅ Completed |
 | `[TEST-002]` | Unified `inflect()` End-to-End Test Matrix for Ambiguous & Compound Nominals | Testing | P1 | ✅ Completed |
-| `[BUG-016]` | Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*) | Linguistic | P2 | 1 increment |
+| `[BUG-016]` | Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*) | Linguistic | P2 | ✅ Completed |
 
 ### Planned Queue — Milestone v0.3.2: Preferences Bundle Isolation, CI & Tooling Hygiene
 
@@ -60,17 +60,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 
 ---
 
-## 2. Active Milestone Specifications (v0.3.1)
-
-### `[BUG-016]` Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*)
-- **Priority**: P2 | **Affected Components**: `src/morphology/stem.ts`, `src/person/stem-person.ts`
-- **Kotus Guideline**: Finnish feminine/mythological names ending in the derivational suffix *-tar/-tär* (*Ilmatar*, *Kuutar*, *Suometar*, *Päivätär*, *Aallotar*, *Sulotar*, *Ainotar*, *Valotar*, *Onnetar*, *Otavatar*, *Tuuletar*, *Suvetar*, *Hallatar*) and matronymics/patronymics ending in *-tytär* (*Matintytär*, *Saduntytär*) belong to Kotus nominal type 32 (*sisar*) with reverse quantitative gradation ($t \to tt$): vocalic stem *-ttare-/-ttäre-* (*Ilmattaren*, *Ilmattarella*, *Ilmattareen*) and consonant-stem partitive *-tarta/-tärtä* (*Ilmatarta*). Conversely, foreign consonant-final names ending in *-tar* (*Petar*, *Dimitar*, *Mukhtar*, *Sattar*, *Ottar*, *Ishtar*) take regular epenthetic *-i-* (*Petarin*, *Petarilla*).
-- **Current Behavior**: `analyzeStem()` treats all `-tar/-tär` names as foreign consonant stems with linking vowel `-i-`, producing `*Ilmatarin`, `*Ilmatarilla`, `*Ilmataria`, `*Ilmatariin`.
-- **Acceptance Criteria**: `inflectPerson('Ilmatar', 'adessive') === 'Ilmattarella'`, `inflectPerson('Ilmatar', 'genitive') === 'Ilmattaren'`, `inflectPerson('Ilmatar', 'partitive') === 'Ilmatarta'`, `inflectPerson('Ilmatar', 'illative') === 'Ilmattareen'`, `inflectPerson('Päivätär', 'adessive') === 'Päivättärellä'`, and `inflectPerson('Petar', 'adessive') === 'Petarilla'`.
-
----
-
-## 3. Icebox (P3: Future Explorations)
+## 2. Icebox (P3: Future Explorations)
 
 - **`[OPT-003]` Consolidate Spoken Letter & Latin Phonology Primitives**: Consolidate shared Latin letter sets, diacritic regexes, and sibilant arrays between `vowels.ts` and `colon.ts`.
 - **`[ICE-001]` Bulk Execution Performance Suite**: Benchmark execution speed and allocation pressure over 100,000 name iterations for `v1.0.0`.
