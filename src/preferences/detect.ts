@@ -6,6 +6,7 @@ import type {
   PreferenceOption
 } from '../cases/types.ts';
 import { inflectPerson } from '../person/index.ts';
+import { isFinnishTarName } from '../morphology/stem.ts';
 import { WORD_DERIVED_GIVEN_NAMES } from './ambiguous-names.data.ts';
 
 // Matches qualitative gradation patterns (stops mp, nt, lt, rt, single t/p, and Kotus type 9 diphthong + k).
@@ -78,6 +79,22 @@ function detectSStemDimension(name: string): AmbiguityDimension | null {
     description: 'Inflection using Finnish s-stem (-kse-) or direct vocalic stem.',
     choices,
     defaultChoiceId
+  };
+}
+
+function detectTarStemDimension(head: string): AmbiguityDimension | null {
+  if (head.length < 5 || !/t[aä]r$/i.test(head)) {
+    return null;
+  }
+  const choices: readonly DimensionChoice[] = [
+    { id: 'tar-stem', label: 'Type 32 (-ttare-)', params: { tarStem: true } },
+    { id: 'tar-vocalic', label: 'Foreign (-i- stem)', params: { tarStem: false } }
+  ];
+  return {
+    key: 'tar-stem',
+    title: 'Type 32 Stem',
+    choices,
+    defaultChoiceId: isFinnishTarName(head) ? 'tar-stem' : 'tar-vocalic'
   };
 }
 
@@ -174,15 +191,10 @@ function buildSingleDimensionOptions(name: string, dim: AmbiguityDimension): Pre
 }
 
 function buildCartesianOptions(name: string, dimensions: readonly AmbiguityDimension[]): PreferenceOption[] {
-  const firstDim = dimensions[0];
+  const [firstDim, secondDim] = dimensions;
   if (!firstDim) {
     return [];
   }
-  if (dimensions.length === 1) {
-    return buildSingleDimensionOptions(name, firstDim);
-  }
-
-  const secondDim = dimensions[1];
   if (!secondDim) {
     return buildSingleDimensionOptions(name, firstDim);
   }
@@ -235,6 +247,7 @@ function collectDimensions(name: string): AmbiguityDimension[] {
   const candidates = [
     detectGradationDimension(head),
     detectSStemDimension(head),
+    detectTarStemDimension(head),
     detectVocalicVariantDimension(head),
     detectAcronymDimension(name, head),
     detectSymbolHarmonyDimension(name)

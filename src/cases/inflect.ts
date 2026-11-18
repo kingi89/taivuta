@@ -18,7 +18,7 @@ import { inflectPerson } from '../person/inflect-person.ts';
 import { inflectPlace, detectLocalCase, type InflectPlaceOptions } from '../place/inflect-place.ts';
 import { classifyProperNoun } from './classify.ts';
 
-const PERSON_PREF_KEYS = ['gradation', 'sStem', 'vocalicStemVariant', 'colon', 'harmony'] as const;
+const PERSON_PREF_KEYS = ['gradation', 'sStem', 'tarStem', 'vocalicStemVariant', 'colon', 'harmony'] as const;
 
 function isContextualLocalCase(targetCase: CaseName): boolean {
   return targetCase === 'local' || targetCase === 'localFrom' || targetCase === 'localTo';
@@ -93,6 +93,7 @@ function hasPersonPreference(preference: GeneralPreference): boolean {
 function buildPersonOptions(options: InflectOptions): InflectPersonOptions {
   const base: InflectPersonOptions = {
     sStem: options.sStem,
+    tarStem: options.tarStem,
     gradation: options.gradation,
     vocalicStemVariant: options.vocalicStemVariant,
     colon: options.colon,

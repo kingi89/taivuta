@@ -57,6 +57,12 @@ export interface PersonPreferenceParams {
    */
   readonly sStem?: boolean;
   /**
+   * Explicitly force or disable Kotus Type 32 (-ttare-/-ttäre-) declension for names ending in -tar/-tär.
+   * - `true`: Forces Type 32 declension (e.g. `Ilmatar` -> `Ilmattaren`).
+   * - `false`: Forces epenthetic -i- declension (e.g. `Ilmatar` -> `Ilmatarin`).
+   */
+  readonly tarStem?: boolean;
+  /**
    * Controls stem vowel mutation for word-derived given names ending in -i.
    * - 'nominative': Retains stem vowel -i (e.g. `Tuuli` -> `Tuulin`, `Meri` -> `Merin`).
    * - 'inflected': Alternates stem vowel -i to -e (e.g. `Tuuli` -> `Tuulen`, `Meri` -> `Meren`).
@@ -116,7 +122,7 @@ export interface AmbiguityDimension {
   /**
    * Category key identifying the nature of ambiguity.
    */
-  readonly key: 'gradation' | 's-stem' | 'vocalic-variant' | 'acronym-colon' | 'vowel-harmony';
+  readonly key: 'gradation' | 's-stem' | 'tar-stem' | 'vocalic-variant' | 'acronym-colon' | 'vowel-harmony';
   /**
    * Descriptive title suitable for form section headers.
    */
@@ -254,6 +260,10 @@ export interface InflectPersonOptions {
    */
   readonly gradation?: boolean;
   /**
+   * Explicitly force or disable Kotus Type 32 (-ttare-/-ttäre-) declension for names ending in -tar/-tär.
+   */
+  readonly tarStem?: boolean;
+  /**
    * Controls stem vowel mutation for word-derived given names ending in -i.
    */
   readonly vocalicStemVariant?: 'nominative' | 'inflected';
@@ -299,6 +309,10 @@ export interface InflectOptions {
    * Force or disable s-stem declension for person names.
    */
   readonly sStem?: boolean;
+  /**
+   * Explicitly force or disable Kotus Type 32 (-ttare-/-ttäre-) declension for names ending in -tar/-tär.
+   */
+  readonly tarStem?: boolean;
   /**
    * Controls stem vowel mutation for word-derived given names ending in -i.
    */

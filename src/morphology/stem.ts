@@ -30,6 +30,8 @@ export interface AnalyzedStem {
   readonly isNen: boolean;
   /** Whether the noun is an s-stem ending in -as/-us/-os/-es */
   readonly isSStem: boolean;
+  /** Whether the noun is a Finnish Type 32 -tar/-tär stem */
+  readonly isTarStem: boolean;
   /** The vocalic linking vowel (e.g. 'i' for consonant stems) */
   readonly linkingVowel: string;
   /** Whether an apostrophe is required before case endings */
@@ -47,49 +49,14 @@ const FRENCH_SILENT_SUFFIXES = /(?:eaux|oux|aux)$/i;
  * Other names ending in -s (e.g. English James, Charles, Jones, Thomas) take the regular
  * consonant linking vowel -i- (Jamesin, Charlesin).
  */
-const FINNISH_S_STEM_NAMES = new Set([
-  'tuomas',
-  'matias',
-  'elias',
-  'joonas',
-  'topias',
-  'andreas',
-  'vilpas',
-  'markus',
-  'julius',
-  'justus',
-  'magnus',
-  'johannes',
-  'aleksis',
-  'petrus',
-  'paulus',
-  'linus',
-  'niklas',
-  'rasmus',
-  'aatos',
-  'luukas',
-  'aulis',
-  'eelis',
-  'iiris',
-  'jeesus',
-  'kristus'
-]);
+const FINNISH_S_STEM_REGEX =
+  /^(?:tuomas|matias|elias|joonas|topias|andreas|vilpas|markus|julius|justus|magnus|johannes|aleksis|petrus|paulus|linus|niklas|rasmus|aatos|luukas|aulis|eelis|iiris|jeesus|kristus)$/i;
 
 /**
  * Well-known names ending in silent consonants or vocalic diphthongs (e.g. Kaj [kai]).
  */
-const SILENT_FINAL_NAMES = new Set([
-  'dumas',
-  'camus',
-  'descartes',
-  'monet',
-  'manet',
-  'degas',
-  'renoir',
-  'kaj',
-  'maj',
-  'guy'
-]);
+const SILENT_FINAL_REGEX =
+  /^(?:dumas|camus|descartes|monet|manet|degas|renoir|kaj|maj|guy)$/i;
 
 /**
  * Checks if a name ending in a consonant likely has a silent final letter.
@@ -98,11 +65,14 @@ const SILENT_FINAL_NAMES = new Set([
  * @returns True if the ending is conventionally silent in Finnish orthography.
  */
 function hasSilentEnding(name: string): boolean {
-  const lower = name.toLowerCase();
-  if (SILENT_FINAL_NAMES.has(lower)) {
-    return true;
-  }
-  return FRENCH_SILENT_SUFFIXES.test(name);
+  return SILENT_FINAL_REGEX.test(name) || FRENCH_SILENT_SUFFIXES.test(name);
+}
+
+interface PartialStem {
+  readonly stem: string;
+  readonly isNen?: boolean;
+  readonly isSStem?: boolean;
+  readonly isTarStem?: boolean;
 }
 
 /**
@@ -111,13 +81,12 @@ function hasSilentEnding(name: string): boolean {
  * @param name - The input proper noun.
  * @returns Stem object if -nen matched, otherwise undefined.
  */
-function matchNen(name: string): { stem: string; isNen: boolean; isSStem: boolean } | undefined {
+function matchNen(name: string): PartialStem | undefined {
   if (name.endsWith('nen') || name.endsWith('Nen')) {
     const suffix = name.endsWith('nen') ? 'se' : 'Se';
     return {
       stem: name.slice(0, -3) + suffix,
-      isNen: true,
-      isSStem: false
+      isNen: true
     };
   }
   return undefined;
@@ -134,13 +103,12 @@ function matchNen(name: string): { stem: string; isNen: boolean; isSStem: boolea
 function matchSStem(
   name: string,
   options?: InflectPersonOptions
-): { stem: string; isNen: boolean; isSStem: boolean } | undefined {
+): PartialStem | undefined {
   if (options?.sStem === false || name.length <= 3) {
     return undefined;
   }
 
-  const lower = name.toLowerCase();
-  const isCandidate = options?.sStem === true || FINNISH_S_STEM_NAMES.has(lower);
+  const isCandidate = options?.sStem === true || FINNISH_S_STEM_REGEX.test(name);
   if (!isCandidate) {
     return undefined;
   }
@@ -150,7 +118,6 @@ function matchSStem(
     const vowel = name[name.length - 2];
     return {
       stem: name.slice(0, -2) + vowel + 'kse',
-      isNen: false,
       isSStem: true
     };
   }
@@ -159,7 +126,6 @@ function matchSStem(
   if (/[uyoei]s$/i.test(name)) {
     return {
       stem: name.slice(0, -1) + 'kse',
-      isNen: false,
       isSStem: true
     };
   }
@@ -167,14 +133,45 @@ function matchSStem(
   return undefined;
 }
 
+const FINNISH_TAR_REGEX =
+  /^(?:aallo|ilma|suome|kuu|sulo|aino|valo|onne|otava|tuule|suve|halla|aja)tar$/i;
+
+/**
+ * Checks whether a proper noun defaults to Finnish Kotus Type 32 (-tar/-tär) declension.
+ *
+ * @param name - The proper noun to inspect.
+ * @returns True if the name defaults to Kotus Type 32 (-ttare-/-ttäre-).
+ */
+export function isFinnishTarName(name: string): boolean {
+  return name.length >= 5 && (/[aeiouyäö]tär$/i.test(name) || FINNISH_TAR_REGEX.test(name));
+}
+
+function matchTarStem(
+  name: string,
+  options?: InflectPersonOptions
+): PartialStem | undefined {
+  if (options?.tarStem === false || name.length < 5) {
+    return undefined;
+  }
+  const match = name.match(/t([aä])r$/i);
+  if (!match || (options?.tarStem !== true && !isFinnishTarName(name))) {
+    return undefined;
+  }
+  return {
+    stem: `${name.slice(0, -3)}tt${match[1] ?? 'a'}re`,
+    isTarStem: true
+  };
+}
+
 function makeStem(
-  data: { stem: string; isNen?: boolean; isSStem?: boolean },
+  data: PartialStem,
   nominative: string
 ): AnalyzedStem {
   return {
     stem: data.stem,
     isNen: data.isNen ?? false,
     isSStem: data.isSStem ?? false,
+    isTarStem: data.isTarStem ?? false,
     linkingVowel: '',
     needsApostrophe: false,
     nominative
@@ -212,6 +209,11 @@ export function analyzeStem(name: string, options?: InflectPersonOptions): Analy
     return makeStem(sStem, trimmed);
   }
 
+  const tarStem = matchTarStem(trimmed, options);
+  if (tarStem) {
+    return makeStem(tarStem, trimmed);
+  }
+
   // If the word ends in a vowel, suffixes attach directly without a linking vowel
   const lastChar = trimmed[trimmed.length - 1] ?? '';
   if (VOWEL_REGEX.test(lastChar)) {
@@ -223,6 +225,7 @@ export function analyzeStem(name: string, options?: InflectPersonOptions): Analy
     stem: trimmed,
     isNen: false,
     isSStem: false,
+    isTarStem: false,
     linkingVowel: 'i',
     needsApostrophe: hasSilentEnding(trimmed),
     nominative: trimmed

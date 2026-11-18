@@ -519,4 +519,39 @@ describe('Canonical Person StemParadigm (getPersonParadigm)', () => {
     assert.equal(inflect('Sato', 'genitive', { role: 'givenName' }), inflectPerson('Sato', 'genitive', { role: 'givenName' }));
     assert.equal(inflect('Sato', 'genitive', { role: 'surname' }), inflectPerson('Sato', 'genitive', { role: 'surname' }));
   });
+
+  it('inflects Finnish Kotus Type 32 -tar/-tär and -tytär names while keeping foreign -tar epenthetic -i- [BUG-016]', () => {
+    // Finnish -tar names (Type 32: reverse t -> tt gradation)
+    assert.equal(inflectPerson('Ilmatar', 'adessive'), 'Ilmattarella');
+    assert.equal(inflectPerson('Ilmatar', 'genitive'), 'Ilmattaren');
+    assert.equal(inflectPerson('Ilmatar', 'partitive'), 'Ilmatarta');
+    assert.equal(inflectPerson('Ilmatar', 'illative'), 'Ilmattareen');
+    assert.equal(inflectPerson('Aallotar', 'genitive'), 'Aallottaren');
+    assert.equal(inflectPerson('Suometar', 'adessive'), 'Suomettarella');
+    assert.equal(inflectPerson('Kuutar', 'genitive'), 'Kuuttaren');
+
+    // Finnish -tär and -tytär names
+    assert.equal(inflectPerson('Päivätär', 'adessive'), 'Päivättärellä');
+    assert.equal(inflectPerson('Päivätär', 'partitive'), 'Päivätärtä');
+    assert.equal(inflectPerson('Päivätär', 'illative'), 'Päivättäreen');
+    assert.equal(inflectPerson('Matintytär', 'adessive'), 'Matintyttärellä');
+    assert.equal(inflectPerson('Saduntytär', 'genitive'), 'Saduntyttären');
+
+    // Foreign -tar names and short names default to epenthetic -i-
+    assert.equal(inflectPerson('Petar', 'adessive'), 'Petarilla');
+    assert.equal(inflectPerson('Petar', 'genitive'), 'Petarin');
+    assert.equal(inflectPerson('Petar', 'partitive'), 'Petaria');
+    assert.equal(inflectPerson('Dimitar', 'adessive'), 'Dimitarilla');
+    assert.equal(inflectPerson('Mukhtar', 'genitive'), 'Mukhtarin');
+    assert.equal(inflectPerson('Ottar', 'adessive'), 'Ottarilla');
+    assert.equal(inflectPerson('Knutar', 'genitive'), 'Knutarin');
+    assert.equal(inflectPerson('Star', 'genitive'), 'Starin');
+
+    // Explicit tarStem overrides and string preferences
+    assert.equal(inflectPerson('Kalevatar', 'genitive', { tarStem: true }), 'Kalevattaren');
+    assert.equal(inflectPerson('Ilmatar', 'genitive', { tarStem: false }), 'Ilmatarin');
+    assert.equal(inflectPerson('Ilmatar', 'adessive', { preference: 'tar-vocalic' }), 'Ilmatarilla');
+    assert.equal(inflectPerson('Avatar', 'genitive', { preference: 'tar-stem' }), 'Avattaren');
+    assert.equal(inflect('Avatar', 'genitive', { preference: { tarStem: true } }), 'Avattaren');
+  });
 });

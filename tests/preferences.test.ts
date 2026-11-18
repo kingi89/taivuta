@@ -398,6 +398,31 @@ describe('Name Holder Disambiguation Subsystem (taivuta/preferences)', () => {
       assert.equal(isAmbiguousName('Atte'), false);
     });
 
+    it('detects Type 32 (-tar/-tär) vs epenthetic -i- ambiguity for -tar/-tär names [BUG-016]', () => {
+      const ilmatar = detectNameDisambiguation('Ilmatar');
+      assert.ok(ilmatar);
+      assert.equal(ilmatar.dimensions[0]?.key, 'tar-stem');
+      assert.equal(ilmatar.defaultOptionId, 'tar-stem');
+      assert.equal(ilmatar.options[0]?.examples.genitive, 'Ilmattaren');
+      assert.equal(ilmatar.options[1]?.examples.genitive, 'Ilmatarin');
+
+      const paivatar = detectNameDisambiguation('Päivätär');
+      assert.ok(paivatar);
+      assert.equal(paivatar.defaultOptionId, 'tar-stem');
+      assert.equal(paivatar.options[0]?.examples.adessive, 'Päivättärellä');
+      assert.equal(paivatar.options[1]?.examples.adessive, 'Päivätärillä');
+
+      const petar = detectNameDisambiguation('Petar');
+      assert.ok(petar);
+      assert.equal(petar.dimensions[0]?.key, 'tar-stem');
+      assert.equal(petar.defaultOptionId, 'tar-vocalic');
+      assert.equal(petar.options[0]?.examples.adessive, 'Pettarella');
+      assert.equal(petar.options[1]?.examples.adessive, 'Petarilla');
+
+      // Short 4-char -tar names like "Star" remain unambiguous
+      assert.equal(detectNameDisambiguation('Star'), null);
+    });
+
     it('handles empty, whitespace, and special inputs gracefully', () => {
       assert.equal(detectNameDisambiguation(''), null);
       assert.equal(detectNameDisambiguation('   '), null);

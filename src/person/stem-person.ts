@@ -37,7 +37,7 @@ function resolveSpecialAnalyzedParadigm(
     });
   }
 
-  if (analyzed.isSStem) {
+  if (analyzed.isSStem || analyzed.isTarStem) {
     return createStemParadigm(name, {
       strong: analyzed.stem,
       weak: analyzed.stem,
@@ -82,7 +82,9 @@ const STRING_PREFERENCE_OVERRIDES: Record<string, Partial<InflectPersonOptions>>
   'no-gradation': { gradation: false },
   gradation: { gradation: true },
   's-stem': { sStem: true },
-  vocalic: { sStem: false },
+  vocalic: { sStem: false, tarStem: false },
+  'tar-stem': { tarStem: true },
+  'tar-vocalic': { tarStem: false },
   nominative: { vocalicStemVariant: 'nominative' },
   inflected: { vocalicStemVariant: 'inflected' },
   acronym: { colon: true },

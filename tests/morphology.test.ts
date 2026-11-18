@@ -171,6 +171,11 @@ describe('Stem Analysis (analyzeStem)', () => {
 
     const johannes = analyzeStem('Johannes');
     assert.equal(johannes.stem, 'Johannekse');
+
+    const ilmatar = analyzeStem('Ilmatar');
+    assert.equal(ilmatar.stem, 'Ilmattare');
+    assert.equal(ilmatar.isTarStem, true);
+    assert.equal(ilmatar.isSStem, false);
   });
 
   it('analyzes vowel-ending names directly', () => {
