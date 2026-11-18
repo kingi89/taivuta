@@ -49,7 +49,8 @@ This document outlines the strategic milestones, architectural direction, and re
 ### Milestone 6: Preferences Bundle Isolation, CI & Tooling Hygiene (v0.3.2) — 🔄 Active Target
 - [ ] **GitHub Actions Modernization & Quality Gates (`[CI-001]`, `[MAINT-004]`)**: Upgrade workflows from `@v4` to `@v6` actions, run `npm run check` in demo deployment, lint `scripts/**/*.ts`, and enforce automated version parity in `scripts/verify-bundle.ts`.
 - [ ] **Developer Tooling & Fixture Scripts (`[MAINT-001]`, `[MAINT-003]`)**: Replace the inline `package.json` demo server one-liner with `scripts/serve-demo.ts`, wire `build:countries-fixture`, and document fixture workflows in `data/README.md`.
-- [ ] **Preferences Subpath Isolation (`[OPT-002]`)**: Decouple the heavy inflection engine from `taivuta/preferences`, reducing its bundle footprint from ~14.16 kB to ~6 kB.
+- [ ] **Preferences Subpath Isolation (`[OPT-002]`)**: Decouple the heavy inflection engine from `taivuta/preferences`, reducing its bundle footprint from ~14.98 kB to ~6 kB.
+- [ ] **Latin Phonology Consolidation (`[OPT-003]`)**: Consolidate shared Latin vowel and spoken-letter primitives across `vowels.ts`, `colon.ts`, and `stem.ts` to reclaim `taivuta` root bundle headroom.
 
 ### Milestone 7: Algorithmic Place Paradigms & Finnish Regions (v0.4.0) — 📋 Planned
 - [ ] **Algorithmic Place Paradigm Generation (`[REFACTOR-001]`, `[OPT-001]`)**: Replace recurring static entries in `IRREGULAR_PLACES` (Type 78 lengthened *-e* stems, Type 39–41 *-s* stems, plural *-inen* municipalities, and unhyphenated inflecting-prefix compounds) with algorithmic `StemParadigm` resolvers and compact overrides for true exceptions.

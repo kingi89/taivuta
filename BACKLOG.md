@@ -23,8 +23,8 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | Add `'scripts/**/*.ts'` to `eslint.config.js` and verify `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`) match in `scripts/verify-bundle.ts`. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
 | `[MAINT-003]` | Wire `build:countries-fixture` & Document Fixture Pipeline | P2 | Add `build:countries-fixture` script to `package.json` alongside `build:municipalities-fixture` and document dataset regeneration in `data/README.md`. |
-| `[MAINT-005]` | Update/Override `picomatch` `devDependency` for GHSA-fc5q-39xc-vjpf | P2 | Once an upstream `picomatch` patch (`>=4.0.8`) is published, update `package-lock.json` (or add an `overrides` entry in `package.json`) and verify `npm audit` and `npm run check` pass. |
-| `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | Generate disambiguation examples in `src/preferences/detect.ts` without bundling the full `taivuta/person` and `taivuta/morphology` engines, reducing `taivuta/preferences` from ~14.16 kB to ~6 kB. |
+| `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | Generate disambiguation examples in `src/preferences/detect.ts` without bundling the full `taivuta/person` and `taivuta/morphology` engines, reducing `taivuta/preferences` from ~14.98 kB to ~6 kB. |
+| `[OPT-003]` | Consolidate Spoken Letter & Latin Phonology Primitives | P2 | Consolidate shared Latin vowel sets, diacritic regexes, and sibilant/spoken-letter primitives across `vowels.ts`, `colon.ts`, and `stem.ts` to reclaim `taivuta` root bundle headroom. |
 
 ### Planned Queue — Milestone v0.4.0: Algorithmic Place Paradigms & Finnish Regions
 
@@ -46,9 +46,42 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 
 ---
 
-## 2. Icebox (P3: Future Explorations)
+## 2. Active Milestone Specifications (v0.3.2)
 
-- **`[OPT-003]` Consolidate Spoken Letter & Latin Phonology Primitives**: Consolidate shared Latin letter sets, diacritic regexes, and sibilant arrays between `vowels.ts` and `colon.ts`.
+### `[OPT-002]` Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath
+- **Priority**: P1 | **Affected Components**: `src/preferences/detect.ts`, `scripts/verify-bundle.ts`
+- **Problem**: `src/preferences/detect.ts` imports `inflectPerson` and `isFinnishTarName`, pulling the full `person` and `morphology` engines into `dist/preferences/index.mjs` (`14.98 kB / 15.00 kB`).
+- **Desired Behavior**: Generate the 5 disambiguation preview examples (`genitive`, `allative`, `illative`, `adessive`, `ablative`) using lightweight preference-local logic without bundling `inflectPerson` or `nature-nouns`, reducing `taivuta/preferences` to `<= 8 kB` (target `~6 kB`) while keeping 100% parity with existing `tests/preferences.test.ts` outputs.
+
+### `[OPT-003]` Consolidate Spoken Letter & Latin Phonology Primitives
+- **Priority**: P2 | **Affected Components**: `src/morphology/vowels.ts`, `src/morphology/colon.ts`, `src/morphology/stem.ts`
+- **Problem**: `taivuta` (root) is at `29.94 kB / 30.00 kB`, and `vowels.ts`, `colon.ts`, and `stem.ts` define overlapping Latin vowel sets and regexes.
+- **Desired Behavior**: Consolidate shared vowel and phonology primitives in `src/morphology/vowels.ts` and reuse them in `colon.ts` and `stem.ts`, reclaiming root bundle headroom with zero behavioral or API changes.
+
+### `[CI-001]` Upgrade GitHub Actions to `@v6` & Gate Demo Deploy on `check`
+- **Priority**: P1 | **Affected Components**: `.github/workflows/ci.yml`, `.github/workflows/deploy-demo.yml`
+- **Problem**: Both workflows still use `actions/checkout@v4` and `actions/setup-node@v4`, and `deploy-demo.yml` deploys after `npm run build` without running `npm run check`.
+- **Desired Behavior**: Upgrade `checkout` and `setup-node` to `@v6` in both workflows (matching `release.yml`) and replace `npm run build` with `npm run check` in `deploy-demo.yml` so broken builds or failing tests cannot deploy to GitHub Pages.
+
+### `[MAINT-004]` Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts`
+- **Priority**: P2 | **Affected Components**: `eslint.config.js`, `scripts/verify-bundle.ts`, `scripts/*.ts`
+- **Problem**: Scripts in `scripts/` are excluded from ESLint checks, and version bumps require manual parity across `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`).
+- **Desired Behavior**: Add `'scripts/**/*.ts'` to `eslint.config.js` (resolving any lint violations in existing scripts) and assert in `scripts/verify-bundle.ts` that `package.json`, `package-lock.json`, and `src/index.ts` share the exact same `version` string.
+
+### `[MAINT-001]` Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts`
+- **Priority**: P2 | **Affected Components**: `package.json`, `scripts/serve-demo.ts`
+- **Problem**: The `"demo"` npm script embeds a long inline `node -e` HTTP server string in `package.json`.
+- **Desired Behavior**: Extract it into a typed, ESLint-clean `scripts/serve-demo.ts` script executed via `node --experimental-strip-types scripts/serve-demo.ts` with proper MIME types and safe path handling inside the repo.
+
+### `[MAINT-003]` Wire `build:countries-fixture` & Document Fixture Pipeline
+- **Priority**: P2 | **Affected Components**: `package.json`, `data/README.md`
+- **Problem**: `scripts/build-countries-fixture.ts` has no npm script entry, and `data/README.md` omits fixture regeneration instructions for municipalities and countries.
+- **Desired Behavior**: Add `"build:countries-fixture"` to `package.json` alongside `"build:municipalities-fixture"`, and document `build:municipalities-fixture`, `build:countries-fixture`, and `generate:places-matrix` in `data/README.md`.
+
+---
+
+## 3. Icebox (P3: Future Explorations)
+
 - **`[ICE-001]` Bulk Execution Performance Suite**: Benchmark execution speed and allocation pressure over 100,000 name iterations for `v1.0.0`.
 - **`[ICE-002]` Foreign Given Names and Surnames Ending in `-tti`**: Research safe heuristics or curated registries for foreign *-tti* names (*Donizetti*, *Pavarotti*, *Anetti*) without false-positive gradation resistance on native Finnish *-tti* names (*Matti*, *Antti*, *Pentti*, *Martti*, *Tytti*).
 - **`[ICE-003]` Foreign & Global Personal Name Disambiguation (`Elaine`, `Corinne`, `Njoki`)**: Design heuristics or role/language awareness to prevent foreign given names ending in coincidental Finnish nature-noun substrings (*-laine*, *-rinne*, *-joki*) from matching surname nature-noun paradigms when `{ role: 'givenName' }` is omitted, as part of broader foreign/global personal name support.
