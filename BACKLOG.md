@@ -19,7 +19,8 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 
 | ID | Title | Priority | Target Outcome & Constraints |
 | :--- | :--- | :--- | :--- |
-| `[CI-001]` | Upgrade GitHub Actions to `@v6` & Gate Demo Deploy on `check` | P1 | Replace `actions/checkout@v4` and `actions/setup-node@v4` with `@v6` in `ci.yml` and `deploy-demo.yml` to resolve Node 20 deprecation warnings; run `npm run check` before building in `deploy-demo.yml`. |
+| `[CI-001]` | Upgrade GitHub Actions to `@v6` & Gate Demo Deploy on `check` | P1 | ✅ Completed. |
+| `[CI-002]` | Upgrade GitHub Pages Actions to Node 24-Native Releases | P2 | Upgrade `actions/configure-pages@v5` $\to$ `@v6`, `actions/upload-pages-artifact@v3` $\to$ `@v5`, and `actions/deploy-pages@v4` $\to$ `@v5` in `deploy-demo.yml` to eliminate Node 20 deprecation warnings. |
 | `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | Add `'scripts/**/*.ts'` to `eslint.config.js` and verify `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`) match in `scripts/verify-bundle.ts`. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
 | `[MAINT-003]` | Wire `build:countries-fixture` & Document Fixture Pipeline | P2 | Add `build:countries-fixture` script to `package.json` alongside `build:municipalities-fixture` and document dataset regeneration in `data/README.md`. |
@@ -53,10 +54,10 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 - **Problem**: `taivuta` (root) is at `29.94 kB / 30.00 kB`, and `vowels.ts`, `colon.ts`, and `stem.ts` define overlapping Latin vowel sets and regexes.
 - **Desired Behavior**: Consolidate shared vowel and phonology primitives in `src/morphology/vowels.ts` and reuse them in `colon.ts` and `stem.ts`, reclaiming root bundle headroom with zero behavioral or API changes.
 
-### `[CI-001]` Upgrade GitHub Actions to `@v6` & Gate Demo Deploy on `check`
-- **Priority**: P1 | **Affected Components**: `.github/workflows/ci.yml`, `.github/workflows/deploy-demo.yml`
-- **Problem**: Both workflows still use `actions/checkout@v4` and `actions/setup-node@v4`, and `deploy-demo.yml` deploys after `npm run build` without running `npm run check`.
-- **Desired Behavior**: Upgrade `checkout` and `setup-node` to `@v6` in both workflows (matching `release.yml`) and replace `npm run build` with `npm run check` in `deploy-demo.yml` so broken builds or failing tests cannot deploy to GitHub Pages.
+### `[CI-002]` Upgrade GitHub Pages Actions to Node 24-Native Releases
+- **Priority**: P2 | **Affected Components**: `.github/workflows/deploy-demo.yml`
+- **Problem**: While `ci.yml` now runs warning-free on `@v6`, `deploy-demo.yml` still emits a Node 20 deprecation warning because `actions/configure-pages@v5`, `actions/deploy-pages@v4`, and `actions/upload-pages-artifact@v3` (via transitive `actions/upload-artifact@v4`) target Node 20.
+- **Desired Behavior**: Upgrade to `actions/configure-pages@v6`, `actions/upload-pages-artifact@v5`, and `actions/deploy-pages@v5` in `deploy-demo.yml` (all already released with Node 24 support) so the GitHub Pages deployment workflow runs with zero Node 20 warnings.
 
 ### `[MAINT-004]` Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts`
 - **Priority**: P2 | **Affected Components**: `eslint.config.js`, `scripts/verify-bundle.ts`, `scripts/*.ts`
