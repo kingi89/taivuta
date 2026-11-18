@@ -23,7 +23,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | Add `'scripts/**/*.ts'` to `eslint.config.js` and verify `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`) match in `scripts/verify-bundle.ts`. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
 | `[MAINT-003]` | Wire `build:countries-fixture` & Document Fixture Pipeline | P2 | Add `build:countries-fixture` script to `package.json` alongside `build:municipalities-fixture` and document dataset regeneration in `data/README.md`. |
-| `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | Generate disambiguation examples in `src/preferences/detect.ts` without bundling the full `taivuta/person` and `taivuta/morphology` engines, reducing `taivuta/preferences` from ~14.98 kB to ~6 kB. |
+| `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | ✅ Completed (`9.07 kB < 10 kB`). |
 | `[OPT-003]` | Consolidate Spoken Letter & Latin Phonology Primitives | P2 | Consolidate shared Latin vowel sets, diacritic regexes, and sibilant/spoken-letter primitives across `vowels.ts`, `colon.ts`, and `stem.ts` to reclaim `taivuta` root bundle headroom. |
 
 ### Planned Queue — Milestone v0.4.0: Algorithmic Place Paradigms & Finnish Regions
@@ -47,11 +47,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.2)
-
-### `[OPT-002]` Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath
-- **Priority**: P1 | **Affected Components**: `src/preferences/detect.ts`, `scripts/verify-bundle.ts`
-- **Problem**: `src/preferences/detect.ts` imports `inflectPerson` and `isFinnishTarName`, pulling the full `person` and `morphology` engines into `dist/preferences/index.mjs` (`14.98 kB / 15.00 kB`).
-- **Desired Behavior**: Generate the 5 disambiguation preview examples (`genitive`, `allative`, `illative`, `adessive`, `ablative`) using lightweight preference-local logic without bundling `inflectPerson` or `nature-nouns`, reducing `taivuta/preferences` to `<= 8 kB` (target `~6 kB`) while keeping 100% parity with existing `tests/preferences.test.ts` outputs.
 
 ### `[OPT-003]` Consolidate Spoken Letter & Latin Phonology Primitives
 - **Priority**: P2 | **Affected Components**: `src/morphology/vowels.ts`, `src/morphology/colon.ts`, `src/morphology/stem.ts`
