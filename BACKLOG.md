@@ -25,8 +25,8 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[BUG-012]` | Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc | Documentation | P2 | ✅ Completed |
 | `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | ✅ Completed |
 | `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P1 | ✅ Completed |
-| `[BUG-013]` | Forward `givenName`/`surname` Roles and Place Preferences in `inflect()` & `format()` | API / Templates | P1 | 1 increment |
-| `[TEST-002]` | Unified `inflect()` End-to-End Test Matrix for Ambiguous & Compound Nominals | Testing | P1 | (with `BUG-013`) |
+| `[BUG-013]` | Forward `givenName`/`surname` Roles and Place Preferences in `inflect()` & `format()` | API / Templates | P1 | ✅ Completed |
+| `[TEST-002]` | Unified `inflect()` End-to-End Test Matrix for Ambiguous & Compound Nominals | Testing | P1 | ✅ Completed |
 | `[BUG-016]` | Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*) | Linguistic | P2 | 1 increment |
 
 ### Planned Queue — Milestone v0.3.2: Preferences Bundle Isolation, CI & Tooling Hygiene
@@ -61,11 +61,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.1)
-
-### `[BUG-013]` & `[TEST-002]` Forward `givenName`/`surname` Roles & Place Preferences in `inflect()` & `format()`
-- **Priority**: P1 | **Affected Components**: `src/cases/types.ts`, `src/cases/inflect.ts`, `src/template/format.ts`, `tests/person.test.ts`, `tests/place.test.ts`
-- **Problem**: `format('{$n:genitive:surname}', ...)` passes `role: 'surname'` to `inflect()`, which discards `'givenName'` and `'surname'` roles when calling `inflectPerson()`. Additionally, `FormatOptions.preferences` and `inflect()` do not support `PlacePreferenceParams` (`localCase`).
-- **Acceptance Criteria**: `InflectOptions.role` accepts `'givenName' | 'surname'`, `inflect()` and `format()` forward sub-roles and place `localCase` preferences, and end-to-end tests (`[TEST-002]`) cover multi-word names, nature surnames, compounds, and template role hints.
 
 ### `[BUG-016]` Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*)
 - **Priority**: P2 | **Affected Components**: `src/morphology/stem.ts`, `src/person/stem-person.ts`

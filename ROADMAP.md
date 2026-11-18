@@ -45,7 +45,7 @@ This document outlines the strategic milestones, architectural direction, and re
 - [x] **Given Name & Hyphenated Disambiguation (`[BUG-002]`, `[BUG-014]`)**: Prevent false-positive qualitative gradation detection for *-rko/-lko* given names (*Marko*, *Mirko*, *Arko*) and support hyphenated name disambiguation (*Marja-Satu*).
 - [x] **Nature Surnames Default Declension & TSDoc Cleanup (`[BUG-006]`, `[BUG-012]`)**: Default standalone (*Niemi*) and hyphenated (*Virtanen-Niemi*) nature surnames to nature noun declension (*Niemen*, *Virtanen-Niemen*) and remove unimplemented `{ inflectAll: true }` TSDoc text.
 - [x] **Entity Role Classification Pipeline & Casing (`[BUG-005]`, `[REFACTOR-002]`)**: Decompose `classifyProperNoun` into discrete pipeline stages so multi-word personal names (*Matti Niemi*) classify as people with preserved capitalization (*Matti Niemen*).
-- [ ] **Template Role Forwarding & End-to-End Matrix (`[BUG-013]`, `[TEST-002]`)**: Forward `givenName`/`surname` role hints and place `localCase` preferences through `inflect()` and `format()`, verified by an end-to-end multi-word and compound test matrix.
+- [x] **Template Role Forwarding & End-to-End Matrix (`[BUG-013]`, `[TEST-002]`)**: Forward `givenName`/`surname` role hints and place `localCase` preferences through `inflect()` and `format()`, verified by an end-to-end multi-word and compound test matrix.
 
 ### Milestone 6: Preferences Bundle Isolation, CI & Tooling Hygiene (v0.3.2) — 📋 Planned
 - [ ] **GitHub Actions Modernization & Quality Gates (`[CI-001]`, `[MAINT-004]`)**: Upgrade workflows from `@v4` to `@v6` actions, run `npm run check` in demo deployment, lint `scripts/**/*.ts`, and enforce automated version parity in `scripts/verify-bundle.ts`.
