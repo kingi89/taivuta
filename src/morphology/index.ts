@@ -9,7 +9,8 @@
 
 export { getVowelHarmony, harmonize, isBackSpokenLetter, type VowelHarmony } from './vowels.ts';
 export { weakenConsonants, type GradationOptions } from './gradation.ts';
-export { analyzeStem, isFinnishTarName, type AnalyzedStem } from './stem.ts';
+export { analyzeStem, type AnalyzedStem } from './stem.ts';
+export { isFinnishTarName } from './tar-names.ts';
 export {
   matchNatureNoun,
   matchNatureNounSurname,

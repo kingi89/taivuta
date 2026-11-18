@@ -132,7 +132,7 @@ For advanced morphology primitives (`weakenConsonants`, `StemParadigm`, `assembl
 | `taivuta/person` | Given names, surnames, foreign names | < 12 kB |
 | `taivuta/place` | Municipalities, countries, toponyms & local cases | < 25 kB |
 | `taivuta/template` | Featherweight tagged template & string formatter | < 2 kB |
-| `taivuta/preferences` | Disambiguation detection & preference options | < 15 kB |
+| `taivuta/preferences` | Disambiguation detection & preference options | < 10 kB |
 | `taivuta/morphology` | Low-level phonology, gradation & stem paradigms | < 12 kB |
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for full module boundaries and trade-offs.

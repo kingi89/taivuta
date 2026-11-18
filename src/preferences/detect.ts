@@ -5,9 +5,9 @@ import type {
   PersonPreferenceParams,
   PreferenceOption
 } from '../cases/types.ts';
-import { inflectPerson } from '../person/index.ts';
-import { isFinnishTarName } from '../morphology/stem.ts';
+import { isFinnishTarName } from '../morphology/tar-names.ts';
 import { WORD_DERIVED_GIVEN_NAMES } from './ambiguous-names.data.ts';
+import { buildPreferenceExamples, type InflectionExamples } from './examples.ts';
 
 // Matches qualitative gradation patterns (stops mp, nt, lt, rt, single t/p, and Kotus type 9 diphthong + k).
 // Kotus: Nouns of nominal type 9 (kala) with single intervocalic k undergo qualitative gradation (k -> Ø),
@@ -21,25 +21,11 @@ const FOREIGN_FEMININE_ETTE_REGEX = /(?:ette|otte|itte)$/i;
 const S_STEM_REGEX = /[aeiouyäö]s$/i;
 const FOREIGN_OR_OS_REGEX = /[cxzqw]|os$/i;
 
-interface InflectionExamples {
-  readonly genitive: string;
-  readonly allative: string;
-  readonly illative: string;
-  readonly adessive: string;
-  readonly ablative: string;
-}
-
 function createExamples(
   name: string,
   params: PersonPreferenceParams
 ): InflectionExamples {
-  return {
-    genitive: inflectPerson(name, 'genitive', { preference: params }),
-    allative: inflectPerson(name, 'allative', { preference: params }),
-    illative: inflectPerson(name, 'illative', { preference: params }),
-    adessive: inflectPerson(name, 'adessive', { preference: params }),
-    ablative: inflectPerson(name, 'ablative', { preference: params })
-  };
+  return buildPreferenceExamples(name, params);
 }
 
 function detectGradationDimension(name: string): AmbiguityDimension | null {

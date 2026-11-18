@@ -5,6 +5,7 @@ import {
   isAmbiguousName,
   getNamePreferenceOptions
 } from '../src/preferences/index.ts';
+import { inflectPerson } from '../src/person/index.ts';
 
 describe('Name Holder Disambiguation Subsystem (taivuta/preferences)', () => {
   describe('Qualitative Consonant Gradation Names', () => {
@@ -421,6 +422,39 @@ describe('Name Holder Disambiguation Subsystem (taivuta/preferences)', () => {
 
       // Short 4-char -tar names like "Star" remain unambiguous
       assert.equal(detectNameDisambiguation('Star'), null);
+    });
+
+    it('matches inflectPerson() across all ambiguity dimensions and hyphenated names [OPT-002]', () => {
+      const names = [
+        'Satu',
+        'Sampo',
+        'Taika',
+        'Janette',
+        'Lucas',
+        'Niklas',
+        'Ilmatar',
+        'Petar',
+        'Päivätär',
+        'Tuuli',
+        'Meri',
+        'KELA',
+        'SATU',
+        'NIKLAS',
+        'Agent007',
+        'Marja-Satu',
+        'Tripla-Nimi-Tuuli'
+      ];
+      for (const name of names) {
+        const res = detectNameDisambiguation(name);
+        assert.ok(res, `Expected disambiguation result for ${name}`);
+        for (const opt of res.options) {
+          assert.equal(opt.examples.genitive, inflectPerson(name, 'genitive', { preference: opt.params }));
+          assert.equal(opt.examples.allative, inflectPerson(name, 'allative', { preference: opt.params }));
+          assert.equal(opt.examples.illative, inflectPerson(name, 'illative', { preference: opt.params }));
+          assert.equal(opt.examples.adessive, inflectPerson(name, 'adessive', { preference: opt.params }));
+          assert.equal(opt.examples.ablative, inflectPerson(name, 'ablative', { preference: opt.params }));
+        }
+      }
     });
 
     it('handles empty, whitespace, and special inputs gracefully', () => {

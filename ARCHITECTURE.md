@@ -30,7 +30,7 @@ flowchart TD
   taivuta --> person
   taivuta --> place
   taivuta --> template
-  preferences --> person
+  preferences --> morphology
   person --> morphology
   place --> morphology
   template --> morphology
@@ -41,10 +41,10 @@ flowchart TD
 
 | Configuration / Subpath | Primary Use Case | Max Budget | What It Includes | What It Excludes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Full `taivuta`** | General web apps, blogs, full e-commerce | < 30 kB | Auto role detection, municipalities, countries, full templates | None |
+| **Full `taivuta`** | General web apps, blogs, full e-commerce | < 30 kB | Auto role detection, municipalities, countries, full templates | Disambiguation detection (`taivuta/preferences`) |
 | **`taivuta/person`** | CRMs, user profiles, auth, notifications | < 12 kB | First/last names, foreign names, hyphenated names, nature surnames | Municipalities, places, countries |
 | **`taivuta/place`** | Delivery, logistics, real estate, travel, maps | < 25 kB | All Finnish municipalities, countries, toponyms | Personal name heuristics, templates |
-| **`taivuta/preferences`** | User onboarding, profile settings, disambiguation prompts | < 15 kB | Algorithmic ambiguity detection, multi-dimensional option generation | Municipalities, places, templates |
+| **`taivuta/preferences`** | User onboarding, profile settings, disambiguation prompts | < 10 kB | Algorithmic ambiguity detection, multi-dimensional option generation | Municipalities, places, templates, full person engine |
 | **`taivuta/template`** | Chatbots, user email templates, profile UI | < 2 kB | Tagged templates `t`, `format()`, custom engine factory | Municipality dataset, personal name heuristics |
 | **`taivuta/morphology`** | Custom NLP tools, search stems, grammar aids | < 12 kB | Phonology, gradation, stem analysis, paradigms, colon suffixation | High-level person/place registries |
 
