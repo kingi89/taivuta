@@ -37,6 +37,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | Add `'scripts/**/*.ts'` to `eslint.config.js` and verify `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`) match in `scripts/verify-bundle.ts`. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
 | `[MAINT-003]` | Wire `build:countries-fixture` & Document Fixture Pipeline | P2 | Add `build:countries-fixture` script to `package.json` alongside `build:municipalities-fixture` and document dataset regeneration in `data/README.md`. |
+| `[MAINT-005]` | Update/Override `picomatch` `devDependency` for GHSA-fc5q-39xc-vjpf | P2 | Once an upstream `picomatch` patch (`>=4.0.8`) is published, update `package-lock.json` (or add an `overrides` entry in `package.json`) and verify `npm audit` and `npm run check` pass. |
 | `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | Generate disambiguation examples in `src/preferences/detect.ts` without bundling the full `taivuta/person` and `taivuta/morphology` engines, reducing `taivuta/preferences` from ~14.16 kB to ~6 kB. |
 
 ### Planned Queue — Milestone v0.4.0: Algorithmic Place Paradigms & Finnish Regions
