@@ -15,21 +15,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 
 ## 1. Milestone Queues
 
-### Active Queue — Milestone v0.3.1: Personal Name Accuracy, Disambiguation & Templates
-
-| ID | Title | Category | Priority | Est. Scope |
-| :--- | :--- | :--- | :--- | :--- |
-| `[BUG-002]` | Given Name Disambiguation False Positives on Liquid-k Stems (*Marko*) | Linguistic / Preferences | P1 | ✅ Completed |
-| `[BUG-014]` | Hyphenated & Compound Personal Name Disambiguation (*Marja-Satu*) | Linguistic / Preferences | P2 | ✅ Completed |
-| `[BUG-006]` | Default Nature Noun Declension for Standalone and Hyphenated Surnames | Linguistic | P1 | ✅ Completed |
-| `[BUG-012]` | Remove Unimplemented `{ inflectAll: true }` Claim from `inflect-person.ts` TSDoc | Documentation | P2 | ✅ Completed |
-| `[BUG-005]` | Entity Role Classification and Casing for Multi-Word Names with Nature Surnames | Linguistic | P1 | ✅ Completed |
-| `[REFACTOR-002]` | Decompose `classifyProperNoun` into Discrete Pipeline Stages | Architecture | P1 | ✅ Completed |
-| `[BUG-013]` | Forward `givenName`/`surname` Roles and Place Preferences in `inflect()` & `format()` | API / Templates | P1 | ✅ Completed |
-| `[TEST-002]` | Unified `inflect()` End-to-End Test Matrix for Ambiguous & Compound Nominals | Testing | P1 | ✅ Completed |
-| `[BUG-016]` | Kotus Type 32 `-tar`/`-tär` & `-tytär` Feminine Name Declension (*Ilmatar*) | Linguistic | P2 | ✅ Completed |
-
-### Planned Queue — Milestone v0.3.2: Preferences Bundle Isolation, CI & Tooling Hygiene
+### Active Queue — Milestone v0.3.2: Preferences Bundle Isolation, CI & Tooling Hygiene
 
 | ID | Title | Priority | Target Outcome & Constraints |
 | :--- | :--- | :--- | :--- |

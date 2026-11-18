@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.1] - 2026-11-18
+
+### Added
+- **Kotus Type 32 `-tar`/`-tär` & `-tytär` Declension**: Added reverse quantitative gradation support (*Ilmatar* $\to$ *Ilmattaren*, *Päivätär* $\to$ *Päivättärellä*, *Matintytär* $\to$ *Matintyttärellä*) while preserving epenthetic *-i-* defaults for foreign `-tar` names (*Petar* $\to$ *Petarilla*), plus `tarStem` preference overrides and disambiguation in `taivuta/preferences`.
+- **Unified `inflect()` End-to-End Matrix**: Expanded integration coverage across multi-word personal names, hyphenated compounds, preference-driven given names, compound/irregular toponyms, and homonyms.
+
+### Fixed
+- **Liquid-k Given Name Disambiguation**: Prevented false-positive qualitative gradation detection for `-rko`/`-lko` given names (*Marko*, *Jyrki*, *Mirka*).
+- **Hyphenated Personal Name Disambiguation**: Inspected the trailing hyphenated segment in `detectNameDisambiguation()` to support compound given names such as *Marja-Satu* and *Tripla-Nimi-Tuuli*.
+- **Nature Surname Defaults & TSDoc**: Defaulted standalone and hyphenated nature surnames (*Niemi*, *Virtanen-Niemi*) to nature-noun declension when `role` is omitted, and removed the unimplemented `{ inflectAll: true }` TSDoc claim.
+- **Multi-Word Nature Surname Classification & Casing**: Classified multi-word personal names ending in nature surnames (*Matti Niemi*, *Pekka Mäki*) as `'person'` and preserved suffix capitalization in `matchNatureNoun()` (*Matti Niemen*).
+- **Sub-Role & Place Preference Forwarding**: Widened `InflectOptions.role` to accept `'givenName' | 'surname'`, forwarded sub-roles to `inflectPerson()`, and supported `PlacePreferenceParams` (`localCase`) in `inflect()` and `format()`.
+
+---
+
 ## [0.3.0] - 2026-11-15
 
 ### Added
