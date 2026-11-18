@@ -6,15 +6,103 @@
 
 import type {
   CaseName,
+  GeneralPreference,
+  GeneralPreferenceInput,
   GrammaticalCase,
-  InflectOptions
+  InflectOptions,
+  InflectPersonOptions,
+  LocalCaseType,
+  PersonPreference
 } from './types.ts';
 import { inflectPerson } from '../person/inflect-person.ts';
-import { inflectPlace, detectLocalCase } from '../place/inflect-place.ts';
+import { inflectPlace, detectLocalCase, type InflectPlaceOptions } from '../place/inflect-place.ts';
 import { classifyProperNoun } from './classify.ts';
+
+const PERSON_PREF_KEYS = ['gradation', 'sStem', 'vocalicStemVariant', 'colon', 'harmony'] as const;
 
 function isContextualLocalCase(targetCase: CaseName): boolean {
   return targetCase === 'local' || targetCase === 'localFrom' || targetCase === 'localTo';
+}
+
+function toPreferenceItems(preference: GeneralPreference): readonly GeneralPreferenceInput[] {
+  return Array.isArray(preference)
+    ? preference
+    : [preference as GeneralPreferenceInput];
+}
+
+/**
+ * Extracts an explicit `localCase` override from a single preference entry.
+ * Returns `null` when the entry does not specify a place local case.
+ */
+function extractLocalCaseFromItem(item: GeneralPreferenceInput): LocalCaseType | null {
+  if (!item || typeof item !== 'object') {
+    return null;
+  }
+  if ('localCase' in item && item.localCase !== undefined) {
+    return item.localCase;
+  }
+  if ('params' in item && item.params && 'localCase' in item.params && item.params.localCase !== undefined) {
+    return item.params.localCase;
+  }
+  return null;
+}
+
+/**
+ * Resolves the last-specified `localCase` across a single or array `GeneralPreference`.
+ * Returns `null` when no place preference is present.
+ */
+function resolvePreferenceLocalCase(preference: GeneralPreference): LocalCaseType | null {
+  let resolved: LocalCaseType | null = null;
+  for (const item of toPreferenceItems(preference)) {
+    const candidate = extractLocalCaseFromItem(item);
+    if (candidate !== null) {
+      resolved = candidate;
+    }
+  }
+  return resolved;
+}
+
+function buildPlaceOptions(options: InflectOptions): InflectPlaceOptions {
+  if (options.localCase !== undefined) {
+    return { localCase: options.localCase };
+  }
+  if (options.preference !== undefined) {
+    const localCase = resolvePreferenceLocalCase(options.preference);
+    if (localCase !== null) {
+      return { localCase };
+    }
+  }
+  return {};
+}
+
+function isPersonPreferenceItem(item: GeneralPreferenceInput): boolean {
+  if (typeof item === 'string') {
+    return true;
+  }
+  if (!item || typeof item !== 'object') {
+    return false;
+  }
+  const params = 'params' in item ? item.params : item;
+  return PERSON_PREF_KEYS.some((key) => key in params);
+}
+
+function hasPersonPreference(preference: GeneralPreference): boolean {
+  return toPreferenceItems(preference).some(isPersonPreferenceItem);
+}
+
+function buildPersonOptions(options: InflectOptions): InflectPersonOptions {
+  const base: InflectPersonOptions = {
+    sStem: options.sStem,
+    gradation: options.gradation,
+    vocalicStemVariant: options.vocalicStemVariant,
+    colon: options.colon,
+    harmony: options.harmony,
+    preference: options.preference as PersonPreference | undefined
+  };
+  if (options.role === 'givenName' || options.role === 'surname' || options.role === 'auto') {
+    return { ...base, role: options.role };
+  }
+  return base;
 }
 
 /**
@@ -32,20 +120,34 @@ export function detectEntityRole(name: string): 'person' | 'place' {
 }
 
 function hasPersonOptions(options: InflectOptions): boolean {
+  const hasPersonPref = options.preference !== undefined && hasPersonPreference(options.preference);
   return (
-    options.preference !== undefined ||
+    hasPersonPref ||
     options.vocalicStemVariant !== undefined ||
     options.sStem !== undefined ||
     options.gradation !== undefined
   );
 }
 
+function hasPlaceOptions(options: InflectOptions): boolean {
+  if (options.localCase !== undefined) {
+    return true;
+  }
+  return options.preference !== undefined && resolvePreferenceLocalCase(options.preference) !== null;
+}
+
 function resolveEntityRole(name: string, options: InflectOptions): 'person' | 'place' {
-  if (options.role === 'person' || options.role === 'place') {
-    return options.role;
+  if (options.role === 'place') {
+    return 'place';
+  }
+  if (options.role === 'person' || options.role === 'givenName' || options.role === 'surname') {
+    return 'person';
   }
   if (hasPersonOptions(options)) {
     return 'person';
+  }
+  if (hasPlaceOptions(options)) {
+    return 'place';
   }
   return detectEntityRole(name);
 }
@@ -75,22 +177,15 @@ export function inflect(
     return name;
   }
 
+  const placeOptions = buildPlaceOptions(options);
   if (isContextualLocalCase(targetCase)) {
-    return inflectPlace(name, targetCase, { localCase: options.localCase });
+    return inflectPlace(name, targetCase, placeOptions);
   }
 
   const role = resolveEntityRole(name, options);
   if (role === 'place') {
-    return inflectPlace(name, targetCase, { localCase: options.localCase });
+    return inflectPlace(name, targetCase, placeOptions);
   }
 
-  return inflectPerson(name, targetCase as GrammaticalCase, {
-    role: options.role === 'auto' ? 'auto' : undefined,
-    sStem: options.sStem,
-    gradation: options.gradation,
-    vocalicStemVariant: options.vocalicStemVariant,
-    colon: options.colon,
-    harmony: options.harmony,
-    preference: options.preference
-  });
+  return inflectPerson(name, targetCase as GrammaticalCase, buildPersonOptions(options));
 }

@@ -171,4 +171,95 @@ describe('t Tagged Template Literal Function', () => {
     assert.equal(format('Viesti {$user:localTo}', { user: mattiNiemi }), 'Viesti Matti Niemelle');
     assert.equal(format('Hei {$user:allative}!', { user: virtanenNiemi }), 'Hei Virtanen-Niemelle!');
   });
+
+  it('forwards givenName and surname roles in inflect() and format() [BUG-013]', () => {
+    assert.equal(inflect('Tuuli', 'genitive', { role: 'givenName' }), 'Tuulin');
+    assert.equal(inflect('Tuuli', 'genitive', { role: 'surname' }), 'Tuulen');
+    assert.equal(inflect('Sato', 'genitive', { role: 'givenName' }), 'Saton');
+    assert.equal(inflect('Sato', 'genitive', { role: 'surname' }), 'Sadon');
+    assert.equal(inflect('Mattila', 'genitive', { role: 'surname' }), 'Mattilan');
+    assert.equal(inflect('Salo', 'genitive', { role: 'surname' }), 'Salon');
+
+    assert.equal(format('{$n:genitive:givenName}', { n: 'Tuuli' }), 'Tuulin');
+    assert.equal(format('{$n:genitive:surname}', { n: 'Tuuli' }), 'Tuulen');
+    assert.equal(format('{$n:genitive:givenName}', { n: 'Sato' }), 'Saton');
+    assert.equal(format('{$n:genitive:surname}', { n: 'Sato' }), 'Sadon');
+    assert.equal(format('{$n:genitive:surname}', { n: 'Mattila' }), 'Mattilan');
+    assert.equal(format('{$n:genitive:surname}', { n: 'Salo' }), 'Salon');
+  });
+
+  it('forwards PlacePreferenceParams localCase in inflect(), format(), and t [BUG-013]', () => {
+    assert.equal(inflect('Tampere', 'local', { preference: { localCase: 'in' } }), 'Tampereessa');
+    assert.equal(inflect('Helsinki', 'localTo', { preference: { localCase: 'on' } }), 'Helsingille');
+    assert.equal(
+      inflect('Tampere', 'local', { localCase: 'on', preference: { localCase: 'in' } }),
+      'Tampereella'
+    );
+    assert.equal(
+      inflect('Tampere', 'local', { preference: [{ localCase: 'on' }, { localCase: 'in' }] }),
+      'Tampereessa'
+    );
+    assert.equal(
+      inflect('Tampere', 'local', {
+        preference: {
+          id: 'tampere-in',
+          label: 'Tampereessa',
+          examples: { genitive: 'Tampereen', allative: 'Tampereelle', illative: 'Tampereeseen' },
+          params: { localCase: 'in' }
+        }
+      }),
+      'Tampereessa'
+    );
+    // Pure PlacePreferenceParams on a homonym should not force person role
+    assert.equal(inflect('Salo', 'genitive', { preference: { localCase: 'in' } }), 'Salon');
+    assert.equal(inflect('Tampere', 'local', { preference: [{}] }), 'Tampereella');
+
+    assert.equal(
+      format(
+        'Asun {$city:local} ja matkustan {$target:localTo}.',
+        { city: 'Tampere', target: 'Helsinki' },
+        { preferences: { city: { localCase: 'in' }, target: { localCase: 'on' } } }
+      ),
+      'Asun Tampereessa ja matkustan Helsingille.'
+    );
+    assert.equal(
+      t`Asun ${['Tampere', 'local', { preference: { localCase: 'in' } }]}.`,
+      'Asun Tampereessa.'
+    );
+  });
+
+  it('passes unified inflect() end-to-end matrix for ambiguous and compound nominals [TEST-002]', () => {
+    const cases: ReadonlyArray<readonly [string, Parameters<typeof inflect>[1], Parameters<typeof inflect>[2] | undefined, string]> = [
+      // Multi-word personal names
+      ['Matti Niemi', 'genitive', undefined, 'Matti Niemen'],
+      ['Pekka Mäki', 'allative', undefined, 'Pekka Mäelle'],
+      ['Liisa Uusi-Pietilä', 'genitive', undefined, 'Liisa Uusi-Pietilän'],
+      // Hyphenated personal names
+      ['Marja-Satu', 'genitive', undefined, 'Marja-Sadun'],
+      ['Virtanen-Niemi', 'genitive', undefined, 'Virtanen-Niemen'],
+      ['Anna-Tuuli', 'genitive', undefined, 'Anna-Tuulin'],
+      // Ambiguous given names with preferences
+      ['Satu', 'genitive', { preference: 'no-gradation' }, 'Satun'],
+      ['Taika', 'genitive', { preference: 'gradation' }, 'Taian'],
+      ['Lucas', 'allative', { preference: 's-stem' }, 'Lucakselle'],
+      ['Tuuli', 'genitive', { preference: 'inflected' }, 'Tuulen'],
+      ['KELA', 'allative', { preference: 'acronym' }, 'KELA:lle'],
+      ['Agent007', 'adessive', { preference: 'harmony-back' }, 'Agent007:lla'],
+      // Compound & irregular toponyms
+      ['Uusi-Seelanti', 'inessive', undefined, 'Uudessa-Seelannissa'],
+      ['Iso-Britannia', 'genitive', undefined, 'Ison-Britannian'],
+      ['Pohjois-Karjala', 'local', undefined, 'Pohjois-Karjalassa'],
+      ['Yhdistyneet arabiemiraatit', 'local', undefined, 'Yhdistyneissä arabiemiraateissa'],
+      ['Dominikaaninen tasavalta', 'local', undefined, 'Dominikaanisessa tasavallassa'],
+      ['Kap Verde', 'local', undefined, 'Kap Verdellä'],
+      // Homonyms with explicit roles
+      ['Salo', 'local', { role: 'place' }, 'Salossa'],
+      ['Lahti', 'genitive', { role: 'surname' }, 'Lahden'],
+      ['Niemi', 'partitive', { role: 'surname' }, 'Niemeä']
+    ];
+
+    for (const [name, targetCase, options, expected] of cases) {
+      assert.equal(inflect(name, targetCase, options), expected, `Failed for ${name} (${targetCase})`);
+    }
+  });
 });

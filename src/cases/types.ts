@@ -219,7 +219,8 @@ export type GeneralPreferenceInput =
   | string
   | PersonPreferenceParams
   | PlacePreferenceParams
-  | PreferenceOption;
+  | PreferenceOption<PersonPreferenceParams>
+  | PreferenceOption<PlacePreferenceParams>;
 
 /**
  * Single or multi-choice preference configuration for generic entities.
@@ -276,12 +277,16 @@ export interface InflectPersonOptions {
  */
 export interface InflectOptions {
   /**
-   * The semantic entity type of the proper noun:
+   * The semantic entity or morphological role of the proper noun:
    * - 'person': Person name (given name, surname, compound).
    * - 'place': Toponym / geographic place name.
+   * - 'givenName': Person name explicitly treated as a first/given name.
+   * - 'surname': Person name explicitly treated as a family name.
    * - 'auto': Detects based on place dictionary, toponymic suffixes, or default nominal rules.
+   * - `undefined` (omitted): Equivalent to `'auto'`, except when person- or place-specific options
+   *   (such as `gradation`, `sStem`, or `localCase`) implicitly disambiguate the entity role.
    */
-  readonly role?: 'person' | 'place' | 'auto';
+  readonly role?: 'person' | 'place' | 'givenName' | 'surname' | 'auto';
   /**
    * Explicit local case override for places ('in' or 'on').
    */
@@ -307,8 +312,8 @@ export interface InflectOptions {
    */
   readonly harmony?: 'front' | 'back';
   /**
-   * Nameholder inflection preference option, option ID, array of preferences, or parameter bundle.
+   * Nameholder or place preference option, option ID, array of preferences, or parameter bundle.
    */
-  readonly preference?: PersonPreference;
+  readonly preference?: GeneralPreference;
 }
 

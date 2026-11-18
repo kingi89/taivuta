@@ -442,4 +442,9 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflectPlace('Virrat', 'genitive'), 'Virtojen');
     assert.equal(inflectPlace('Virrat', 'partitive'), 'Virtoja');
   });
+
+  it('maintains parity between unified inflect() PlacePreferenceParams and inflectPlace() [BUG-013]', () => {
+    assert.equal(inflect('Tampere', 'local', { preference: { localCase: 'in' } }), inflectPlace('Tampere', 'local', { localCase: 'in' }));
+    assert.equal(inflect('Helsinki', 'localTo', { preference: { localCase: 'on' } }), inflectPlace('Helsinki', 'localTo', { localCase: 'on' }));
+  });
 });

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { inflectPerson } from '../src/index.ts';
+import { inflect, inflectPerson } from '../src/index.ts';
 import { getPersonParadigm } from '../src/person/index.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -511,5 +511,12 @@ describe('Canonical Person StemParadigm (getPersonParadigm)', () => {
     const niemiDefault = getPersonParadigm('Niemi');
     assert.equal(niemiDefault.weakVocalicStem, 'Nieme');
     assert.equal(niemiDefault.partitive, 'Niemeä');
+  });
+
+  it('maintains parity between unified inflect() sub-roles and inflectPerson() [BUG-013]', () => {
+    assert.equal(inflect('Tuuli', 'genitive', { role: 'givenName' }), inflectPerson('Tuuli', 'genitive', { role: 'givenName' }));
+    assert.equal(inflect('Tuuli', 'genitive', { role: 'surname' }), inflectPerson('Tuuli', 'genitive', { role: 'surname' }));
+    assert.equal(inflect('Sato', 'genitive', { role: 'givenName' }), inflectPerson('Sato', 'genitive', { role: 'givenName' }));
+    assert.equal(inflect('Sato', 'genitive', { role: 'surname' }), inflectPerson('Sato', 'genitive', { role: 'surname' }));
   });
 });

@@ -9,8 +9,8 @@
 
 import type {
   CaseName,
-  InflectOptions,
-  PersonPreference
+  GeneralPreference,
+  InflectOptions
 } from '../cases/types.ts';
 
 /**
@@ -23,7 +23,7 @@ export type FormatValues = Record<string, string | number | undefined | null>;
  */
 export interface FormatOptions {
   /**
-   * Optional map of variable names to their inflection preferences.
+   * Optional map of variable names to their person or place inflection preferences.
    *
    * @example
    * ```typescript
@@ -31,9 +31,14 @@ export interface FormatOptions {
    *   preferences: { user: "no-gradation" }
    * });
    * // "Soita Satulle!"
+   *
+   * format("Asun {$city:local}.", { city: "Tampere" }, {
+   *   preferences: { city: { localCase: "in" } }
+   * });
+   * // "Asun Tampereessa."
    * ```
    */
-  readonly preferences?: Record<string, PersonPreference>;
+  readonly preferences?: Record<string, GeneralPreference>;
 }
 
 /**
