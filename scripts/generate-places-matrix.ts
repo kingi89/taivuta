@@ -913,7 +913,6 @@ function inflectPlaceAllCases(name: string, meta: { localCase: 'in' | 'on'; cust
     };
   }
 
-  const strongStem = clean;
   const weakStem = weakenConsonants(clean);
   const inSuffix = harmonize('ssa', clean);
   const elSuffix = harmonize('sta', clean);
