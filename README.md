@@ -139,9 +139,21 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for full module boundaries and trade-offs
 
 ---
 
+## Security & Reliability
+
+- **Zero Runtime Dependencies**: Ships with `dependencies: {}` and pure, non-mutating functions across all subpaths.
+- **Resilient, Bounded Runtime**: Enforces strict primitive `string` boundaries, returns safe fallbacks without throwing on malformed inputs/options, and runs in linear $O(N)$ time up to the `1,000,000`-character proper-noun ceiling.
+- **Encode-After-Inflect Contract**: Outputs plain Unicode text without implicit HTML/SQL escaping or unescaping, uses Kotus typographic `’` (`U+2019`) rather than ASCII `'` (`U+0027`), and may synthesize ASCII `:` (`U+003A`) for acronyms/abbreviations—always encode or validate URLs **after** inflection.
+- **Runtime Floor**: Compiled bundles target ES2022 / Node.js `>=18.0.0` (verified in CI on `18.x`, `22.x`, and `24.x`).
+
+See [SECURITY.md](SECURITY.md) for all 7 consumer trust guarantees, supported versions, and vulnerability reporting instructions.
+
+---
+
 ## Documentation & Guides
 
 - [Architecture & Design Principles](ARCHITECTURE.md): Deep dive into the `StemParadigm` morphological engine, consonant gradation anchoring, and modular bundle boundaries.
+- [Security Policy](SECURITY.md): Consumer trust guarantees, output-encoding boundaries, supported versions, and vulnerability reporting.
 - [Contributing Guide](CONTRIBUTING.md): Development environment setup, quality gates, and pull request conventions.
 - [Changelog](CHANGELOG.md): Detailed release history adhering to Keep a Changelog.
 - [Attribution & Sources](ATTRIBUTION.md): Citations and licenses for linguistic open data sources.
