@@ -22,7 +22,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[CI-001]` | Upgrade GitHub Actions to `@v6` & Gate Demo Deploy on `check` | P1 | ✅ Completed. |
 | `[CI-002]` | Upgrade GitHub Pages Actions to Node 24-Native Releases | P2 | ✅ Completed (verified warning-free on GitHub Actions). |
 | `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | ✅ Completed. |
-| `[SEC-001]` | Runtime Security Hardening, Trimming Alignment & Adversarial Test Suite | P1 | Fix `Object.prototype` lookup bugs across 7 modules, replace unbounded compound-prefix recursion with $O(N)$ handling, align whitespace trimming across public entry points, guard against malformed JS inputs and $>1{,}000{,}000$-char proper nouns, and add `tests/security.test.ts`. |
+| `[SEC-001]` | Runtime Security Hardening, Trimming Alignment & Adversarial Test Suite | P1 | ✅ Completed. |
 | `[SEC-004]` | Switch Synthesized Apostrophe from ASCII `'` (`U+0027`) to Kotus `’` (`U+2019`) | P1 | Replace synthesized ASCII `'` (`U+0027`) with Kotus typographic `’` (`U+2019`) in `src/person/stem-person.ts` (`Kaj’n`, `Bordeaux’ssa`, `Dumas’n`) to eliminate single-quote breakout vectors while aligning with Kotus orthography; update `tests/person.test.ts` and add a metacharacter-synthesis invariant test in `tests/security.test.ts`. |
 | `[SEC-002]` | Security Policy (`SECURITY.md`), Governance & Release Trust Docs | P1 | Create `SECURITY.md` (7 trust guarantees, character integrity & encode-after-inflect boundary with concrete colon `:` URL-scheme examples and intentional `U+2019` vs. `U+0027` apostrophe rationale, 1M-char bound, GitHub Private Vulnerability Reporting + fallback email without hard SLAs), add Security & Reliability summary to `README.md`, add Secure Coding Standards to `CONTRIBUTING.md`, and add `"engines"` to `package.json`. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
@@ -54,11 +54,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.2)
-
-### `[SEC-001]` Runtime Security Hardening, Trimming Alignment & Adversarial Test Suite
-- **Priority**: P1 | **Affected Components**: `src/template/format.ts`, `src/morphology/assembler.ts`, `src/morphology/colon.ts`, `src/morphology/compounds.ts`, `src/person/stem-person.ts`, `src/person/inflect-person.ts`, `src/place/inflect-place.ts`, `src/place/state-places.ts`, `src/cases/inflect.ts`, `src/preferences/detect.ts`, `tests/security.test.ts`
-- **Problem**: Plain-object dictionary lookups without `Object.hasOwn()` leak `Object.prototype` properties or throw on keys such as `'toString'`; repeated `Uusi-`/`Iso-` prefixes cause unbounded recursion stack overflows; JS callers passing `null`, non-strings, or malformed options trigger unhandled `TypeError`s; whitespace trimming is inconsistent across `inflectPerson` vs. `inflectPlace`/`detectLocalCase`; and no documented input ceiling or adversarial regression test suite exists.
-- **Desired Behavior**: Replace unsafe lookups with `Object.hasOwn()`/`Map`/`Object.create(null)`, eliminate recursive stack overflows with $O(N)$ linear-time prefix handling, align whitespace trimming across all public entry points, guard public API boundaries against malformed JS inputs without throwing, enforce a `1,000,000`-character proper-noun length ceiling (returning input unchanged above the cap while keeping `format()` templates unbounded), and add `tests/security.test.ts` covering all 7 trust principles.
 
 ### `[SEC-004]` Switch Synthesized Apostrophe from ASCII `'` (`U+0027`) to Kotus `’` (`U+2019`)
 - **Priority**: P1 | **Affected Components**: `src/person/stem-person.ts`, `src/morphology/stem.ts`, `tests/person.test.ts`, `tests/security.test.ts`
