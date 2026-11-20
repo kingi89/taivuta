@@ -13,7 +13,7 @@
  *   (Villen, Kallessa), unlike common nouns (vene -> veneen).
  * - Foreign names ending in a pronounced consonant take an epenthetic (linking) -i-
  *   (John -> Johnin, David -> Davidilla).
- * - Foreign names ending in a silent letter use an apostrophe (Bordeaux -> Bordeaux'ssa, Dumas -> Dumas'n).
+ * - Foreign names ending in a silent letter use a typographic apostrophe (U+2019: Bordeaux -> Bordeaux’ssa, Dumas -> Dumas’n, Kaj -> Kaj’n).
  *
  * @packageDocumentation
  */

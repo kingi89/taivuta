@@ -24,6 +24,13 @@ const TRADITIONAL_QUALITATIVE_GIVEN_NAMES: ReadonlySet<string> = new Set([
   'satu'
 ]);
 
+/**
+ * Typographic apostrophe (U+2019), used instead of ASCII U+0027 for Finnish
+ * inflectional apostrophes (standard orthography; also avoids synthesizing
+ * ASCII single-quote delimiters into clean inputs).
+ */
+const TYPOGRAPHIC_APOSTROPHE = '\u2019';
+
 function resolveSpecialAnalyzedParadigm(
   name: string,
   analyzed: AnalyzedStem
@@ -53,10 +60,10 @@ function resolveSpecialAnalyzedParadigm(
         ? 'hin'
         : harmonize('hon', name);
       return createStemParadigm(name, {
-        strong: `${name}'`,
-        weak: `${name}'`,
-        partitive: `${name}'${harmonize('ta', name)}`,
-        illative: `${name}'${illativeSuffix}`
+        strong: `${name}${TYPOGRAPHIC_APOSTROPHE}`,
+        weak: `${name}${TYPOGRAPHIC_APOSTROPHE}`,
+        partitive: `${name}${TYPOGRAPHIC_APOSTROPHE}${harmonize('ta', name)}`,
+        illative: `${name}${TYPOGRAPHIC_APOSTROPHE}${illativeSuffix}`
       });
     }
 

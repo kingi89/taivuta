@@ -156,6 +156,75 @@ describe('Security & Consumer Trust Invariants', () => {
     );
   });
 
+  it('uses Kotus typographic apostrophe (U+2019) and never synthesizes quote or tag metacharacters from clean inputs', () => {
+    const nonNominativeCases = [
+      'genitive',
+      'partitive',
+      'inessive',
+      'elative',
+      'illative',
+      'adessive',
+      'ablative',
+      'allative',
+      'essive',
+      'translative'
+    ] as const;
+    const silentFinalNames = [
+      'Kaj',
+      'Maj',
+      'Dumas',
+      'Camus',
+      'Descartes',
+      'Monet',
+      'Manet',
+      'Degas',
+      'Renoir',
+      'Bordeaux',
+      'Margaux',
+      'Choux'
+    ] as const;
+
+    for (const name of silentFinalNames) {
+      for (const targetCase of nonNominativeCases) {
+        const unified = inflect(name, targetCase);
+        const person = inflectPerson(name, targetCase);
+        for (const result of [unified, person]) {
+          assert.ok(result.includes('\u2019'), `Expected U+2019 in ${name}:${targetCase} -> ${result}`);
+          assert.ok(!result.includes('\u0027'), `Unexpected ASCII apostrophe in ${name}:${targetCase} -> ${result}`);
+        }
+      }
+    }
+
+    assert.equal(format("<button title='{$name:genitive}'>", { name: 'Kaj' }), "<button title='Kaj\u2019n'>");
+
+    const allCases = ['nominative', ...nonNominativeCases, 'local', 'localFrom', 'localTo'] as const;
+    const cleanInputs = [
+      'Matti',
+      'Virtanen',
+      'Tuomas',
+      'Ilmatar',
+      'Niemi',
+      'John',
+      'Kaj',
+      'Bordeaux',
+      'Helsinki',
+      'Tampere',
+      'Yhdysvallat',
+      'HJK'
+    ] as const;
+    const forbiddenMetachars = /['"<>&\\]/;
+
+    for (const input of cleanInputs) {
+      for (const targetCase of allCases) {
+        const result = inflect(input, targetCase);
+        assert.ok(
+          !forbiddenMetachars.test(result),
+          `Synthesized metacharacter in ${input}:${targetCase} -> ${result}`
+        );
+      }
+    }
+  });
+
   it('trims proper-noun whitespace consistently while preserving outer template whitespace', () => {
     assert.equal(inflect('  Helsinki  ', 'local'), 'Helsingissä');
     assert.equal(inflect('  Matti  ', 'nominative'), 'Matti');
