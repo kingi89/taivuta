@@ -7,6 +7,7 @@
  * @packageDocumentation
  */
 
+import { isRecord } from './guards.ts';
 import { getVowelHarmony, type VowelHarmony } from './vowels.ts';
 import type { LocalCaseType } from '../cases/types.ts';
 
@@ -75,16 +76,21 @@ export function createStemParadigm(
   },
   options: CreateParadigmOptions = {}
 ): StemParadigm {
-  const harmony = options.vowelHarmony ?? getVowelHarmony(nominative);
+  const safeNom = typeof nominative === 'string' ? nominative : '';
+  const safeOpts: CreateParadigmOptions = isRecord(options) ? options : {};
+  const harmony = safeOpts.vowelHarmony ?? getVowelHarmony(safeNom);
+  const validStems: typeof stems = isRecord(stems)
+    ? stems
+    : { strong: safeNom, weak: safeNom, partitive: safeNom, illative: safeNom };
   return {
-    nominative,
-    strongVocalicStem: stems.strong,
-    weakVocalicStem: stems.weak,
-    partitive: stems.partitive,
-    illative: stems.illative,
+    nominative: safeNom,
+    strongVocalicStem: validStems.strong,
+    weakVocalicStem: validStems.weak,
+    partitive: validStems.partitive,
+    illative: validStems.illative,
     vowelHarmony: harmony,
-    defaultSpatialCase: options.defaultSpatialCase ?? 'in',
-    ...(stems.genitive ? { genitive: stems.genitive } : {}),
-    ...(options.isPlural ? { isPlural: true } : {})
+    defaultSpatialCase: safeOpts.defaultSpatialCase ?? 'in',
+    ...(validStems.genitive ? { genitive: validStems.genitive } : {}),
+    ...(safeOpts.isPlural ? { isPlural: true } : {})
   };
 }

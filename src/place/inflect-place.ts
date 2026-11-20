@@ -13,6 +13,14 @@ import {
   ISLAND_INTERNAL_EXCEPTIONS,
   IRREGULAR_PLACES
 } from './municipalities.data.ts';
+import {
+  fallbackString,
+  isRecord,
+  isValidCaseName,
+  safeGet,
+  sanitizeInput
+} from '../morphology/guards.ts';
+import { inflectCompoundPrefix } from '../morphology/compounds.ts';
 import { needsColon, inflectColonWord } from '../morphology/colon.ts';
 import {
   inflectPluralMaat,
@@ -21,7 +29,6 @@ import {
   inflectStateCompound
 } from './state-places.ts';
 import { getPlaceParadigm } from './stem-places.ts';
-import { decomposeCompound } from '../morphology/compounds.ts';
 import { matchNatureNoun } from '../morphology/nature-nouns.ts';
 import { assembleCase } from '../morphology/assembler.ts';
 
@@ -107,49 +114,55 @@ function hasExternalLocalCase(place: string): boolean {
   );
 }
 
-function checkCompoundRemainder(place: string): string | null {
-  if (place.startsWith('Uusi-') || place.startsWith('Iso-')) {
-    return place.slice(place.indexOf('-') + 1);
-  }
-  return null;
+const LEADING_INFLECTING_PREFIX_REGEX = /^(?:Uusi-|Iso-)+(?=[\s\S])/;
+
+function stripLeadingInflectingPrefixes(place: string): string {
+  return place.replace(LEADING_INFLECTING_PREFIX_REGEX, '');
 }
 
-export function detectLocalCase(place: string): LocalCaseType {
-  if (!place) {
-    return 'in';
-  }
-
+function detectKnownPlaceCase(place: string): LocalCaseType | null {
   const override = IRREGULAR_PLACES.get(place);
   if (override?.localCaseType) {
     return override.localCaseType;
   }
-
   if (EXTERNAL_CASE_MUNICIPALITIES.has(place) || hasExternalLocalCase(place)) {
     return 'on';
   }
-
   if (ISLAND_INTERNAL_EXCEPTIONS.has(place)) {
     return 'in';
   }
+  return null;
+}
 
-  const remainder = checkCompoundRemainder(place);
-  if (remainder) {
-    return detectLocalCase(remainder);
-  }
-
+function detectSuffixLocalCase(place: string): LocalCaseType {
   const nature = matchNatureNoun(place);
   if (nature) {
     return nature.defaultSpatialCase;
   }
-
-  if (NATURE_EXTERNAL_SUFFIXES.test(place)) {
-    return 'on';
-  }
-
-  return 'in';
+  return NATURE_EXTERNAL_SUFFIXES.test(place) ? 'on' : 'in';
 }
 
+export function detectLocalCase(place: string): LocalCaseType {
+  const trimmed = sanitizeInput(place);
+  if (!trimmed) {
+    return 'in';
+  }
 
+  const direct = detectKnownPlaceCase(trimmed);
+  if (direct) {
+    return direct;
+  }
+
+  const stripped = stripLeadingInflectingPrefixes(trimmed);
+  if (stripped !== trimmed) {
+    const strippedKnown = detectKnownPlaceCase(stripped);
+    if (strippedKnown) {
+      return strippedKnown;
+    }
+  }
+
+  return detectSuffixLocalCase(stripped);
+}
 
 function resolveGeopoliticalState(place: string, targetCase: GrammaticalCase): string | null {
   return (
@@ -185,7 +198,7 @@ function resolveSpecialOrStatePlace(
 ): string | null {
   const override = IRREGULAR_PLACES.get(place);
   if (override && resolvedCase !== 'nominative') {
-    const custom = override[resolvedCase];
+    const custom = safeGet<string>(override, resolvedCase);
     if (custom) {
       return custom;
     }
@@ -194,6 +207,46 @@ function resolveSpecialOrStatePlace(
     return inflectColonWord(place, resolvedCase);
   }
   return resolveGeopoliticalState(place, resolvedCase);
+}
+
+function resolveStandardPlace(place: string, resolvedCase: GrammaticalCase): string {
+  const nature = matchNatureNoun(place);
+  if (nature) {
+    return assembleCase(nature, resolvedCase);
+  }
+  const paradigm = getPlaceParadigm(place, detectLocalCase(place));
+  return assembleCase(paradigm, resolvedCase);
+}
+
+function inflectCompoundPrefixes(place: string, resolvedCase: GrammaticalCase): string | null {
+  const prefixRegex = /\b(Uusi-|Iso-)/g;
+  const parts: string[] = [];
+  let cursor = 0;
+  let match = prefixRegex.exec(place);
+
+  while (match) {
+    const matchEnd = match.index + match[0].length;
+    if (matchEnd >= place.length) {
+      break;
+    }
+    parts.push(place.slice(cursor, match.index), inflectCompoundPrefix(match[0], resolvedCase));
+    cursor = matchEnd;
+    match = prefixRegex.exec(place);
+  }
+
+  if (cursor === 0) {
+    return null;
+  }
+  const head = place.slice(cursor);
+  parts.push(resolveSpecialOrStatePlace(head, resolvedCase) ?? resolveStandardPlace(head, resolvedCase));
+  return parts.join('');
+}
+
+function sanitizePlaceOptions(options: InflectPlaceOptions): InflectPlaceOptions {
+  if (isRecord(options) && (options.localCase === 'in' || options.localCase === 'on')) {
+    return { localCase: options.localCase };
+  }
+  return {};
 }
 
 /**
@@ -222,30 +275,22 @@ export function inflectPlace(
   targetCase: CaseName,
   options: InflectPlaceOptions = {}
 ): string {
-  if (!place) {
-    return '';
+  const trimmed = sanitizeInput(place);
+  if (!trimmed) {
+    return fallbackString(place);
+  }
+  if (!isValidCaseName(targetCase)) {
+    return trimmed;
   }
 
-  const resolvedCase = resolveLocalCaseTarget(place, targetCase, options);
+  const resolvedCase = resolveLocalCaseTarget(trimmed, targetCase, sanitizePlaceOptions(options));
   if (resolvedCase === 'nominative') {
-    return place;
+    return trimmed;
   }
 
-  const special = resolveSpecialOrStatePlace(place, resolvedCase);
-  if (special) {
-    return special;
-  }
-
-  const compound = decomposeCompound(place, resolvedCase);
-  if (compound?.isInflectingPrefix) {
-    return `${compound.prefix}${inflectPlace(compound.headWord, resolvedCase, options)}`;
-  }
-
-  const nature = matchNatureNoun(place);
-  if (nature) {
-    return assembleCase(nature, resolvedCase);
-  }
-
-  const paradigm = getPlaceParadigm(place, detectLocalCase(place));
-  return assembleCase(paradigm, resolvedCase);
+  return (
+    resolveSpecialOrStatePlace(trimmed, resolvedCase) ??
+    inflectCompoundPrefixes(trimmed, resolvedCase) ??
+    resolveStandardPlace(trimmed, resolvedCase)
+  );
 }

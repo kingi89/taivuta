@@ -8,6 +8,7 @@
  */
 
 import type { LocalCaseType } from '../cases/types.ts';
+import { fallbackString, sanitizeInput } from '../morphology/guards.ts';
 import { harmonize } from '../morphology/vowels.ts';
 import { weakenConsonants } from '../morphology/gradation.ts';
 import { createStemParadigm, type StemParadigm } from '../morphology/paradigm.ts';
@@ -121,8 +122,14 @@ export function getPlaceParadigm(
   place: string,
   defaultSpatialCase: LocalCaseType = 'in'
 ): StemParadigm {
+  const trimmed = sanitizeInput(place);
+  if (!trimmed) {
+    const fb = fallbackString(place);
+    return createStemParadigm(fb, { strong: fb, weak: fb, partitive: fb, illative: fb });
+  }
+  const safeSpatial: LocalCaseType = defaultSpatialCase === 'on' ? 'on' : 'in';
   return (
-    resolveSpecialPlaceParadigm(place, defaultSpatialCase) ??
-    resolveVocalicPlaceParadigm(place, defaultSpatialCase)
+    resolveSpecialPlaceParadigm(trimmed, safeSpatial) ??
+    resolveVocalicPlaceParadigm(trimmed, safeSpatial)
   );
 }

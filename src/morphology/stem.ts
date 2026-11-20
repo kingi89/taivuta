@@ -19,6 +19,7 @@
  */
 
 import type { InflectPersonOptions } from '../cases/types.ts';
+import { fallbackString, isRecord, sanitizeInput } from './guards.ts';
 import { isFinnishTarName } from './tar-names.ts';
 import { LATIN_VOWEL_REGEX } from './vowels.ts';
 
@@ -182,22 +183,24 @@ function makeStem(
  * ```
  */
 export function analyzeStem(name: string, options?: InflectPersonOptions): AnalyzedStem {
-  const trimmed = name.trim();
+  const trimmed = sanitizeInput(name);
   if (!trimmed) {
-    return makeStem({ stem: '' }, '');
+    const fb = fallbackString(name);
+    return makeStem({ stem: fb }, fb);
   }
 
+  const safeOptions = isRecord(options) ? options : undefined;
   const nen = matchNen(trimmed);
   if (nen) {
     return makeStem(nen, trimmed);
   }
 
-  const sStem = matchSStem(trimmed, options);
+  const sStem = matchSStem(trimmed, safeOptions);
   if (sStem) {
     return makeStem(sStem, trimmed);
   }
 
-  const tarStem = matchTarStem(trimmed, options);
+  const tarStem = matchTarStem(trimmed, safeOptions);
   if (tarStem) {
     return makeStem(tarStem, trimmed);
   }

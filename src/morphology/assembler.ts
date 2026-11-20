@@ -12,6 +12,7 @@
  * @packageDocumentation
  */
 
+import { isRecord, isValidCaseName, safeGet } from './guards.ts';
 import { applyHarmony } from './vowels.ts';
 import type { StemParadigm } from './paradigm.ts';
 import type { CaseName, LocalCaseType, PlaceLocalCase } from '../cases/types.ts';
@@ -68,7 +69,7 @@ function buildStandardCase(
   paradigm: StemParadigm,
   targetCase: string
 ): string {
-  const rawSuffix = STANDARD_SUFFIXES[targetCase];
+  const rawSuffix = safeGet<string>(STANDARD_SUFFIXES, targetCase);
   if (!rawSuffix) {
     return paradigm.nominative;
   }
@@ -117,8 +118,11 @@ export function assembleCase(
   targetCase: CaseName,
   options: AssembleCaseOptions = {}
 ): string {
-  if (!paradigm || !paradigm.nominative || targetCase === 'nominative') {
-    return paradigm ? paradigm.nominative : '';
+  if (!isRecord(paradigm) || typeof paradigm.nominative !== 'string' || !paradigm.nominative) {
+    return '';
+  }
+  if (!isValidCaseName(targetCase) || targetCase === 'nominative') {
+    return paradigm.nominative;
   }
 
   const special = resolveSpecialCase(paradigm, targetCase);
@@ -126,8 +130,9 @@ export function assembleCase(
     return special;
   }
 
+  const safeOptions: AssembleCaseOptions = isRecord(options) ? options : {};
   if (isContextualCase(targetCase)) {
-    return buildContextualCase(targetCase, paradigm, options);
+    return buildContextualCase(targetCase, paradigm, safeOptions);
   }
 
   return buildStandardCase(paradigm, targetCase);

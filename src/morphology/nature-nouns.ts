@@ -14,6 +14,7 @@
  * @packageDocumentation
  */
 
+import { fallbackString, isRecord, sanitizeInput } from './guards.ts';
 import { type VowelHarmony } from './vowels.ts';
 import { createStemParadigm, type StemParadigm } from './paradigm.ts';
 import { assembleCase } from './assembler.ts';
@@ -116,10 +117,10 @@ function capitalizeForm(base: string, suffixForm: string, isCapitalized: boolean
  * ```
  */
 export function matchNatureNoun(name: string): StemParadigm | null {
-  if (!name) {
+  const trimmed = sanitizeInput(name);
+  if (!trimmed) {
     return null;
   }
-  const trimmed = name.trim();
   const lower = trimmed.toLowerCase();
 
   for (const rule of NATURE_NOUN_RULES) {
@@ -193,11 +194,18 @@ export function inflectNatureNounSurname(
   caseName: GrammaticalCase,
   stemDef: NatureNounStem
 ): string {
-  const p = matchNatureNoun(name);
+  const trimmed = sanitizeInput(name);
+  if (!trimmed) {
+    return fallbackString(name);
+  }
+  const p = matchNatureNoun(trimmed);
   if (p) {
     return assembleCase(p, caseName);
   }
-  const fallbackParadigm = createStemParadigm(name, {
+  if (!isRecord(stemDef) || typeof stemDef.strongStem !== 'string') {
+    return trimmed;
+  }
+  const fallbackParadigm = createStemParadigm(trimmed, {
     strong: stemDef.strongStem,
     weak: stemDef.weakStem,
     partitive: stemDef.partitive,

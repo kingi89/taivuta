@@ -41,7 +41,7 @@ flowchart TD
 
 | Configuration / Subpath | Primary Use Case | Max Budget | What It Includes | What It Excludes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Full `taivuta`** | General web apps, blogs, full e-commerce | < 30 kB | Auto role detection, municipalities, countries, full templates | Disambiguation detection (`taivuta/preferences`) |
+| **Full `taivuta`** | General web apps, blogs, full e-commerce | < 32 kB | Auto role detection, municipalities, countries, full templates | Disambiguation detection (`taivuta/preferences`) |
 | **`taivuta/person`** | CRMs, user profiles, auth, notifications | < 12 kB | First/last names, foreign names, hyphenated names, nature surnames | Municipalities, places, countries |
 | **`taivuta/place`** | Delivery, logistics, real estate, travel, maps | < 25 kB | All Finnish municipalities, countries, toponyms | Personal name heuristics, templates |
 | **`taivuta/preferences`** | User onboarding, profile settings, disambiguation prompts | < 10 kB | Algorithmic ambiguity detection, multi-dimensional option generation | Municipalities, places, templates, full person engine |

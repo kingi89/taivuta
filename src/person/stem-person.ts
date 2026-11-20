@@ -7,6 +7,7 @@
  * @packageDocumentation
  */
 
+import { fallbackString, isRecord, safeGet, sanitizeInput } from '../morphology/guards.ts';
 import { createStemParadigm, type StemParadigm } from '../morphology/paradigm.ts';
 import { harmonize } from '../morphology/vowels.ts';
 import { weakenConsonants } from '../morphology/gradation.ts';
@@ -95,10 +96,10 @@ const STRING_PREFERENCE_OVERRIDES: Record<string, Partial<InflectPersonOptions>>
 
 function normalizeSinglePreference(item: unknown): Partial<InflectPersonOptions> {
   if (typeof item === 'string') {
-    return STRING_PREFERENCE_OVERRIDES[item] ?? {};
+    return safeGet(STRING_PREFERENCE_OVERRIDES, item) ?? {};
   }
-  if (item && typeof item === 'object') {
-    if ('params' in item && item.params && typeof item.params === 'object') {
+  if (isRecord(item)) {
+    if ('params' in item && isRecord(item.params)) {
       return item.params as Partial<InflectPersonOptions>;
     }
     return item as Partial<InflectPersonOptions>;
@@ -117,6 +118,9 @@ function normalizeSinglePreference(item: unknown): Partial<InflectPersonOptions>
  * @returns Concrete InflectPersonOptions with normalized preference overrides.
  */
 export function resolvePersonPreference(options: InflectPersonOptions = {}): InflectPersonOptions {
+  if (!isRecord(options)) {
+    return {};
+  }
   if (!options.preference) {
     return options;
   }
@@ -198,18 +202,24 @@ export function getPersonParadigm(
   name: string,
   options: InflectPersonOptions = {}
 ): StemParadigm {
+  const trimmed = sanitizeInput(name);
+  if (!trimmed) {
+    const fb = fallbackString(name);
+    return createStemParadigm(fb, { strong: fb, weak: fb, partitive: fb, illative: fb });
+  }
+
   const effectiveOptions = resolvePersonPreference(options);
 
-  if (shouldMatchNatureNoun(name, effectiveOptions)) {
-    const nature = matchNatureNoun(name);
+  if (shouldMatchNatureNoun(trimmed, effectiveOptions)) {
+    const nature = matchNatureNoun(trimmed);
     if (nature) {
       return nature;
     }
   }
 
-  const analyzed = analyzeStem(name, effectiveOptions);
+  const analyzed = analyzeStem(trimmed, effectiveOptions);
   return (
-    resolveSpecialAnalyzedParadigm(name, analyzed) ??
-    resolveVocalicPersonParadigm(name, effectiveOptions)
+    resolveSpecialAnalyzedParadigm(trimmed, analyzed) ??
+    resolveVocalicPersonParadigm(trimmed, effectiveOptions)
   );
 }

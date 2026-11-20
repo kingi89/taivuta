@@ -7,7 +7,7 @@ This document outlines the strategic milestones, architectural direction, and re
 ## Strategic Vision & Core Principles
 
 - **Zero Runtime Dependencies**: The published package will indefinitely maintain `dependencies: {}`.
-- **Strict Size Budgets**: Root bundle $\le 30$ kB minified; subpaths $\le 15$ kB minified.
+- **Strict Size Budgets**: Root bundle $\le 32$ kB minified (restoring $\le 30$ kB in `v0.4.0` via `[OPT-001]`); subpaths $\le 15$ kB minified.
 - **Linguistic Fidelity**: Kotus (Institute for the Languages of Finland) standards serve as the baseline authority for proper noun inflection.
 - **Name-Holder Authority**: When multiple declensions exist, the name holder's preference is primary. Heuristics supply safe defaults when omitted.
 

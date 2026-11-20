@@ -16,6 +16,8 @@
  * @packageDocumentation
  */
 
+import { fallbackString, isRecord, sanitizeInput } from './guards.ts';
+
 /**
  * Options controlling how consonant gradation is applied.
  */
@@ -131,16 +133,21 @@ function weakenQualitative(stem: string, original: string, singleKLoss = false):
  * ```
  */
 export function weakenConsonants(word: string, options: GradationOptions = {}): string {
-  if (!word || word.length < 2) {
-    return word;
+  const trimmed = sanitizeInput(word);
+  if (!trimmed) {
+    return fallbackString(word);
+  }
+  if (trimmed.length < 2) {
+    return trimmed;
   }
 
+  const safeOptions: GradationOptions = isRecord(options) ? options : {};
   // Always apply quantitative gradation (geminate stops)
-  let result = weakenGeminates(word);
+  let result = weakenGeminates(trimmed);
 
   // Apply qualitative gradation unless caller requested doubleOnly
-  if (!options.doubleOnly) {
-    result = weakenQualitative(result, word, options.singleKLoss);
+  if (!safeOptions.doubleOnly) {
+    result = weakenQualitative(result, trimmed, Boolean(safeOptions.singleKLoss));
   }
 
   return result;

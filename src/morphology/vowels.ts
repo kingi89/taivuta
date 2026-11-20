@@ -11,6 +11,8 @@
  * @packageDocumentation
  */
 
+import { MAX_INPUT_LENGTH, safeGet, sanitizeInput, stripTrailingDots } from './guards.ts';
+
 /**
  * The vowel harmony classification of a word.
  */
@@ -81,6 +83,9 @@ const BACK_VOWEL_MAP: Readonly<Record<string, string>> = {
  * ```
  */
 export function isBackSpokenLetter(letter: string): boolean {
+  if (typeof letter !== 'string' || letter.length > MAX_INPUT_LENGTH) {
+    return false;
+  }
   return BACK_SPOKEN_LETTER_REGEX.test(letter);
 }
 
@@ -153,12 +158,17 @@ function scanVowels(component: string): 'back' | 'front' | null {
  * ```
  */
 export function getVowelHarmony(word: string): VowelHarmony {
+  const cleanWord = sanitizeInput(word);
+  if (!cleanWord) {
+    return 'front';
+  }
+
   // Step 1: For space- or hyphen-separated compounds, only the final word component governs.
-  const component = getLastSegment(word);
+  const component = getLastSegment(cleanWord);
 
   // Step 2: Single letters and tokens ending in an isolated letter (e.g. "X", "E", "foo123x",
   // "3D", "P.", "Á") take the harmony of that final letter's spoken Finnish name.
-  const isolatedLetterMatch = ISOLATED_TRAILING_LATIN_REGEX.exec(component.replace(/\.+$/, ''));
+  const isolatedLetterMatch = ISOLATED_TRAILING_LATIN_REGEX.exec(stripTrailingDots(component));
   if (isolatedLetterMatch) {
     const letter = isolatedLetterMatch[1] ?? '';
     return isBackSpokenLetter(letter) ? 'back' : 'front';
@@ -196,10 +206,16 @@ export function getVowelHarmony(word: string): VowelHarmony {
  * ```
  */
 export function applyHarmony(suffix: string, harmony: VowelHarmony): string {
-  if (harmony === 'front') {
-    return suffix.replace(/[aouAOU]/g, (ch) => FRONT_VOWEL_MAP[ch] ?? ch);
+  if (typeof suffix !== 'string') {
+    return '';
   }
-  return suffix.replace(/[äöyÄÖY]/g, (ch) => BACK_VOWEL_MAP[ch] ?? ch);
+  if (suffix.length > MAX_INPUT_LENGTH) {
+    return suffix;
+  }
+  if (harmony === 'front') {
+    return suffix.replace(/[aouAOU]/g, (ch) => safeGet(FRONT_VOWEL_MAP, ch) ?? ch);
+  }
+  return suffix.replace(/[äöyÄÖY]/g, (ch) => safeGet(BACK_VOWEL_MAP, ch) ?? ch);
 }
 
 /**
@@ -217,5 +233,11 @@ export function applyHarmony(suffix: string, harmony: VowelHarmony): string {
  * ```
  */
 export function harmonize(suffix: string, word: string): string {
+  if (typeof suffix !== 'string') {
+    return '';
+  }
+  if (typeof word !== 'string' || word.length > MAX_INPUT_LENGTH) {
+    return suffix;
+  }
   return getVowelHarmony(word) === 'back' ? suffix : applyHarmony(suffix, 'front');
 }

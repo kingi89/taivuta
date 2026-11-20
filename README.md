@@ -128,7 +128,7 @@ For advanced morphology primitives (`weakenConsonants`, `StemParadigm`, `assembl
 
 | Subpath | Primary Use Case | Bundle Budget |
 | :--- | :--- | :--- |
-| `taivuta` | Full library with auto role detection & templates | < 30 kB |
+| `taivuta` | Full library with auto role detection & templates | < 32 kB |
 | `taivuta/person` | Given names, surnames, foreign names | < 12 kB |
 | `taivuta/place` | Municipalities, countries, toponyms & local cases | < 25 kB |
 | `taivuta/template` | Featherweight tagged template & string formatter | < 2 kB |

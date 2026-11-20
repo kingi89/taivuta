@@ -16,6 +16,7 @@ import type {
 } from './types.ts';
 import { inflectPerson } from '../person/inflect-person.ts';
 import { inflectPlace, detectLocalCase, type InflectPlaceOptions } from '../place/inflect-place.ts';
+import { fallbackString, isRecord, isValidCaseName, sanitizeInput } from '../morphology/guards.ts';
 import { classifyProperNoun } from './classify.ts';
 
 const PERSON_PREF_KEYS = ['gradation', 'sStem', 'tarStem', 'vocalicStemVariant', 'colon', 'harmony'] as const;
@@ -35,14 +36,17 @@ function toPreferenceItems(preference: GeneralPreference): readonly GeneralPrefe
  * Returns `null` when the entry does not specify a place local case.
  */
 function extractLocalCaseFromItem(item: GeneralPreferenceInput): LocalCaseType | null {
-  if (!item || typeof item !== 'object') {
+  if (!isRecord(item)) {
     return null;
   }
-  if ('localCase' in item && item.localCase !== undefined) {
+  if ('localCase' in item && (item.localCase === 'in' || item.localCase === 'on')) {
     return item.localCase;
   }
-  if ('params' in item && item.params && 'localCase' in item.params && item.params.localCase !== undefined) {
-    return item.params.localCase;
+  if ('params' in item && isRecord(item.params)) {
+    const localCase = item.params.localCase;
+    if (localCase === 'in' || localCase === 'on') {
+      return localCase;
+    }
   }
   return null;
 }
@@ -63,7 +67,7 @@ function resolvePreferenceLocalCase(preference: GeneralPreference): LocalCaseTyp
 }
 
 function buildPlaceOptions(options: InflectOptions): InflectPlaceOptions {
-  if (options.localCase !== undefined) {
+  if (options.localCase === 'in' || options.localCase === 'on') {
     return { localCase: options.localCase };
   }
   if (options.preference !== undefined) {
@@ -79,11 +83,14 @@ function isPersonPreferenceItem(item: GeneralPreferenceInput): boolean {
   if (typeof item === 'string') {
     return true;
   }
-  if (!item || typeof item !== 'object') {
+  if (!isRecord(item)) {
     return false;
   }
   const params = 'params' in item ? item.params : item;
-  return PERSON_PREF_KEYS.some((key) => key in params);
+  if (!isRecord(params)) {
+    return false;
+  }
+  return PERSON_PREF_KEYS.some((key) => Object.hasOwn(params, key));
 }
 
 function hasPersonPreference(preference: GeneralPreference): boolean {
@@ -117,7 +124,11 @@ function buildPersonOptions(options: InflectOptions): InflectPersonOptions {
  * @returns The detected entity role ('place' or 'person').
  */
 export function detectEntityRole(name: string): 'person' | 'place' {
-  return classifyProperNoun(name, detectLocalCase(name));
+  const trimmed = sanitizeInput(name);
+  if (!trimmed) {
+    return 'person';
+  }
+  return classifyProperNoun(trimmed, detectLocalCase(trimmed));
 }
 
 function hasPersonOptions(options: InflectOptions): boolean {
@@ -131,7 +142,7 @@ function hasPersonOptions(options: InflectOptions): boolean {
 }
 
 function hasPlaceOptions(options: InflectOptions): boolean {
-  if (options.localCase !== undefined) {
+  if (options.localCase === 'in' || options.localCase === 'on') {
     return true;
   }
   return options.preference !== undefined && resolvePreferenceLocalCase(options.preference) !== null;
@@ -174,19 +185,24 @@ export function inflect(
   targetCase: CaseName,
   options: InflectOptions = {}
 ): string {
-  if (!name || targetCase === 'nominative') {
-    return name;
+  const trimmed = sanitizeInput(name);
+  if (!trimmed) {
+    return fallbackString(name);
+  }
+  if (!isValidCaseName(targetCase) || targetCase === 'nominative') {
+    return trimmed;
   }
 
-  const placeOptions = buildPlaceOptions(options);
+  const safeOptions: InflectOptions = isRecord(options) ? options : {};
+  const placeOptions = buildPlaceOptions(safeOptions);
   if (isContextualLocalCase(targetCase)) {
-    return inflectPlace(name, targetCase, placeOptions);
+    return inflectPlace(trimmed, targetCase, placeOptions);
   }
 
-  const role = resolveEntityRole(name, options);
+  const role = resolveEntityRole(trimmed, safeOptions);
   if (role === 'place') {
-    return inflectPlace(name, targetCase, placeOptions);
+    return inflectPlace(trimmed, targetCase, placeOptions);
   }
 
-  return inflectPerson(name, targetCase as GrammaticalCase, buildPersonOptions(options));
+  return inflectPerson(trimmed, targetCase as GrammaticalCase, buildPersonOptions(safeOptions));
 }

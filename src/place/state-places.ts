@@ -8,6 +8,7 @@
  */
 
 import type { GrammaticalCase } from '../cases/types.ts';
+import { safeGet } from '../morphology/guards.ts';
 import { harmonize } from '../morphology/vowels.ts';
 
 /**
@@ -35,7 +36,7 @@ export function inflectPluralMaat(place: string, targetCase: GrammaticalCase): s
     essive: 'maina',
     translative: 'maiksi'
   };
-  const end = endings[targetCase];
+  const end = safeGet<string>(endings, targetCase);
   return end ? `${base}${end}` : null;
 }
 
@@ -64,7 +65,7 @@ export function inflectPluralVallat(place: string, targetCase: GrammaticalCase):
     essive: 'valtoina',
     translative: 'valloiksi'
   };
-  const end = endings[targetCase];
+  const end = safeGet<string>(endings, targetCase);
   return end ? `${base}${end}` : null;
 }
 
@@ -100,7 +101,7 @@ export function inflectPluralIslandArchipelago(
   if (targetCase === 'genitive') return `${prefix}${cutT}en`;
   if (targetCase === 'partitive') return `${prefix}${stem}${harmonize('a', stem)}`;
 
-  const ending = ARCHIPELAGO_ENDINGS[targetCase];
+  const ending = safeGet<string>(ARCHIPELAGO_ENDINGS, targetCase);
   if (!ending) return null;
   const harmonizedEnd = ending === 'lle' ? 'lle' : harmonize(ending, stem);
   return `${prefix}${stem}${harmonizedEnd}`;
@@ -133,9 +134,9 @@ function inflectEmirates(place: string, targetCase: GrammaticalCase): string | n
     genitive: 'arabiemiirikuntien',
     partitive: 'arabiemiirikuntia'
   };
-  const kEnd = kunnatEndings[targetCase];
+  const kEnd = safeGet<string>(kunnatEndings, targetCase);
   if (!kEnd) return null;
-  const pfx = isCompound ? (pfxMap[targetCase] ?? '') : '';
+  const pfx = isCompound ? (safeGet<string>(pfxMap, targetCase) ?? '') : '';
   return `${pfx}${isCompound ? kEnd : 'A' + kEnd.slice(1)}`;
 }
 
@@ -151,7 +152,7 @@ function inflectRepublic(place: string, targetCase: GrammaticalCase): string | n
     genitive: 'tasavallan',
     partitive: 'tasavaltaa'
   };
-  const tEnd = nounEndings[targetCase];
+  const tEnd = safeGet<string>(nounEndings, targetCase);
   if (!tEnd) return null;
 
   if (prefix.endsWith('nen')) {
@@ -163,7 +164,7 @@ function inflectRepublic(place: string, targetCase: GrammaticalCase): string | n
       genitive: 'sen',
       partitive: 'sta'
     };
-    const adjEnd = adjEndings[targetCase] ?? '';
+    const adjEnd = safeGet<string>(adjEndings, targetCase) ?? '';
     return `${adjBase}${adjEnd} ${tEnd}`;
   }
   return `${prefix} ${tEnd}`;
@@ -185,7 +186,7 @@ export function inflectStateCompound(place: string, targetCase: GrammaticalCase)
       genitive: 'Yhdistyneen kuningaskunnan',
       partitive: 'Yhdistynyttä kuningaskuntaa'
     };
-    return endings[targetCase] ?? null;
+    return safeGet<string>(endings, targetCase) ?? null;
   }
 
   return inflectEmirates(place, targetCase) ?? inflectRepublic(place, targetCase);

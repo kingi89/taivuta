@@ -96,13 +96,24 @@ interface InterpolationContext<C extends string, O> {
   readonly options?: FormatOptions;
 }
 
+function resolvePreference(
+  options: FormatOptions | undefined,
+  key: string
+): GeneralPreference | undefined {
+  const prefs = options?.preferences;
+  if (prefs && typeof prefs === 'object' && Object.hasOwn(prefs, key)) {
+    return prefs[key];
+  }
+  return undefined;
+}
+
 function interpolateMatch<C extends string, O>(
   token: string,
   context: InterpolationContext<C, O>
 ): string {
   const parts = token.slice(2, -1).split(':');
   const key = parts[0];
-  if (!key) {
+  if (!key || !Object.hasOwn(context.values, key)) {
     return '';
   }
 
@@ -118,7 +129,7 @@ function interpolateMatch<C extends string, O>(
   }
 
   const role = parts[2];
-  const preference = context.options?.preferences?.[key];
+  const preference = resolvePreference(context.options, key);
   const options: Record<string, unknown> = role ? { role } : {};
   if (preference !== undefined) {
     options.preference = preference;
@@ -145,11 +156,14 @@ export function createTemplateEngine<C extends string = string, O = unknown>(
   inflect: InflectorFn<C, O>
 ): TemplateEngine {
   function format(template: string, values: FormatValues, options?: FormatOptions): string {
-    if (!template) {
+    if (typeof template !== 'string' || !template) {
       return '';
     }
 
-    const context: InterpolationContext<C, O> = { values, inflect, options };
+    const safeValues: FormatValues = values && typeof values === 'object' ? values : {};
+    const safeOptions: FormatOptions | undefined =
+      options && typeof options === 'object' ? options : undefined;
+    const context: InterpolationContext<C, O> = { values: safeValues, inflect, options: safeOptions };
     return template.replace(/\{\$[a-zA-Z0-9_]+(?::[a-zA-Z0-9_]+)?(?::[a-zA-Z0-9_]+)?\}/g, (token) => {
       return interpolateMatch(token, context);
     });
@@ -159,10 +173,14 @@ export function createTemplateEngine<C extends string = string, O = unknown>(
     strings: TemplateStringsArray,
     ...values: readonly TaggedTemplateArg[]
   ): string {
+    if (!Array.isArray(strings)) {
+      return '';
+    }
     let result = '';
 
     for (let i = 0; i < strings.length; i++) {
-      result += strings[i];
+      const part = strings[i];
+      result += typeof part === 'string' ? part : '';
       if (i < values.length) {
         const val = values[i];
         if (Array.isArray(val)) {

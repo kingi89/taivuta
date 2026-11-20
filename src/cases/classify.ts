@@ -8,6 +8,7 @@
  */
 
 import type { LocalCaseType } from './types.ts';
+import { sanitizeInput } from '../morphology/guards.ts';
 import {
   EXTERNAL_CASE_MUNICIPALITIES,
   ISLAND_INTERNAL_EXCEPTIONS,
@@ -110,11 +111,10 @@ export function classifyProperNoun(
   name: string,
   defaultSpatialCase?: LocalCaseType
 ): 'person' | 'place' {
-  if (!name) {
+  const trimmed = sanitizeInput(name);
+  if (!trimmed) {
     return 'person';
   }
-
-  const trimmed = name.trim();
 
   if (isExplicitPlace(trimmed)) {
     return 'place';

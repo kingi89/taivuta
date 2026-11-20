@@ -8,6 +8,7 @@
  */
 
 import type { GrammaticalCase } from '../cases/types.ts';
+import { isValidGrammaticalCase, safeGet, sanitizeInput } from './guards.ts';
 
 /**
  * Compound prefixes whose modifier inflects congruently with the head noun (e.g. Uusi-Seelanti, Iso-Britannia).
@@ -54,6 +55,24 @@ export interface CompoundParts {
 }
 
 /**
+ * Resolves the inflected form of a known congruent compound prefix (e.g. `Uusi-`, `Iso-`).
+ *
+ * @param rawPrefix - Prefix string including trailing hyphen.
+ * @param targetCase - Target grammatical case.
+ * @returns Inflected prefix for the requested case, or `rawPrefix` if unrecognized.
+ */
+export function inflectCompoundPrefix(
+  rawPrefix: string,
+  targetCase: GrammaticalCase
+): string {
+  const declensionTable = safeGet<Readonly<Record<GrammaticalCase, string>>>(
+    INFLECTING_PREFIXES,
+    rawPrefix
+  );
+  return safeGet<string>(declensionTable, targetCase) ?? rawPrefix;
+}
+
+/**
  * Decomposes a hyphenated compound proper noun into its prefix and head word.
  *
  * @param name - The compound proper noun (e.g. "Uusi-Seelanti", "Pohjois-Karjala", "Kari-Pekka").
@@ -70,28 +89,32 @@ export function decomposeCompound(
   name: string,
   targetCase: GrammaticalCase = 'nominative'
 ): CompoundParts | null {
-  const match = name.match(/^(.*?\b)(Uusi-|Iso-)(.+)$/);
+  const trimmed = sanitizeInput(name);
+  if (!trimmed) {
+    return null;
+  }
+
+  const effectiveCase = isValidGrammaticalCase(targetCase) ? targetCase : 'nominative';
+  const match = trimmed.match(/^(.*?\b)(Uusi-|Iso-)(.+)$/);
   if (match) {
     const pre = match[1] ?? '';
     const rawPrefix = match[2] ?? '';
     const headWord = match[3] ?? '';
-    const declensionTable = INFLECTING_PREFIXES[rawPrefix];
-    const inflectedPrefix = declensionTable?.[targetCase] ?? rawPrefix;
     return {
-      prefix: `${pre}${inflectedPrefix}`,
+      prefix: `${pre}${inflectCompoundPrefix(rawPrefix, effectiveCase)}`,
       headWord,
       isInflectingPrefix: true
     };
   }
 
-  const hyphenIdx = name.indexOf('-');
-  if (hyphenIdx === -1 || hyphenIdx === name.length - 1) {
+  const hyphenIdx = trimmed.indexOf('-');
+  if (hyphenIdx === -1 || hyphenIdx === trimmed.length - 1) {
     return null;
   }
 
   return {
-    prefix: name.slice(0, hyphenIdx + 1),
-    headWord: name.slice(hyphenIdx + 1),
+    prefix: trimmed.slice(0, hyphenIdx + 1),
+    headWord: trimmed.slice(hyphenIdx + 1),
     isInflectingPrefix: false
   };
 }

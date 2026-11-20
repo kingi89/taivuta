@@ -6,6 +6,7 @@ import type {
   PreferenceOption
 } from '../cases/types.ts';
 import { isFinnishTarName } from '../morphology/tar-names.ts';
+import { sanitizeInput } from '../morphology/guards.ts';
 import { WORD_DERIVED_GIVEN_NAMES } from './ambiguous-names.data.ts';
 import { buildPreferenceExamples, type InflectionExamples } from './examples.ts';
 
@@ -242,7 +243,7 @@ function collectDimensions(name: string): AmbiguityDimension[] {
 }
 
 export function detectNameDisambiguation(name: string): NameDisambiguation | null {
-  const trimmed = name.trim();
+  const trimmed = sanitizeInput(name);
   if (!trimmed) {
     return null;
   }

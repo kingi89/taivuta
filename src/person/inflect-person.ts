@@ -14,6 +14,7 @@
 
 import { assembleCase } from '../morphology/assembler.ts';
 import { needsColon, inflectColonWord } from '../morphology/colon.ts';
+import { fallbackString, isValidGrammaticalCase, sanitizeInput } from '../morphology/guards.ts';
 import { getPersonParadigm, resolvePersonPreference } from './stem-person.ts';
 import type { GrammaticalCase, InflectPersonOptions } from '../cases/types.ts';
 
@@ -95,8 +96,11 @@ export function inflectPerson(
   targetCase: GrammaticalCase,
   rawOptions: InflectPersonOptions = {}
 ): string {
-  const trimmed = name?.trim() ?? '';
-  if (!trimmed || targetCase === 'nominative') {
+  const trimmed = sanitizeInput(name);
+  if (!trimmed) {
+    return fallbackString(name);
+  }
+  if (!isValidGrammaticalCase(targetCase) || targetCase === 'nominative') {
     return trimmed;
   }
 

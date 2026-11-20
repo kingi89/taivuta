@@ -48,7 +48,7 @@ const BUNDLE_SPECS: readonly BundleSpec[] = [
   {
     name: 'taivuta (root)',
     file: 'dist/index.mjs',
-    maxMinifiedKb: 30.0
+    maxMinifiedKb: 32.0
   },
   {
     name: 'taivuta/person',

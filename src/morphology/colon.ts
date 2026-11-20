@@ -15,6 +15,14 @@
 
 import type { GrammaticalCase } from '../cases/types.ts';
 import {
+  fallbackString,
+  isRecord,
+  isValidGrammaticalCase,
+  safeGet,
+  sanitizeInput,
+  stripTrailingDots
+} from './guards.ts';
+import {
   applyHarmony,
   getLastSegment,
   harmonize,
@@ -39,12 +47,12 @@ import {
  * ```
  */
 export function needsColon(token: string): boolean {
-  const trimmed = token.trim();
+  const trimmed = sanitizeInput(token);
   if (!trimmed) {
     return false;
   }
 
-  const core = trimmed.replace(/\.+$/, '');
+  const core = stripTrailingDots(trimmed);
   if (!core) {
     // Tokens consisting purely of punctuation/dots (e.g. "...", ".") attach endings with a colon
     return true;
@@ -150,6 +158,15 @@ function resolveHarmonizedSuffix(
   return harmony ? applyHarmony(suffix, harmony) : harmonize(suffix, token);
 }
 
+function resolveColonHarmony(
+  options?: { readonly harmony?: 'front' | 'back' }
+): VowelHarmony | undefined {
+  if (!isRecord(options)) {
+    return undefined;
+  }
+  return options.harmony === 'front' || options.harmony === 'back' ? options.harmony : undefined;
+}
+
 /**
  * Inflects an abbreviation, numeral, handle, or non-alphabetic token using colon suffixation.
  *
@@ -170,21 +187,29 @@ export function inflectColonWord(
   targetCase: GrammaticalCase,
   options?: { readonly harmony?: 'front' | 'back' }
 ): string {
-  const baseSuffix = COLON_BASE_ENDINGS[targetCase];
-  if (!baseSuffix) {
-    return token;
+  const trimmed = sanitizeInput(token);
+  if (!trimmed) {
+    return fallbackString(token);
   }
 
-  const core = token.trim().replace(/\.+$/, '');
+  const baseSuffix = isValidGrammaticalCase(targetCase)
+    ? safeGet<string | null>(COLON_BASE_ENDINGS, targetCase)
+    : null;
+  if (!baseSuffix) {
+    return trimmed;
+  }
+
+  const harmony = resolveColonHarmony(options);
+  const core = stripTrailingDots(trimmed);
   const lastChar = core.slice(-1);
 
   if (targetCase === 'partitive' || targetCase === 'illative') {
     const phonology = getLetterPhonology(lastChar);
     if (phonology) {
       const suffix = targetCase === 'partitive' ? phonology.partitive : phonology.illative;
-      return `${token}:${resolveHarmonizedSuffix(suffix, token, options?.harmony)}`;
+      return `${trimmed}:${resolveHarmonizedSuffix(suffix, trimmed, harmony)}`;
     }
   }
 
-  return `${token}:${resolveHarmonizedSuffix(baseSuffix, token, options?.harmony)}`;
+  return `${trimmed}:${resolveHarmonizedSuffix(baseSuffix, trimmed, harmony)}`;
 }
