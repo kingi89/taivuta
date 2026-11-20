@@ -21,7 +21,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | :--- | :--- | :--- | :--- |
 | `[CI-001]` | Upgrade GitHub Actions to `@v6` & Gate Demo Deploy on `check` | P1 | ✅ Completed. |
 | `[CI-002]` | Upgrade GitHub Pages Actions to Node 24-Native Releases | P2 | ✅ Completed (verified warning-free on GitHub Actions). |
-| `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | Add `'scripts/**/*.ts'` to `eslint.config.js` and verify `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`) match in `scripts/verify-bundle.ts`. |
+| `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | ✅ Completed. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
 | `[MAINT-006]` | Retire Obsolete `scripts/generate-places-matrix.ts` Prototype | P2 | Remove the obsolete pre-`v0.1.0` `scripts/generate-places-matrix.ts` prototype and its `generate:places-matrix` script entry in `package.json` before documenting active fixture scripts in `[MAINT-003]`. |
 | `[MAINT-003]` | Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline | P2 | Decide whether to keep (wire `build:countries-fixture` + clean up `main()`/`mkdirSync`/relative logs) or retire `scripts/build-countries-fixture.ts`, and document active fixture regeneration workflows (including `data/municipalities.txt` provenance) in `data/README.md`. |
@@ -50,11 +50,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.2)
-
-### `[MAINT-004]` Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts`
-- **Priority**: P2 | **Affected Components**: `eslint.config.js`, `scripts/verify-bundle.ts`, `scripts/*.ts`
-- **Problem**: Scripts in `scripts/` are excluded from ESLint checks, and version bumps require manual parity across `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`).
-- **Desired Behavior**: Add `'scripts/**/*.ts'` to `eslint.config.js` (resolving any lint violations in existing scripts) and assert in `scripts/verify-bundle.ts` that `package.json`, `package-lock.json`, and `src/index.ts` share the exact same `version` string.
 
 ### `[MAINT-001]` Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts`
 - **Priority**: P2 | **Affected Components**: `package.json`, `scripts/serve-demo.ts`
