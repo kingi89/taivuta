@@ -51,21 +51,23 @@ This document outlines the strategic milestones, architectural direction, and re
 - [ ] **Developer Tooling & Fixture Scripts (`[MAINT-001]`, `[MAINT-006]`, `[MAINT-003]`)**: Replace the inline `package.json` demo server one-liner with `scripts/serve-demo.ts`, retire obsolete `scripts/generate-places-matrix.ts`, evaluate `scripts/build-countries-fixture.ts`, and document active fixture workflows in `data/README.md`.
 - [x] **Preferences Subpath Isolation (`[OPT-002]`)**: Decoupled `inflectPerson` and `stem.ts` from `taivuta/preferences`, reducing its bundle footprint from `14.98 kB` to `9.07 kB` (`< 10 kB`).
 - [x] **Latin Phonology Consolidation (`[OPT-003]`)**: Consolidated shared Latin vowel, spoken-letter, segment, and harmony primitives in `vowels.ts` for reuse across `colon.ts`, `stem.ts`, and `assembler.ts`, reducing `taivuta` root from `29.94 kB` to `29.42 kB`.
+- [ ] **Security Hardening & Trust Policy (`[SEC-001]`, `[SEC-002]`)**: Harden runtime boundaries (safe prototype lookups, $O(N)$ prefix handling, aligned trimming, 1,000,000-character proper-noun bound, `tests/security.test.ts`) and publish `SECURITY.md`, consumer trust guarantees in `README.md`, and secure-coding standards in `CONTRIBUTING.md`.
 
 ### Milestone 7: Algorithmic Place Paradigms & Finnish Regions (v0.4.0) — 📋 Planned
 - [ ] **Algorithmic Place Paradigm Generation (`[REFACTOR-001]`, `[OPT-001]`)**: Replace recurring static entries in `IRREGULAR_PLACES` (Type 78 lengthened *-e* stems, Type 39–41 *-s* stems, plural *-inen* municipalities, and unhyphenated inflecting-prefix compounds) with algorithmic `StemParadigm` resolvers and compact overrides for true exceptions.
 - [ ] **State Compound Secondary Cases & 11-Case Paradigm Suite (`[BUG-015]`, `[TEST-003]`)**: Resolve missing secondary cases (`adessive`, `ablative`, `allative`, `essive`, `translative`) for geopolitical state compounds without bundle bloat, and verify all 11 cases across irregular/algorithmic places.
 - [ ] **Finnish Administrative & Historical Regions (`[TASK-004]`)**: Comprehensive spatial and grammatical case support and benchmark coverage for all 19 Finnish regions (e.g. *Uusimaa $\to$ Uudellamaalla*, *Varsinais-Suomi $\to$ Varsinais-Suomessa*, *Pirkanmaa $\to$ Pirkanmaalla*).
+- [ ] **Algorithmic Place Security & Demo Audit (`[SEC-003]`)**: Verify new algorithmic place resolvers against `tests/security.test.ts` invariants and audit `demo/index.html` DOM rendering for safe text insertion.
 
 ### Milestone 8: Comprehensive User Documentation & Verification (v0.5.0) — 📋 Planned
 - [ ] **Architecture Documentation Synchronization (`[DOC-001]`)**: Align `ARCHITECTURE.md` with current `StemParadigm` fields, supported 11+3 case inventory, final-syllable gradation anchoring, and `-lahti` internal local case rules.
-- [ ] **Comprehensive User & Preferences Guides (`[DOC-002]`)**: Author `docs/user-guide.md` (complete case reference, options, template syntax, and role hints) and `docs/preferences-guide.md` (onboarding UX and persistence recipes), linked from `README.md`.
+- [ ] **Comprehensive User & Preferences Guides (`[DOC-002]`)**: Author `docs/user-guide.md` (complete case reference, options, template syntax, role hints, and edge-case/fallback contract matrix) and `docs/preferences-guide.md` (onboarding UX and persistence recipes), linked from `README.md`.
 - [ ] **Automated Documentation Verification (`[TEST-004]`)**: Add `scripts/verify-docs.ts` to `npm run check` to validate code examples across markdown guides and TSDoc blocks.
 
 ### Milestone 9: Production Release v1.0.0 (Release Candidate) — 📋 Planned
 - [ ] Formal API freeze with stable semver guarantees.
 - [ ] Production npm packaging, provenance signing, and release validation.
-- [ ] Performance benchmark verifying sub-millisecond execution over 100,000 name iterations (`[ICE-001]`).
+- [ ] Performance and adversarial fuzz benchmark verifying sub-millisecond execution and zero crashes over 100,000+ name and randomized Unicode inputs (`[ICE-001]`).
 
 ---
 
