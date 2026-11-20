@@ -25,7 +25,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
 | `[MAINT-003]` | Wire `build:countries-fixture` & Document Fixture Pipeline | P2 | Add `build:countries-fixture` script to `package.json` alongside `build:municipalities-fixture` and document dataset regeneration in `data/README.md`. |
 | `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | ✅ Completed (`9.07 kB < 10 kB`). |
-| `[OPT-003]` | Consolidate Spoken Letter & Latin Phonology Primitives | P2 | Consolidate shared Latin vowel sets, diacritic regexes, and sibilant/spoken-letter primitives across `vowels.ts`, `colon.ts`, and `stem.ts` to reclaim `taivuta` root bundle headroom. |
+| `[OPT-003]` | Consolidate Spoken Letter & Latin Phonology Primitives | P2 | ✅ Completed (`taivuta` root `29.94 kB` $\to$ `29.42 kB`). |
 
 ### Planned Queue — Milestone v0.4.0: Algorithmic Place Paradigms & Finnish Regions
 
@@ -48,11 +48,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.2)
-
-### `[OPT-003]` Consolidate Spoken Letter & Latin Phonology Primitives
-- **Priority**: P2 | **Affected Components**: `src/morphology/vowels.ts`, `src/morphology/colon.ts`, `src/morphology/stem.ts`
-- **Problem**: `taivuta` (root) is at `29.94 kB / 30.00 kB`, and `vowels.ts`, `colon.ts`, and `stem.ts` define overlapping Latin vowel sets and regexes.
-- **Desired Behavior**: Consolidate shared vowel and phonology primitives in `src/morphology/vowels.ts` and reuse them in `colon.ts` and `stem.ts`, reclaiming root bundle headroom with zero behavioral or API changes.
 
 ### `[CI-002]` Upgrade GitHub Pages Actions to Node 24-Native Releases
 - **Priority**: P2 | **Affected Components**: `.github/workflows/deploy-demo.yml`

@@ -50,7 +50,7 @@ This document outlines the strategic milestones, architectural direction, and re
 - [ ] **GitHub Actions Modernization & Quality Gates (`[CI-001]`, `[MAINT-004]`)**: Upgrade workflows from `@v4` to `@v6` actions, run `npm run check` in demo deployment, lint `scripts/**/*.ts`, and enforce automated version parity in `scripts/verify-bundle.ts`.
 - [ ] **Developer Tooling & Fixture Scripts (`[MAINT-001]`, `[MAINT-003]`)**: Replace the inline `package.json` demo server one-liner with `scripts/serve-demo.ts`, wire `build:countries-fixture`, and document fixture workflows in `data/README.md`.
 - [x] **Preferences Subpath Isolation (`[OPT-002]`)**: Decoupled `inflectPerson` and `stem.ts` from `taivuta/preferences`, reducing its bundle footprint from `14.98 kB` to `9.07 kB` (`< 10 kB`).
-- [ ] **Latin Phonology Consolidation (`[OPT-003]`)**: Consolidate shared Latin vowel and spoken-letter primitives across `vowels.ts`, `colon.ts`, and `stem.ts` to reclaim `taivuta` root bundle headroom.
+- [x] **Latin Phonology Consolidation (`[OPT-003]`)**: Consolidated shared Latin vowel, spoken-letter, segment, and harmony primitives in `vowels.ts` for reuse across `colon.ts`, `stem.ts`, and `assembler.ts`, reducing `taivuta` root from `29.94 kB` to `29.42 kB`.
 
 ### Milestone 7: Algorithmic Place Paradigms & Finnish Regions (v0.4.0) — 📋 Planned
 - [ ] **Algorithmic Place Paradigm Generation (`[REFACTOR-001]`, `[OPT-001]`)**: Replace recurring static entries in `IRREGULAR_PLACES` (Type 78 lengthened *-e* stems, Type 39–41 *-s* stems, plural *-inen* municipalities, and unhyphenated inflecting-prefix compounds) with algorithmic `StemParadigm` resolvers and compact overrides for true exceptions.
