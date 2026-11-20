@@ -23,7 +23,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[CI-002]` | Upgrade GitHub Pages Actions to Node 24-Native Releases | P2 | ✅ Completed (verified warning-free on GitHub Actions). |
 | `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | ✅ Completed. |
 | `[SEC-001]` | Runtime Security Hardening, Trimming Alignment & Adversarial Test Suite | P1 | ✅ Completed. |
-| `[SEC-004]` | Switch Synthesized Apostrophe from ASCII `'` (`U+0027`) to Kotus `’` (`U+2019`) | P1 | Replace synthesized ASCII `'` (`U+0027`) with Kotus typographic `’` (`U+2019`) in `src/person/stem-person.ts` (`Kaj’n`, `Bordeaux’ssa`, `Dumas’n`) to eliminate single-quote breakout vectors while aligning with Kotus orthography; update `tests/person.test.ts` and add a metacharacter-synthesis invariant test in `tests/security.test.ts`. |
+| `[SEC-004]` | Switch Synthesized Apostrophe from ASCII `'` (`U+0027`) to Kotus `’` (`U+2019`) | P1 | ✅ Completed. |
 | `[SEC-002]` | Security Policy (`SECURITY.md`), Governance & Release Trust Docs | P1 | Create `SECURITY.md` (7 trust guarantees, character integrity & encode-after-inflect boundary with concrete colon `:` URL-scheme examples and intentional `U+2019` vs. `U+0027` apostrophe rationale, 1M-char bound, GitHub Private Vulnerability Reporting + fallback email without hard SLAs), add Security & Reliability summary to `README.md`, add Secure Coding Standards to `CONTRIBUTING.md`, and add `"engines"` to `package.json`. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
 | `[MAINT-006]` | Retire Obsolete `scripts/generate-places-matrix.ts` Prototype | P2 | Remove the obsolete pre-`v0.1.0` `scripts/generate-places-matrix.ts` prototype and its `generate:places-matrix` script entry in `package.json` before documenting active fixture scripts in `[MAINT-003]`. |
@@ -54,11 +54,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.2)
-
-### `[SEC-004]` Switch Synthesized Apostrophe from ASCII `'` (`U+0027`) to Kotus `’` (`U+2019`)
-- **Priority**: P1 | **Affected Components**: `src/person/stem-person.ts`, `src/morphology/stem.ts`, `tests/person.test.ts`, `tests/security.test.ts`
-- **Problem**: For silent-final foreign names (`Kaj`, `Maj`, `Guy`, `Dumas`, `Bordeaux`, `-eaux`/`-oux`/`-aux`), `src/person/stem-person.ts` synthesizes an ASCII straight apostrophe `'` (`U+0027`). Pure ASCII-letter inputs such as `"Kaj"` or `"eaux"` pass pre-inflection allowlists and HTML character checks (`< > " ' &`), yet `inflect('Kaj', 'genitive')` outputs `"Kaj'n"`, breaking out of single-quoted HTML attributes (enabling full XSS if followed by a second quote-free value in the same attribute, e.g. `<input value='{$a:genitive} {$b}'>` with `a = "Kaj"` and `b = "autofocus onfocus=alert(1)//"`), single-quoted SQL strings, JS string literals, or POSIX shell strings. Additionally, Kotus (*Kielitoimiston ohjepankki*, *Heittomerkki*) explicitly recommends typographic `’` (`U+2019`) over ASCII `'` (`U+0027`) for Finnish inflectional apostrophes.
-- **Desired Behavior**: Replace synthesized ASCII `'` (`U+0027`) with Kotus typographic `’` (`U+2019`) in `src/person/stem-person.ts` (`Kaj’n`, `Bordeaux’ssa`, `Dumas’n`) and update TSDoc in `src/morphology/stem.ts` with the Kotus *Heittomerkki* citation. Update apostrophe expectations in `tests/person.test.ts`, add a regression assertion in `tests/security.test.ts` verifying `taivuta` never synthesizes HTML/SQL/JS quote or tag metacharacters (`'`, `"`, `<`, `>`, `&`, `\`) from pure-letter inputs, and record the behavioral output change under `### Changed` and `### Security` in `CHANGELOG.md` for `v0.3.2`. Execute before `[SEC-002]` so `SECURITY.md` documents live behavior.
 
 ### `[SEC-002]` Security Policy (`SECURITY.md`), Governance & Release Trust Docs
 - **Priority**: P1 | **Affected Components**: `SECURITY.md`, `README.md`, `CONTRIBUTING.md`, `package.json`
