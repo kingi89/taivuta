@@ -23,7 +23,8 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[CI-002]` | Upgrade GitHub Pages Actions to Node 24-Native Releases | P2 | ✅ Completed (verified warning-free on GitHub Actions). |
 | `[MAINT-004]` | Lint `scripts/**/*.ts` & Enforce Version Parity in `verify-bundle.ts` | P2 | Add `'scripts/**/*.ts'` to `eslint.config.js` and verify `package.json`, `package-lock.json`, and `src/index.ts` (`VERSION`) match in `scripts/verify-bundle.ts`. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
-| `[MAINT-003]` | Wire `build:countries-fixture` & Document Fixture Pipeline | P2 | Add `build:countries-fixture` script to `package.json` alongside `build:municipalities-fixture` and document dataset regeneration in `data/README.md`. |
+| `[MAINT-006]` | Retire Obsolete `scripts/generate-places-matrix.ts` Prototype | P2 | Remove the obsolete pre-`v0.1.0` `scripts/generate-places-matrix.ts` prototype and its `generate:places-matrix` script entry in `package.json` before documenting active fixture scripts in `[MAINT-003]`. |
+| `[MAINT-003]` | Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline | P2 | Decide whether to keep (wire `build:countries-fixture` + clean up `main()`/`mkdirSync`/relative logs) or retire `scripts/build-countries-fixture.ts`, and document active fixture regeneration workflows (including `data/municipalities.txt` provenance) in `data/README.md`. |
 | `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | ✅ Completed (`9.07 kB < 10 kB`). |
 | `[OPT-003]` | Consolidate Spoken Letter & Latin Phonology Primitives | P2 | ✅ Completed (`taivuta` root `29.94 kB` $\to$ `29.42 kB`). |
 
@@ -36,6 +37,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[BUG-015]` | Secondary Case Coverage for Geopolitical State Compounds | P2 | Support `adessive`, `ablative`, `allative`, `essive`, and `translative` for plural archipelagos (*Filippiinit*) and state compounds (*Dominikaaninen tasavalta*, *Yhdistynyt kuningaskunta*) in `src/place/state-places.ts` using a bundle-size-neutral mechanism. |
 | `[TEST-003]` | 11-Case Paradigm Verification for Irregular & Algorithmic Places | P2 | Verify all 11 grammatical cases in `tests/place.test.ts` across representative irregular, algorithmic, and state-compound toponyms. |
 | `[TASK-004]` | Finnish Administrative & Historical Regions Support | P1 | Full spatial (`local`, `localFrom`, `localTo`) and grammatical case support and 100% fixture benchmark for all 19 Finnish regions (*Uusimaa $\to$ Uudellamaalla*, *Varsinais-Suomi $\to$ Varsinais-Suomessa*, *Pirkanmaa $\to$ Pirkanmaalla*, *Ahvenanmaa*, *Kainuu*). |
+| `[MAINT-007]` | Decouple `build-municipalities-fixture.ts` from `src/` Imports | P2 | Eliminate the circular dependency where `scripts/build-municipalities-fixture.ts` imports `src/` inflection code to generate `tests/fixtures/municipalities.json` (either freeze the verified static fixture or generate independently), fix L238 `harmonize('ssä', clean)`, add header docs, and log relative paths. |
 
 ### Planned Queue — Milestone v0.5.0: Comprehensive User Documentation & Verification
 
@@ -59,10 +61,15 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 - **Problem**: The `"demo"` npm script embeds a long inline `node -e` HTTP server string in `package.json`.
 - **Desired Behavior**: Extract it into a typed, ESLint-clean `scripts/serve-demo.ts` script executed via `node --experimental-strip-types scripts/serve-demo.ts` with proper MIME types and safe path handling inside the repo.
 
-### `[MAINT-003]` Wire `build:countries-fixture` & Document Fixture Pipeline
-- **Priority**: P2 | **Affected Components**: `package.json`, `data/README.md`
-- **Problem**: `scripts/build-countries-fixture.ts` has no npm script entry, and `data/README.md` omits fixture regeneration instructions for municipalities and countries.
-- **Desired Behavior**: Add `"build:countries-fixture"` to `package.json` alongside `"build:municipalities-fixture"`, and document `build:municipalities-fixture`, `build:countries-fixture`, and `generate:places-matrix` in `data/README.md`.
+### `[MAINT-006]` Retire Obsolete `scripts/generate-places-matrix.ts` Prototype
+- **Priority**: P2 | **Affected Components**: `scripts/generate-places-matrix.ts`, `package.json`
+- **Problem**: `scripts/generate-places-matrix.ts` (1,034 lines) is an obsolete pre-`v0.1.0` prototype that never imports `src/place/` and maintains a drifted parallel fork of municipality rules.
+- **Desired Behavior**: Delete `scripts/generate-places-matrix.ts` and remove `"generate:places-matrix"` from `package.json` before `[MAINT-003]` documents the active fixture pipeline, keeping `npm run check` green.
+
+### `[MAINT-003]` Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline
+- **Priority**: P2 | **Affected Components**: `package.json`, `scripts/build-countries-fixture.ts`, `data/README.md`
+- **Problem**: `scripts/build-countries-fixture.ts` is unwired in `package.json` and duplicates static data already committed in `tests/fixtures/un-countries.json` and `country-variants.json` without external input; `data/README.md` also omits fixture regeneration instructions and `data/municipalities.txt` provenance.
+- **Desired Behavior**: After `[MAINT-006]` retires `generate-places-matrix.ts`, decide whether to keep `scripts/build-countries-fixture.ts` as a typed source (wiring `"build:countries-fixture"`, wrapping top-level side effects in `main()`, adding `mkdirSync` + `'utf8'`, and logging relative paths) or retire it in favor of the JSON fixtures directly, and document active fixture regeneration workflows in `data/README.md`.
 
 ---
 
@@ -72,3 +79,4 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 - **`[ICE-002]` Foreign Given Names and Surnames Ending in `-tti`**: Research safe heuristics or curated registries for foreign *-tti* names (*Donizetti*, *Pavarotti*, *Anetti*) without false-positive gradation resistance on native Finnish *-tti* names (*Matti*, *Antti*, *Pentti*, *Martti*, *Tytti*).
 - **`[ICE-003]` Foreign & Global Personal Name Disambiguation (`Elaine`, `Corinne`, `Njoki`)**: Design heuristics or role/language awareness to prevent foreign given names ending in coincidental Finnish nature-noun substrings (*-laine*, *-rinne*, *-joki*) from matching surname nature-noun paradigms when `{ role: 'givenName' }` is omitted, as part of broader foreign/global personal name support.
 - **`[ICE-004]` Hyphenated `Iso-` and `Uusi-` Surname Disambiguation (`Iso-Anttila`, `Uusi-Pietilä`)**: Distinguish standalone Finnish farmstead surnames starting with `Iso-` and `Uusi-` (which per Kotus keep the prefix uninflected: *Iso-Anttilan*, *Uusi-Pietilän*) from congruently inflecting compound toponyms (*Iso-Britannia $\to$ Ison-Britannian*, *Uusi-Seelanti $\to$ Uuden-Seelannin*) when `inflect()` is called without an explicit `role: 'person'` hint.
+- **`[ICE-005]` Script CLI Hygiene & Strict ESLint Rules for `scripts/**/*.ts`**: Standardize non-zero exit codes on missing inputs and relative path logging across `scripts/`, fix the `mtime` sorting comment in `extract-dvv-names.ts`, and tighten `eslint.config.js` for `scripts/**/*.ts` (`complexity <= 10`, `max-depth <= 3`, `max-params <= 3`) once legacy scripts are retired or refactored.
