@@ -20,6 +20,7 @@
 
 import type { InflectPersonOptions } from '../cases/types.ts';
 import { isFinnishTarName } from './tar-names.ts';
+import { LATIN_VOWEL_REGEX } from './vowels.ts';
 
 /**
  * Result of analyzing a nominal stem.
@@ -41,7 +42,6 @@ export interface AnalyzedStem {
   readonly nominative: string;
 }
 
-const VOWEL_REGEX = /[aeiouyäöåáéíóúàèìòùâêîôûãõäöüÿøæœōūāēī]/i;
 const FRENCH_SILENT_SUFFIXES = /(?:eaux|oux|aux)$/i;
 
 /**
@@ -204,7 +204,7 @@ export function analyzeStem(name: string, options?: InflectPersonOptions): Analy
 
   // If the word ends in a vowel, suffixes attach directly without a linking vowel
   const lastChar = trimmed[trimmed.length - 1] ?? '';
-  if (VOWEL_REGEX.test(lastChar)) {
+  if (LATIN_VOWEL_REGEX.test(lastChar)) {
     return makeStem({ stem: trimmed }, trimmed);
   }
 

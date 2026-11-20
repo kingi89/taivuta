@@ -14,7 +14,16 @@
  */
 
 import type { GrammaticalCase } from '../cases/types.ts';
-import { harmonize, isBackSpokenLetter } from './vowels.ts';
+import {
+  applyHarmony,
+  getLastSegment,
+  harmonize,
+  isBackSpokenLetter,
+  ISOLATED_TRAILING_LATIN_REGEX,
+  LATIN_LETTER_REGEX,
+  LATIN_VOWEL_REGEX,
+  type VowelHarmony
+} from './vowels.ts';
 
 /**
  * Checks whether a token represents an abbreviation, handle, or non-alphabetic ending requiring colon suffixation.
@@ -43,19 +52,17 @@ export function needsColon(token: string): boolean {
 
   const lastChar = core[core.length - 1] ?? '';
   // Non-Latin characters (digits, symbols, non-Latin scripts like 朧)
-  if (!/\p{Script=Latin}/u.test(lastChar)) {
+  if (!LATIN_LETTER_REGEX.test(lastChar)) {
     return true;
   }
 
   // Tokens ending in an isolated single Latin letter (e.g. "X", "E", "foo123x", "bar___y", "abc!xy$z.", "Á", "Ø")
-  if (/(?:^|[^\p{Script=Latin}])\p{Script=Latin}$/u.test(core)) {
+  if (ISOLATED_TRAILING_LATIN_REGEX.test(core)) {
     return true;
   }
 
   // Final component without vowels (e.g. "Koski Tl", "HJK", "STT")
-  const parts = trimmed.split(/[\s-]+/);
-  const lastSegment = parts[parts.length - 1] ?? '';
-  return !/[aeiouyäöáéíóúàèìòùâêîôûãõäöüÿøåæœōūāēī]/i.test(lastSegment);
+  return !LATIN_VOWEL_REGEX.test(getLastSegment(trimmed));
 }
 
 interface LetterPhonology {
@@ -138,15 +145,9 @@ const COLON_BASE_ENDINGS: Record<GrammaticalCase, string | null> = {
 function resolveHarmonizedSuffix(
   suffix: string,
   token: string,
-  harmony?: 'front' | 'back'
+  harmony?: VowelHarmony
 ): string {
-  if (harmony === 'front') {
-    return suffix.replace(/a/g, 'ä').replace(/o/g, 'ö').replace(/u/g, 'y');
-  }
-  if (harmony === 'back') {
-    return suffix.replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/y/g, 'u');
-  }
-  return harmonize(suffix, token);
+  return harmony ? applyHarmony(suffix, harmony) : harmonize(suffix, token);
 }
 
 /**

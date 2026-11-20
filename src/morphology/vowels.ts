@@ -17,40 +17,54 @@
 export type VowelHarmony = 'front' | 'back';
 
 /**
- * Finnish back vowels: a, o, u.
- * Accented variants with macrons, acutes, graves, and tildes retain back tongue position.
+ * Matches a back vowel (Finnish a, o, u, å plus accented variants).
  */
-const BACK_VOWELS = new Set([
-  'a', 'o', 'u', 'å',
-  'á', 'à', 'â', 'ã', 'ā',
-  'ó', 'ò', 'ô', 'õ', 'ō',
-  'ú', 'ù', 'û', 'ū',
-  'A', 'O', 'U', 'Å',
-  'Á', 'À', 'Â', 'Ã', 'Ā',
-  'Ó', 'Ò', 'Ô', 'Õ', 'Ō',
-  'Ú', 'Ù', 'Û', 'Ū'
-]);
+const BACK_VOWEL_REGEX = /[aouåáàâãāóòôõōúùûū]/i;
 
 /**
- * Finnish front vowels: ä, ö, y, plus Scandinavian/Germanic front vowels: ü, ø, æ.
- * (Note: e and i are neutral vowels in Finnish, not front triggers when back vowels exist).
+ * Matches a Finnish or Scandinavian/Germanic front vowel (ä, ö, y, ü, ø, æ).
+ * Note: e and i are neutral vowels in Finnish, not front triggers when back vowels exist.
  */
-const FRONT_VOWELS = new Set([
-  'ä', 'ö', 'y', 'ü', 'ø', 'æ',
-  'Ä', 'Ö', 'Y', 'Ü', 'Ø', 'Æ'
-]);
+const FRONT_VOWEL_REGEX = /[äöyüøæ]/i;
 
 /**
- * Letters whose individual spoken names in Finnish contain back vowels:
- * - A (/aa/), H (/hoo/), K (/koo/), O (/oo/), Q (/kuu/), U (/uu/), Z (/tseta/), Å (/oo/)
- * When used as vowel-less abbreviations (e.g. HJK, Tl), the final letter's spoken name governs:
- * - Suffix with -lla/-ssa: A, H, K, O, Q, U, Z, Å
- * - Suffix with -llä/-ssä: B, C, D, E, F, G, I, J, L, M, N, P, R, S, T, V, W, X, Y, Ä, Ö
+ * Matches a single Latin letter whose spoken Finnish name contains a back vowel
+ * (A, H, K, O, Q, U, Z, Ž, Å and accented back-vowel variants).
  */
-const BACK_SPOKEN_LETTER_NAMES = new Set([
-  'a', 'h', 'k', 'o', 'q', 'u', 'z', 'ž', 'å',
-  'A', 'H', 'K', 'O', 'Q', 'U', 'Z', 'Ž', 'Å'
-]);
+const BACK_SPOKEN_LETTER_REGEX = /^[ahkoquzžåáàâãāóòôõōúùûū]$/i;
+
+/**
+ * Matches a single Latin script character (letters across European orthographies).
+ */
+export const LATIN_LETTER_REGEX = /\p{Script=Latin}/u;
+
+/**
+ * Matches an isolated trailing Latin letter at the end of a token or after a non-Latin character.
+ */
+export const ISOLATED_TRAILING_LATIN_REGEX = /(?:^|[^\p{Script=Latin}])(\p{Script=Latin})$/u;
+
+/**
+ * Matches any Latin vowel character (Finnish, Nordic, Western/Eastern European, or macron variants).
+ */
+export const LATIN_VOWEL_REGEX = /[aeiouyäöåáéíóúàèìòùâêîôûãõüÿøæœōūāēī]/i;
+
+const FRONT_VOWEL_MAP: Readonly<Record<string, string>> = {
+  a: 'ä',
+  o: 'ö',
+  u: 'y',
+  A: 'Ä',
+  O: 'Ö',
+  U: 'Y'
+};
+
+const BACK_VOWEL_MAP: Readonly<Record<string, string>> = {
+  ä: 'a',
+  ö: 'o',
+  y: 'u',
+  Ä: 'A',
+  Ö: 'O',
+  Y: 'U'
+};
 
 /**
  * Checks whether a single letter has back vowel harmony in its spoken Finnish letter name.
@@ -67,17 +81,16 @@ const BACK_SPOKEN_LETTER_NAMES = new Set([
  * ```
  */
 export function isBackSpokenLetter(letter: string): boolean {
-  return BACK_VOWELS.has(letter) || BACK_SPOKEN_LETTER_NAMES.has(letter);
+  return BACK_SPOKEN_LETTER_REGEX.test(letter);
 }
 
 /**
- * Extracts the relevant final segment of a word for vowel harmony determination.
- * For compound words joined by hyphens or spaces, the last word component is used.
+ * Extracts the final whitespace- or hyphen-delimited segment of a proper noun.
  *
  * @param word - The input word or compound phrase.
- * @returns The final component to evaluate for harmony.
+ * @returns The final segment (trimmed if single-token).
  */
-function getLastComponent(word: string): string {
+export function getLastSegment(word: string): string {
   const trimmed = word.trim();
   const segments = trimmed.split(/[\s-]+/);
   return segments[segments.length - 1] ?? trimmed;
@@ -104,9 +117,9 @@ function scanVowels(component: string): 'back' | 'front' | null {
   let lastHarmony: 'back' | 'front' | null = null;
 
   for (const char of target) {
-    if (BACK_VOWELS.has(char)) {
+    if (BACK_VOWEL_REGEX.test(char)) {
       lastHarmony = 'back';
-    } else if (FRONT_VOWELS.has(char)) {
+    } else if (FRONT_VOWEL_REGEX.test(char)) {
       lastHarmony = 'front';
     }
   }
@@ -141,11 +154,11 @@ function scanVowels(component: string): 'back' | 'front' | null {
  */
 export function getVowelHarmony(word: string): VowelHarmony {
   // Step 1: For space- or hyphen-separated compounds, only the final word component governs.
-  const component = getLastComponent(word);
+  const component = getLastSegment(word);
 
   // Step 2: Single letters and tokens ending in an isolated letter (e.g. "X", "E", "foo123x",
   // "3D", "P.", "Á") take the harmony of that final letter's spoken Finnish name.
-  const isolatedLetterMatch = /(?:^|[^\p{Script=Latin}])(\p{Script=Latin})\.?$/u.exec(component);
+  const isolatedLetterMatch = ISOLATED_TRAILING_LATIN_REGEX.exec(component.replace(/\.+$/, ''));
   if (isolatedLetterMatch) {
     const letter = isolatedLetterMatch[1] ?? '';
     return isBackSpokenLetter(letter) ? 'back' : 'front';
@@ -160,13 +173,33 @@ export function getVowelHarmony(word: string): VowelHarmony {
   // Step 4: For vowel-less acronyms/abbreviations, use the spoken name of the final letter
   // (A, H, K, O, Q, U, Z, Ž, Å take back harmony, e.g. HJK:ssa, HZ:lla).
   const lastChar = component[component.length - 1] ?? '';
-  if (BACK_SPOKEN_LETTER_NAMES.has(lastChar)) {
+  if (isBackSpokenLetter(lastChar)) {
     return 'back';
   }
 
   // Step 5: Words containing only neutral vowels (e, i) take front vowel harmony in Finnish
   // (Kotus guideline: Sanat, joissa on vain e- ja i-vokaaleja, ovat etuvokaalisia).
   return 'front';
+}
+
+/**
+ * Converts a suffix string into the requested vowel harmony ('front' or 'back').
+ *
+ * @param suffix - Suffix string to convert (e.g. "ssa", "ssä", "hon").
+ * @param harmony - Target vowel harmony ('front' maps a/o/u -> ä/ö/y; 'back' maps ä/ö/y -> a/o/u).
+ * @returns The suffix converted to the requested vowel harmony.
+ *
+ * @example
+ * ```ts
+ * applyHarmony("ssa", "front"); // "ssä"
+ * applyHarmony("ään", "back");  // "aan"
+ * ```
+ */
+export function applyHarmony(suffix: string, harmony: VowelHarmony): string {
+  if (harmony === 'front') {
+    return suffix.replace(/[aouAOU]/g, (ch) => FRONT_VOWEL_MAP[ch] ?? ch);
+  }
+  return suffix.replace(/[äöyÄÖY]/g, (ch) => BACK_VOWEL_MAP[ch] ?? ch);
 }
 
 /**
@@ -184,16 +217,5 @@ export function getVowelHarmony(word: string): VowelHarmony {
  * ```
  */
 export function harmonize(suffix: string, word: string): string {
-  const harmony = getVowelHarmony(word);
-  if (harmony === 'back') {
-    return suffix;
-  }
-
-  return suffix
-    .replace(/a/g, 'ä')
-    .replace(/o/g, 'ö')
-    .replace(/u/g, 'y')
-    .replace(/A/g, 'Ä')
-    .replace(/O/g, 'Ö')
-    .replace(/U/g, 'Y');
+  return getVowelHarmony(word) === 'back' ? suffix : applyHarmony(suffix, 'front');
 }

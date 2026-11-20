@@ -224,6 +224,8 @@ describe('Arbitrary Strings, Periods & Acronym Inflection', () => {
     assert.equal(inflectPerson('Z', 'partitive', { harmony: 'front' }), 'Z:ää');
     assert.equal(inflectPerson('X', 'illative', { harmony: 'back' }), 'X:aan');
     assert.equal(inflectPerson('X', 'partitive', { harmony: 'back' }), 'X:aa');
+    assert.equal(inflectPerson('NIKLAS', 'illative', { colon: true }), 'NIKLAS:ään');
+    assert.equal(inflectPerson('NIKLAS', 'illative', { colon: true, harmony: 'back' }), 'NIKLAS:aan');
   });
 
   it('works via unified inflect() entry point', () => {

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   getVowelHarmony,
   harmonize,
+  isBackSpokenLetter,
   weakenConsonants,
   analyzeStem,
   inflect
@@ -75,6 +76,18 @@ describe('Vowel Harmony (getVowelHarmony & harmonize)', () => {
     assert.equal(harmonize('sta', 'Jyväskylä'), 'stä');
     assert.equal(harmonize('lla', 'Päivi-Liisa'), 'lla');
     assert.equal(harmonize('llä', 'Pekka-Yrjö'), 'llä');
+    assert.equal(harmonize('SSA', 'Helsinki'), 'SSÄ');
+    assert.equal(harmonize('HON', 'Y'), 'HÖN');
+    assert.equal(harmonize('SSA', 'Turku'), 'SSA');
+  });
+
+  it('identifies back-spoken letters and rejects front, empty, and multi-char inputs', () => {
+    for (const letter of ['Á', 'ō', 'ū', 'H', 'K', 'Q', 'Z', 'Ž']) {
+      assert.equal(isBackSpokenLetter(letter), true, `Expected back spoken harmony for ${letter}`);
+    }
+    for (const letter of ['E', 'Ä', 'Ø', '', 'ab']) {
+      assert.equal(isBackSpokenLetter(letter), false, `Expected false for ${letter}`);
+    }
   });
 });
 

@@ -12,7 +12,7 @@
  * @packageDocumentation
  */
 
-import { harmonize } from './vowels.ts';
+import { applyHarmony } from './vowels.ts';
 import type { StemParadigm } from './paradigm.ts';
 import type { CaseName, LocalCaseType, PlaceLocalCase } from '../cases/types.ts';
 
@@ -73,8 +73,9 @@ function buildStandardCase(
     return paradigm.nominative;
   }
 
-  const harmonyChar = paradigm.vowelHarmony === 'front' ? 'ä' : 'a';
-  const suffix = harmonize(rawSuffix, harmonyChar);
+  const suffix = paradigm.vowelHarmony === 'front'
+    ? applyHarmony(rawSuffix, 'front')
+    : rawSuffix;
   const stem = targetCase === 'essive'
     ? paradigm.strongVocalicStem
     : paradigm.weakVocalicStem;
