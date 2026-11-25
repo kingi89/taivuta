@@ -25,7 +25,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[SEC-001]` | Runtime Security Hardening, Trimming Alignment & Adversarial Test Suite | P1 | ✅ Completed. |
 | `[SEC-004]` | Switch Synthesized Apostrophe from ASCII `'` (`U+0027`) to Kotus `’` (`U+2019`) | P1 | ✅ Completed. |
 | `[SEC-002]` | Security Policy (`SECURITY.md`), Governance & Release Trust Docs | P1 | ✅ Completed. |
-| `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | Extract the inline Node HTTP server one-liner from `package.json` into a typed, linted `scripts/serve-demo.ts` script. |
+| `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | ✅ Completed. |
 | `[MAINT-006]` | Retire Obsolete `scripts/generate-places-matrix.ts` Prototype | P2 | Remove the obsolete pre-`v0.1.0` `scripts/generate-places-matrix.ts` prototype and its `generate:places-matrix` script entry in `package.json` before documenting active fixture scripts in `[MAINT-003]`. |
 | `[MAINT-003]` | Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline | P2 | Decide whether to keep (wire `build:countries-fixture` + clean up `main()`/`mkdirSync`/relative logs) or retire `scripts/build-countries-fixture.ts`, and document active fixture regeneration workflows (including `data/municipalities.txt` provenance) in `data/README.md`. |
 | `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | ✅ Completed (`9.07 kB < 10 kB`). |
@@ -54,11 +54,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.2)
-
-### `[MAINT-001]` Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts`
-- **Priority**: P2 | **Affected Components**: `package.json`, `scripts/serve-demo.ts`
-- **Problem**: The `"demo"` npm script embeds a long inline `node -e` HTTP server string in `package.json`.
-- **Desired Behavior**: Extract it into a typed, ESLint-clean `scripts/serve-demo.ts` script executed via `node --experimental-strip-types scripts/serve-demo.ts` with proper MIME types and safe path handling inside the repo.
 
 ### `[MAINT-006]` Retire Obsolete `scripts/generate-places-matrix.ts` Prototype
 - **Priority**: P2 | **Affected Components**: `scripts/generate-places-matrix.ts`, `package.json`
