@@ -20,6 +20,9 @@ npm install
 
 # Run the full quality suite
 npm run check
+
+# Preview the interactive browser demo locally at http://127.0.0.1:3000 (optional PORT override)
+npm run build && npm run demo
 ```
 
 ---
