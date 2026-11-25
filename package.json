@@ -81,7 +81,6 @@
     "prepublishOnly": "npm run check",
     "extract:names": "node --experimental-strip-types scripts/extract-dvv-names.ts",
     "generate:matrix": "node --experimental-strip-types scripts/generate-names-matrix.ts",
-    "generate:places-matrix": "node --experimental-strip-types scripts/generate-places-matrix.ts",
     "build:municipalities-fixture": "node --experimental-strip-types scripts/build-municipalities-fixture.ts",
     "demo": "node --experimental-strip-types scripts/serve-demo.ts"
   },
