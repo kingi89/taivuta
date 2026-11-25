@@ -26,7 +26,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[SEC-004]` | Switch Synthesized Apostrophe from ASCII `'` (`U+0027`) to Kotus `’` (`U+2019`) | P1 | ✅ Completed. |
 | `[SEC-002]` | Security Policy (`SECURITY.md`), Governance & Release Trust Docs | P1 | ✅ Completed. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | ✅ Completed. |
-| `[MAINT-006]` | Retire Obsolete `scripts/generate-places-matrix.ts` Prototype | P2 | Remove the obsolete pre-`v0.1.0` `scripts/generate-places-matrix.ts` prototype and its `generate:places-matrix` script entry in `package.json` before documenting active fixture scripts in `[MAINT-003]`. |
+| `[MAINT-006]` | Retire Obsolete `scripts/generate-places-matrix.ts` Prototype | P2 | ✅ Completed. |
 | `[MAINT-003]` | Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline | P2 | Decide whether to keep (wire `build:countries-fixture` + clean up `main()`/`mkdirSync`/relative logs) or retire `scripts/build-countries-fixture.ts`, and document active fixture regeneration workflows (including `data/municipalities.txt` provenance) in `data/README.md`. |
 | `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | ✅ Completed (`9.07 kB < 10 kB`). |
 | `[OPT-003]` | Consolidate Spoken Letter & Latin Phonology Primitives | P2 | ✅ Completed (`taivuta` root `29.94 kB` $\to$ `29.42 kB`). |
@@ -54,11 +54,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.3.2)
-
-### `[MAINT-006]` Retire Obsolete `scripts/generate-places-matrix.ts` Prototype
-- **Priority**: P2 | **Affected Components**: `scripts/generate-places-matrix.ts`, `package.json`
-- **Problem**: `scripts/generate-places-matrix.ts` (1,034 lines) is an obsolete pre-`v0.1.0` prototype that never imports `src/place/` and maintains a drifted parallel fork of municipality rules.
-- **Desired Behavior**: Delete `scripts/generate-places-matrix.ts` and remove `"generate:places-matrix"` from `package.json` before `[MAINT-003]` documents the active fixture pipeline, keeping `npm run check` green.
 
 ### `[MAINT-003]` Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline
 - **Priority**: P2 | **Affected Components**: `package.json`, `scripts/build-countries-fixture.ts`, `data/README.md`
