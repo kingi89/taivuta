@@ -4,6 +4,18 @@ This directory contains data resources and instructions for reproducing or updat
 
 ---
 
+## Overview
+
+| Output Artifact | Input / Source | Regeneration / Update | Verifying Suite |
+| :--- | :--- | :--- | :--- |
+| `tests/fixtures/dvv-top-names.json` | DVV `.xlsx` workbooks in `data/names/` | `npm run extract:names` | `tests/person.test.ts` |
+| `data/names-matrix.csv` | `tests/fixtures/dvv-top-names.json` | `npm run generate:matrix` | Manual CSV review |
+| `tests/fixtures/municipalities.json` | `data/municipalities.txt` + overrides | `npm run build:municipalities-fixture` | `tests/place.test.ts` |
+| `tests/fixtures/un-countries.json` | Curated static JSON | Edit JSON directly | `tests/countries.test.ts` |
+| `tests/fixtures/country-variants.json` | Curated static JSON | Edit JSON directly | `tests/countries.test.ts` |
+
+---
+
 ## 1. DVV Name Statistics (Etunimet & Sukunimet)
 
 The personal name benchmark (`tests/fixtures/dvv-top-names.json`) is derived from open datasets published by Digi- ja väestötietovirasto (DVV, Digital and Population Data Services Agency).
@@ -54,6 +66,29 @@ You can also specify a custom output path:
 ```bash
 npm run generate:matrix -- --output path/to/matrix.csv
 ```
+
+---
+
+## 3. Finnish Municipalities Benchmark (`build:municipalities-fixture`)
+
+To regenerate the Finnish municipalities benchmark (`tests/fixtures/municipalities.json`, 308 entries, verified by `tests/place.test.ts`), run:
+
+```bash
+npm run build:municipalities-fixture
+```
+
+This reads `data/municipalities.txt` (a local, gitignored UTF-8 file via `data/*.txt` containing one Finnish municipality name per line) and writes `tests/fixtures/municipalities.json`.
+
+---
+
+## 4. UN Member States & Country Variants Benchmark
+
+The country benchmarks are maintained directly as curated static JSON fixtures (one JSON object per line, loaded via `tests/fixtures/un-countries.fixture.ts` and verified by `tests/countries.test.ts`):
+
+- `tests/fixtures/un-countries.json` — 197 UN member state entries (`name`, `localCase`, `localFrom`, `localTo`, `genitive`, `localCaseType`).
+- `tests/fixtures/country-variants.json` — 5 commonly used alternative country name entries (*Arabiemiirikunnat*, *Bosnia-Hertsegovina*, *Eesti*, *Iso-Britannia*, *Kongo*).
+
+Updates are edited directly in these JSON files and verified via `npm run check`.
 
 ---
 
