@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.2] - 2026-11-27
+
+### Security
+- **Runtime Boundary Hardening**: Hardened public APIs across all subpaths against malformed runtime inputs, `Object.prototype` collisions, and invalid options, aligned whitespace trimming across proper-noun entry points, and enforced linear $O(N)$ execution with a `1,000,000`-character proper-noun ceiling (keeping `format()` templates unbounded).
+- **Kotus Typographic Apostrophe (`U+2019`)**: Switched synthesized inflectional apostrophes for silent-final foreign names (*Kaj’n*, *Bordeaux’ssa*, *Dumas’n*) from ASCII `'` (`U+0027`) to Kotus typographic `’` (`U+2019`).
+- **Security Policy & Runtime Floor**: Published [`SECURITY.md`](SECURITY.md) documenting consumer trust guarantees and output-encoding boundaries, declared `"engines": { "node": ">=18.0.0" }`, and verified compiled ESM/CJS compatibility on Node 18+.
+
+### Performance
+- **Smaller `taivuta/preferences` Subpath**: Reduced the `taivuta/preferences` bundle footprint to under `10 kB` minified by decoupling it from the full person inflection engine.
+
+---
+
 ## [0.3.1] - 2026-11-18
 
 ### Added

@@ -4,14 +4,14 @@ import { VERSION, getStatus } from '../src/index.ts';
 
 describe('taivuta baseline exports', () => {
   it('exports semantic version string', () => {
-    assert.equal(VERSION, '0.3.1');
+    assert.equal(VERSION, '0.3.2');
   });
 
   it('returns valid library status object', () => {
     const status = getStatus();
     assert.deepEqual(status, {
       name: 'taivuta',
-      version: '0.3.1',
+      version: '0.3.2',
       ready: true
     });
   });
