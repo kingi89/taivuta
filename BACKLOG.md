@@ -27,7 +27,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[SEC-002]` | Security Policy (`SECURITY.md`), Governance & Release Trust Docs | P1 | ✅ Completed. |
 | `[MAINT-001]` | Replace Inline Demo Script in `package.json` with `scripts/serve-demo.ts` | P2 | ✅ Completed. |
 | `[MAINT-006]` | Retire Obsolete `scripts/generate-places-matrix.ts` Prototype | P2 | ✅ Completed. |
-| `[MAINT-003]` | Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline | P2 | Decide whether to keep (wire `build:countries-fixture` + clean up `main()`/`mkdirSync`/relative logs) or retire `scripts/build-countries-fixture.ts`, and document active fixture regeneration workflows (including `data/municipalities.txt` provenance) in `data/README.md`. |
+| `[MAINT-003]` | Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline | P2 | ✅ Completed. |
 | `[OPT-002]` | Decouple Heavy Inflection Engine from `taivuta/preferences` Subpath | P1 | ✅ Completed (`9.07 kB < 10 kB`). |
 | `[OPT-003]` | Consolidate Spoken Letter & Latin Phonology Primitives | P2 | ✅ Completed (`taivuta` root `29.94 kB` $\to$ `29.42 kB`). |
 
@@ -55,10 +55,7 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 
 ## 2. Active Milestone Specifications (v0.3.2)
 
-### `[MAINT-003]` Evaluate `build-countries-fixture.ts` & Document Fixture Pipeline
-- **Priority**: P2 | **Affected Components**: `package.json`, `scripts/build-countries-fixture.ts`, `data/README.md`
-- **Problem**: `scripts/build-countries-fixture.ts` is unwired in `package.json` and duplicates static data already committed in `tests/fixtures/un-countries.json` and `country-variants.json` without external input; `data/README.md` also omits fixture regeneration instructions and `data/municipalities.txt` provenance.
-- **Desired Behavior**: After `[MAINT-006]` retires `generate-places-matrix.ts`, decide whether to keep `scripts/build-countries-fixture.ts` as a typed source (wiring `"build:countries-fixture"`, wrapping top-level side effects in `main()`, adding `mkdirSync` + `'utf8'`, and logging relative paths) or retire it in favor of the JSON fixtures directly, and document active fixture regeneration workflows in `data/README.md`.
+*All active `v0.3.2` milestone tasks are completed.*
 
 ---
 
