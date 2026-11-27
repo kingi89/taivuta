@@ -21,6 +21,7 @@ import {
 import {
   matchNatureNoun,
   inflectNatureNounSurname,
+  isFinnishTarName,
   decomposeCompound,
   needsColon,
   inflectColonWord
@@ -85,6 +86,19 @@ describe('Security & Consumer Trust Invariants', () => {
       'Sadulle'
     );
     assert.equal(format('{$toString:genitive}', { toString: 'Matti' } as never), 'Matin');
+    assert.equal(inflect('Tampere', 'genitive', { preference: 'toString' as never }), 'Tampereen');
+
+    const untrustedPref = {
+      colon: 'false',
+      role: 'surname',
+      harmony: 'invalid',
+      vocalicStemVariant: 'invalid',
+      extra: 1
+    };
+    const resolvedPref = resolvePersonPreference({ preference: untrustedPref as never });
+    assert.equal('role' in resolvedPref, false);
+    assert.equal('extra' in resolvedPref, false);
+    assert.equal(inflectPerson('Satu', 'allative', { preference: untrustedPref as never }), 'Sadulle');
   });
 
   it('handles malformed JS runtime inputs gracefully without throwing', () => {
@@ -108,6 +122,7 @@ describe('Security & Consumer Trust Invariants', () => {
       assert.equal(needsColon(bad as never), false);
       assert.equal(inflectColonWord(bad as never, 'genitive'), '');
       assert.equal(analyzeStem(bad as never).stem, '');
+      assert.equal(isFinnishTarName(bad as never), false);
       assert.equal(matchNatureNoun(bad as never), null);
       assert.equal(inflectNatureNounSurname(bad as never, 'genitive', {} as never), '');
       assert.equal(decomposeCompound(bad as never), null);
@@ -130,18 +145,77 @@ describe('Security & Consumer Trust Invariants', () => {
     assert.equal(assembleCase(null as never, 'genitive'), '');
     assert.equal(assembleCase({} as never, 'genitive'), '');
     assert.equal(assembleCase(createStemParadigm('Matti', null as never, null as never), 'genitive'), 'Mattin');
+
+    const emptyStemsParadigm = createStemParadigm('Matti', {} as never, {
+      vowelHarmony: 'invalid',
+      defaultSpatialCase: 'invalid'
+    } as never);
+    assert.equal(assembleCase(emptyStemsParadigm, 'genitive'), 'Mattin');
+    assert.equal(assembleCase(emptyStemsParadigm, 'local'), 'Mattissa');
+
+    const symbolStemsParadigm = createStemParadigm('Matti', {
+      strong: Symbol('x'),
+      weak: Object.create(null),
+      partitive: 123,
+      illative: null
+    } as never);
+    assert.equal(assembleCase(symbolStemsParadigm, 'genitive'), 'Mattin');
+
+    const directMalformedParadigm = {
+      nominative: 'Matti',
+      weakVocalicStem: Symbol('x'),
+      strongVocalicStem: Object.create(null),
+      partitive: 123,
+      illative: null
+    } as never;
+    assert.equal(assembleCase(directMalformedParadigm, 'genitive'), 'Matti');
+    assert.equal(assembleCase(directMalformedParadigm, 'partitive'), 'Matti');
+    assert.equal(assembleCase(directMalformedParadigm, 'illative'), 'Matti');
+    assert.equal(assembleCase(directMalformedParadigm, 'inessive'), 'Matti');
+    assert.equal(assembleCase(directMalformedParadigm, 'essive'), 'Matti');
+
     assert.equal(inflectNatureNounSurname('Xyz', 'genitive', null as never), 'Xyz');
+    assert.equal(
+      inflectNatureNounSurname('Xyz', 'genitive', { strongStem: 'Xyz', illativeSuffix: Symbol('x') } as never),
+      'Xyz'
+    );
 
     assert.equal(format(null as never, null as never, null as never), '');
     assert.equal(format('{$a:genitive}', null as never, null as never), '');
     assert.equal(t(null as never), '');
     assert.equal(t([null, ''] as never, 'ignored'), 'ignored');
 
+    const throwingObj = {
+      toString(): string {
+        throw new Error('boom');
+      }
+    };
+    const invalidTemplateValues: readonly unknown[] = [
+      Object.create(null),
+      throwingObj,
+      Symbol('x'),
+      Number.NaN,
+      Number.POSITIVE_INFINITY,
+      Number.NEGATIVE_INFINITY,
+      {},
+      new String('Matti')
+    ];
+    for (const v of invalidTemplateValues) {
+      assert.equal(format('{$v}', { v } as never), '');
+      assert.equal(format('{$v:genitive}', { v } as never), '');
+      assert.equal(t`${v as never}`, '');
+      assert.equal(t`${[v, 'genitive'] as never}`, '');
+    }
+
     // Intentional numeric interpolation remains supported in template engines
     assert.equal(format('{$n:genitive}', { n: 7 }), '7:n');
+    assert.equal(t`${[7, 'genitive'] as never}`, '7:n');
     assert.equal(t`Numero ${7}`, 'Numero 7');
     const customEngine = createTemplateEngine(inflectPerson);
     assert.equal(customEngine.format(null as never, null as never), '');
+    const nullInflectEngine = createTemplateEngine(null as never);
+    assert.equal(nullInflectEngine.format('{$a:genitive}', { a: 'Matti' }), 'Matti');
+    assert.equal(nullInflectEngine.t`${['Matti', 'genitive']}`, 'Matti');
   });
 
   it('preserves raw characters without escaping/unescaping and keeps templates single-pass', () => {
@@ -238,6 +312,7 @@ describe('Security & Consumer Trust Invariants', () => {
     assert.equal(detectNameDisambiguation('  Satu  ')?.name, 'Satu');
     assert.equal(weakenConsonants('  Matti  '), 'Mati');
     assert.equal(decomposeCompound('  Uusi-Seelanti  ', 'inessive')?.prefix, 'Uudessa-');
+    assert.equal(isFinnishTarName('  Ilmatar  '), true);
     assert.equal(format('  Hei {$user:allative}!  ', { user: '  Matti  ' }), '  Hei Matille!  ');
   });
 
@@ -303,6 +378,7 @@ describe('Security & Consumer Trust Invariants', () => {
     assert.equal(detectEntityRole(overLimit), 'person');
     assert.equal(detectNameDisambiguation(overLimit), null);
     assert.equal(needsColon(overLimit), false);
+    assert.equal(isFinnishTarName(overLimit), false);
     assert.equal(isBackSpokenLetter(overLimit), false);
     assert.equal(getVowelHarmony(overLimit), 'front');
 

@@ -202,7 +202,7 @@ export function inflectNatureNounSurname(
   if (p) {
     return assembleCase(p, caseName);
   }
-  if (!isRecord(stemDef) || typeof stemDef.strongStem !== 'string') {
+  if (!isRecord(stemDef) || typeof stemDef.strongStem !== 'string' || typeof stemDef.illativeSuffix !== 'string') {
     return trimmed;
   }
   const fallbackParadigm = createStemParadigm(trimmed, {

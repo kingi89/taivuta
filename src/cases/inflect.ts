@@ -15,6 +15,7 @@ import type {
   PersonPreference
 } from './types.ts';
 import { inflectPerson } from '../person/inflect-person.ts';
+import { isKnownPersonPreferenceId } from '../person/stem-person.ts';
 import { inflectPlace, detectLocalCase, type InflectPlaceOptions } from '../place/inflect-place.ts';
 import { fallbackString, isRecord, isValidCaseName, sanitizeInput } from '../morphology/guards.ts';
 import { classifyProperNoun } from './classify.ts';
@@ -81,7 +82,7 @@ function buildPlaceOptions(options: InflectOptions): InflectPlaceOptions {
 
 function isPersonPreferenceItem(item: GeneralPreferenceInput): boolean {
   if (typeof item === 'string') {
-    return true;
+    return isKnownPersonPreferenceId(item);
   }
   if (!isRecord(item)) {
     return false;

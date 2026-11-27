@@ -107,6 +107,27 @@ function resolvePreference(
   return undefined;
 }
 
+function toTemplateString(value: unknown): string | null {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value);
+  }
+  return null;
+}
+
+function formatTaggedArg<C extends string, O>(
+  val: unknown,
+  inflect: InflectorFn<C, O>
+): string {
+  if (Array.isArray(val)) {
+    const name = toTemplateString(val[0]);
+    return name === null ? '' : inflect(name, val[1] as C, val[2] as O);
+  }
+  return toTemplateString(val) ?? '';
+}
+
 function interpolateMatch<C extends string, O>(
   token: string,
   context: InterpolationContext<C, O>
@@ -117,12 +138,11 @@ function interpolateMatch<C extends string, O>(
     return '';
   }
 
-  const rawVal = context.values[key];
-  if (rawVal === undefined || rawVal === null) {
+  const strVal = toTemplateString(context.values[key]);
+  if (strVal === null) {
     return '';
   }
 
-  const strVal = String(rawVal);
   const caseName = parts[1];
   if (!caseName) {
     return strVal;
@@ -155,6 +175,10 @@ function interpolateMatch<C extends string, O>(
 export function createTemplateEngine<C extends string = string, O = unknown>(
   inflect: InflectorFn<C, O>
 ): TemplateEngine {
+  const safeInflect: InflectorFn<C, O> = typeof inflect === 'function'
+    ? inflect
+    : (name: string): string => (typeof name === 'string' ? name : '');
+
   function format(template: string, values: FormatValues, options?: FormatOptions): string {
     if (typeof template !== 'string' || !template) {
       return '';
@@ -163,7 +187,11 @@ export function createTemplateEngine<C extends string = string, O = unknown>(
     const safeValues: FormatValues = values && typeof values === 'object' ? values : {};
     const safeOptions: FormatOptions | undefined =
       options && typeof options === 'object' ? options : undefined;
-    const context: InterpolationContext<C, O> = { values: safeValues, inflect, options: safeOptions };
+    const context: InterpolationContext<C, O> = {
+      values: safeValues,
+      inflect: safeInflect,
+      options: safeOptions
+    };
     return template.replace(/\{\$[a-zA-Z0-9_]+(?::[a-zA-Z0-9_]+)?(?::[a-zA-Z0-9_]+)?\}/g, (token) => {
       return interpolateMatch(token, context);
     });
@@ -182,13 +210,7 @@ export function createTemplateEngine<C extends string = string, O = unknown>(
       const part = strings[i];
       result += typeof part === 'string' ? part : '';
       if (i < values.length) {
-        const val = values[i];
-        if (Array.isArray(val)) {
-          const [name, targetCase, options] = val;
-          result += inflect(name, targetCase as unknown as C, options as unknown as O);
-        } else if (val !== undefined && val !== null) {
-          result += String(val);
-        }
+        result += formatTaggedArg(values[i], safeInflect);
       }
     }
 

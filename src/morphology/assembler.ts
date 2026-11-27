@@ -12,7 +12,7 @@
  * @packageDocumentation
  */
 
-import { isRecord, isValidCaseName, safeGet } from './guards.ts';
+import { asString, isRecord, isValidCaseName, safeGet } from './guards.ts';
 import { applyHarmony } from './vowels.ts';
 import type { StemParadigm } from './paradigm.ts';
 import type { CaseName, LocalCaseType, PlaceLocalCase } from '../cases/types.ts';
@@ -80,19 +80,23 @@ function buildStandardCase(
   const stem = targetCase === 'essive'
     ? paradigm.strongVocalicStem
     : paradigm.weakVocalicStem;
+  if (typeof stem !== 'string') {
+    return paradigm.nominative;
+  }
 
   return `${stem}${suffix}`;
 }
 
 function resolveSpecialCase(paradigm: StemParadigm, targetCase: CaseName): string | null {
+  const nom = paradigm.nominative;
   if (targetCase === 'genitive') {
-    return paradigm.genitive ?? `${paradigm.weakVocalicStem}n`;
+    return asString(paradigm.genitive) || (typeof paradigm.weakVocalicStem === 'string' ? `${paradigm.weakVocalicStem}n` : nom);
   }
   if (targetCase === 'partitive') {
-    return paradigm.partitive;
+    return asString(paradigm.partitive) || nom;
   }
   if (targetCase === 'illative') {
-    return paradigm.illative;
+    return asString(paradigm.illative) || nom;
   }
   return null;
 }

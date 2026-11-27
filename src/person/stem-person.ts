@@ -101,15 +101,50 @@ const STRING_PREFERENCE_OVERRIDES: Record<string, Partial<InflectPersonOptions>>
   'harmony-front': { harmony: 'front' }
 };
 
+const BOOLEAN_PREF_KEYS = ['gradation', 'sStem', 'tarStem', 'colon'] as const;
+
+/**
+ * Checks whether a string identifier corresponds to a built-in person preference preset.
+ *
+ * @param id - Candidate preference identifier string.
+ * @returns True if `id` is a recognized built-in person preference key; otherwise false.
+ *
+ * @example
+ * ```ts
+ * isKnownPersonPreferenceId('no-gradation'); // true
+ * isKnownPersonPreferenceId('toString');     // false
+ * ```
+ */
+export function isKnownPersonPreferenceId(id: string): boolean {
+  return Object.hasOwn(STRING_PREFERENCE_OVERRIDES, id);
+}
+
+function extractPersonPrefParams(source: Record<string, unknown>): Partial<InflectPersonOptions> {
+  const result: { -readonly [K in keyof InflectPersonOptions]?: InflectPersonOptions[K] } = {};
+  for (const key of BOOLEAN_PREF_KEYS) {
+    const val = safeGet<unknown>(source, key);
+    if (typeof val === 'boolean') {
+      result[key] = val;
+    }
+  }
+  const variant = safeGet<unknown>(source, 'vocalicStemVariant');
+  if (variant === 'nominative' || variant === 'inflected') {
+    result.vocalicStemVariant = variant;
+  }
+  const harmony = safeGet<unknown>(source, 'harmony');
+  if (harmony === 'front' || harmony === 'back') {
+    result.harmony = harmony;
+  }
+  return result;
+}
+
 function normalizeSinglePreference(item: unknown): Partial<InflectPersonOptions> {
   if (typeof item === 'string') {
     return safeGet(STRING_PREFERENCE_OVERRIDES, item) ?? {};
   }
   if (isRecord(item)) {
-    if ('params' in item && isRecord(item.params)) {
-      return item.params as Partial<InflectPersonOptions>;
-    }
-    return item as Partial<InflectPersonOptions>;
+    const source = 'params' in item && isRecord(item.params) ? item.params : item;
+    return extractPersonPrefParams(source);
   }
   return {};
 }

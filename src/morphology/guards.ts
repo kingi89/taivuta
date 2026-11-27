@@ -54,6 +54,13 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /**
+ * Returns `value` when it is a primitive string, otherwise `fallback`.
+ */
+export function asString(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value : fallback;
+}
+
+/**
  * Reads an own property from a record safely without inheriting from `Object.prototype`.
  */
 export function safeGet<T>(record: object | null | undefined, key: string): T | undefined {

@@ -50,6 +50,11 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 | `[DOC-001]` | Synchronize `ARCHITECTURE.md` with Current Engine Implementation | P2 | Update `StemParadigm` interface documentation, supported 11+3 case inventory, final-syllable regex gradation explanation, and `-lahti` internal local case classification in `ARCHITECTURE.md`. |
 | `[DOC-002]` | Author Comprehensive User & Preferences Guides (`docs/`) | P1 | Create `docs/user-guide.md` (all cases, options, template syntax, role hints, and edge-case/fallback contract matrix) and `docs/preferences-guide.md` (onboarding UX and persistence recipes), linked from `README.md`. |
 | `[TEST-004]` | Automated Documentation Example Verification (`scripts/verify-docs.ts`) | P2 | Add a zero-dependency script wired into `npm run check` that extracts and validates code examples from `README.md`, `docs/*.md`, and TSDoc `@example` blocks. |
+| `[SEC-005]` | Freeze Exported Static Registries Against Runtime Mutation | P2 | Freeze `NATURE_NOUN_RULES` (and rule objects) in `src/morphology/nature-nouns.ts` and protect `WORD_DERIVED_GIVEN_NAMES` in `src/preferences/ambiguous-names.data.ts` against accidental downstream mutation. |
+| `[BUG-018]` | Include `tarStem`, `colon`, and `harmony` in `hasPersonOptions()` | P2 | Update `hasPersonOptions()` in `src/cases/inflect.ts` so explicit `tarStem`, `colon`, or `harmony` options are honored instead of being silently dropped on place-like tokens. |
+| `[BUG-019]` | Anchor `tt`/`kk` Geminate Exclusion Regexes in `weakenQualitative()` | P2 | Add trailing `$` anchors to the `tt` and `kk` checks in `src/morphology/gradation.ts` (L102, L110) so earlier-syllable geminates do not suppress final-syllable qualitative gradation in compounds. |
+| `[BUG-020]` | Validate `options.localCase` Override in `assembleCase()` | P2 | Check `options.localCase === 'in' \|\| options.localCase === 'on'` in `src/morphology/assembler.ts` so invalid strings fall back to `paradigm.defaultSpatialCase` instead of coercing to `'in'`. |
+| `[DOC-003]` | Update Stale `taivuta/preferences` Bundle Budget in `demo/index.html` | P2 | Update the technical panel text in `demo/index.html` (L523) from `< 15 kB` to `< 10 kB` to match the current subpath budget. |
 
 ---
 

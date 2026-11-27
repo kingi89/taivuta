@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import { isRecord } from './guards.ts';
+import { asString, isRecord } from './guards.ts';
 import { getVowelHarmony, type VowelHarmony } from './vowels.ts';
 import type { LocalCaseType } from '../cases/types.ts';
 
@@ -76,21 +76,19 @@ export function createStemParadigm(
   },
   options: CreateParadigmOptions = {}
 ): StemParadigm {
-  const safeNom = typeof nominative === 'string' ? nominative : '';
-  const safeOpts: CreateParadigmOptions = isRecord(options) ? options : {};
-  const harmony = safeOpts.vowelHarmony ?? getVowelHarmony(safeNom);
-  const validStems: typeof stems = isRecord(stems)
-    ? stems
-    : { strong: safeNom, weak: safeNom, partitive: safeNom, illative: safeNom };
+  const safeNom = asString(nominative);
+  const o: CreateParadigmOptions = isRecord(options) ? options : {};
+  const s: Partial<typeof stems> = isRecord(stems) ? stems : {};
+  const genitive = asString(s.genitive);
   return {
     nominative: safeNom,
-    strongVocalicStem: validStems.strong,
-    weakVocalicStem: validStems.weak,
-    partitive: validStems.partitive,
-    illative: validStems.illative,
-    vowelHarmony: harmony,
-    defaultSpatialCase: safeOpts.defaultSpatialCase ?? 'in',
-    ...(validStems.genitive ? { genitive: validStems.genitive } : {}),
-    ...(safeOpts.isPlural ? { isPlural: true } : {})
+    strongVocalicStem: asString(s.strong, safeNom),
+    weakVocalicStem: asString(s.weak, safeNom),
+    partitive: asString(s.partitive, safeNom),
+    illative: asString(s.illative, safeNom),
+    vowelHarmony: o.vowelHarmony === 'front' || o.vowelHarmony === 'back' ? o.vowelHarmony : getVowelHarmony(safeNom),
+    defaultSpatialCase: o.defaultSpatialCase === 'on' ? 'on' : 'in',
+    ...(genitive ? { genitive } : {}),
+    ...(o.isPlural === true ? { isPlural: true } : {})
   };
 }
