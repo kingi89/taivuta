@@ -15,6 +15,7 @@ import { createStemParadigm, type StemParadigm } from '../morphology/paradigm.ts
 import { matchNatureNoun } from '../morphology/nature-nouns.ts';
 import {
   GRADATION_RESISTANT_PLACES,
+  IRREGULAR_PLACE_PARADIGMS,
   NATURE_NOUN_BYPASS_PLACES,
   PLURAL_INEN_PLACES,
   TYPE_39_S_PLACES,
@@ -88,6 +89,13 @@ function resolveNamedClassParadigm(
   place: string,
   defaultSpatialCase: LocalCaseType
 ): StemParadigm | null {
+  const irregular = IRREGULAR_PLACE_PARADIGMS.get(place);
+  if (irregular) {
+    return createStemParadigm(place, irregular, {
+      defaultSpatialCase,
+      isPlural: irregular.isPlural
+    });
+  }
   if (PLURAL_INEN_PLACES.has(place)) {
     return buildPluralInenParadigm(place, defaultSpatialCase);
   }

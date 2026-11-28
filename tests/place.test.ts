@@ -537,4 +537,42 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflectPlace('Rautalampi', 'translative'), 'Rautalammiksi');
     assert.equal(inflectPlace('Toholampi', 'translative'), 'Toholammiksi');
   });
+
+  it('assembles full 11-case paradigms for lexically irregular toponyms via StemParadigm', () => {
+    assert.equal(inflectPlace('Suomi', 'essive'), 'Suomena');
+    assert.equal(inflectPlace('Suomi', 'translative'), 'Suomeksi');
+    assert.equal(inflect('Suomi', 'genitive'), 'Suomen');
+
+    assert.equal(inflectPlace('Loppi', 'essive'), 'Loppena');
+    assert.equal(inflectPlace('Loppi', 'translative'), 'Lopeksi');
+    assert.equal(inflectPlace('Loppi', 'illative'), 'Loppeen');
+
+    assert.equal(inflectPlace('Pihtipudas', 'essive'), 'Pihtiputaana');
+    assert.equal(inflectPlace('Pihtipudas', 'translative'), 'Pihtiputaaksi');
+    assert.equal(inflectPlace('Pihtipudas', 'illative'), 'Pihtiputaaseen');
+
+    assert.equal(inflectPlace('Punkalaidun', 'essive'), 'Punkalaitumena');
+    assert.equal(inflectPlace('Punkalaidun', 'translative'), 'Punkalaitumeksi');
+    assert.equal(inflectPlace('Punkalaidun', 'illative'), 'Punkalaitumeen');
+
+    assert.equal(inflectPlace('Virrat', 'essive'), 'Virtoina');
+    assert.equal(inflectPlace('Virrat', 'translative'), 'Virroiksi');
+    assert.equal(inflectPlace('Brändö', 'essive'), 'Brändönä');
+    assert.equal(inflectPlace('Brändö', 'illative'), 'Brändöhön');
+    assert.equal(inflectPlace('Föglö', 'translative'), 'Föglöksi');
+    assert.equal(inflectPlace('Föglö', 'illative'), 'Föglöhön');
+  });
+
+  it('applies external-case haplology to Kangasala while keeping full stem in other cases', () => {
+    assert.equal(inflectPlace('Kangasala', 'adessive'), 'Kangasalla');
+    assert.equal(inflectPlace('Kangasala', 'ablative'), 'Kangasalta');
+    assert.equal(inflectPlace('Kangasala', 'allative'), 'Kangasalle');
+    assert.equal(inflectPlace('Kangasala', 'genitive'), 'Kangasalan');
+    assert.equal(inflectPlace('Kangasala', 'partitive'), 'Kangasalaa');
+    assert.equal(inflectPlace('Kangasala', 'inessive'), 'Kangasalassa');
+    assert.equal(inflectPlace('Kangasala', 'elative'), 'Kangasalasta');
+    assert.equal(inflectPlace('Kangasala', 'illative'), 'Kangasalaan');
+    assert.equal(inflectPlace('Kangasala', 'essive'), 'Kangasalana');
+    assert.equal(inflectPlace('Kangasala', 'translative'), 'Kangasalaksi');
+  });
 });

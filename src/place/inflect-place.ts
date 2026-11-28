@@ -11,7 +11,6 @@ import type { CaseName, GrammaticalCase, LocalCaseType } from '../cases/types.ts
 import {
   EXTERNAL_CASE_MUNICIPALITIES,
   ISLAND_INTERNAL_EXCEPTIONS,
-  IRREGULAR_PLACES,
   UNHYPHENATED_INFLECTING_PREFIX_PLACES
 } from './municipalities.data.ts';
 import {
@@ -123,10 +122,6 @@ function stripLeadingInflectingPrefixes(place: string): string {
 }
 
 function detectKnownPlaceCase(place: string): LocalCaseType | null {
-  const override = IRREGULAR_PLACES.get(place);
-  if (override?.localCaseType) {
-    return override.localCaseType;
-  }
   if (EXTERNAL_CASE_MUNICIPALITIES.has(place) || hasExternalLocalCase(place)) {
     return 'on';
   }
@@ -194,15 +189,22 @@ function resolveLocalCaseTarget(
   return localType === 'on' ? 'allative' : 'illative';
 }
 
+// Kangasala drops repeated -la- in external local cases (haplology),
+// while retaining the full stem across all other grammatical and internal cases.
+const KANGASALA_EXTERNAL_CASES: Readonly<Record<string, string>> = {
+  adessive: 'Kangasalla',
+  ablative: 'Kangasalta',
+  allative: 'Kangasalle'
+};
+
 function resolveSpecialOrStatePlace(
   place: string,
   resolvedCase: GrammaticalCase
 ): string | null {
-  const override = IRREGULAR_PLACES.get(place);
-  if (override && resolvedCase !== 'nominative') {
-    const custom = safeGet<string>(override, resolvedCase);
-    if (custom) {
-      return custom;
+  if (place === 'Kangasala') {
+    const haplology = safeGet<string>(KANGASALA_EXTERNAL_CASES, resolvedCase);
+    if (haplology) {
+      return haplology;
     }
   }
   if (needsColon(place)) {

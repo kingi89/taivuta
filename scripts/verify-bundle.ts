@@ -54,7 +54,7 @@ const BUNDLE_SPECS: readonly BundleSpec[] = [
     name: 'taivuta/person',
     file: 'dist/person/index.mjs',
     maxMinifiedKb: 12.0,
-    forbiddenStrings: ['EXTERNAL_CASE_MUNICIPALITIES', 'Pedersören kunta']
+    forbiddenStrings: ['EXTERNAL_CASE_MUNICIPALITIES', 'Punkalaidun']
   },
   {
     name: 'taivuta/place',
@@ -65,7 +65,7 @@ const BUNDLE_SPECS: readonly BundleSpec[] = [
     name: 'taivuta/morphology',
     file: 'dist/morphology/index.mjs',
     maxMinifiedKb: 12.0,
-    forbiddenStrings: ['EXTERNAL_CASE_MUNICIPALITIES', 'Pedersören kunta']
+    forbiddenStrings: ['EXTERNAL_CASE_MUNICIPALITIES', 'Punkalaidun']
   },
   {
     name: 'taivuta/template',
@@ -73,7 +73,7 @@ const BUNDLE_SPECS: readonly BundleSpec[] = [
     maxMinifiedKb: 2.0,
     forbiddenStrings: [
       'EXTERNAL_CASE_MUNICIPALITIES',
-      'Pedersören kunta',
+      'Punkalaidun',
       'inflectPerson',
       'inflectPlace'
     ]
@@ -84,7 +84,7 @@ const BUNDLE_SPECS: readonly BundleSpec[] = [
     maxMinifiedKb: 10.0,
     forbiddenStrings: [
       'EXTERNAL_CASE_MUNICIPALITIES',
-      'Pedersören kunta',
+      'Punkalaidun',
       'inflectPerson',
       'matchNatureNoun',
       'analyzeStem'

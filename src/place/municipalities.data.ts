@@ -5,23 +5,16 @@
  * @packageDocumentation
  */
 
-import type { LocalCaseType } from '../cases/types.ts';
-
 /**
- * Shape of custom stem overrides for irregular places.
+ * Canonical stem specification for lexically irregular Finnish toponyms.
  */
-export interface PlaceOverride {
-  readonly localCaseType?: LocalCaseType;
+export interface IrregularPlaceSpec {
+  readonly strong: string;
+  readonly weak: string;
+  readonly partitive: string;
+  readonly illative: string;
   readonly genitive?: string;
-  readonly partitive?: string;
-  readonly inessive?: string;
-  readonly elative?: string;
-  readonly illative?: string;
-  readonly adessive?: string;
-  readonly ablative?: string;
-  readonly allative?: string;
-  readonly essive?: string;
-  readonly translative?: string;
+  readonly isPlural?: boolean;
 }
 
 /**
@@ -200,65 +193,53 @@ export const NATURE_NOUN_BYPASS_PLACES: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Explicit stem overrides for irregular places, compounds, and administrative entries.
+ * Canonical StemParadigm specifications for lexically irregular places whose stems
+ * combine irregular vowel shifts, gradation exceptions, or plural/suppletive forms.
  */
-export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<string, PlaceOverride>([
-  ['Suomi', {
-    localCaseType: 'in',
-    genitive: 'Suomen',
-    partitive: 'Suomea',
-    inessive: 'Suomessa',
-    elative: 'Suomesta',
-    illative: 'Suomeen'
-  }],
+export const IRREGULAR_PLACE_PARADIGMS: ReadonlyMap<string, IrregularPlaceSpec> = new Map<string, IrregularPlaceSpec>([
   ['Brändö', {
+    strong: 'Brändö',
+    weak: 'Brändö',
+    partitive: 'Brändöä',
     illative: 'Brändöhön'
   }],
   ['Föglö', {
+    strong: 'Föglö',
+    weak: 'Föglö',
+    partitive: 'Föglöä',
     illative: 'Föglöhön'
   }],
   ['Loppi', {
-    localCaseType: 'on',
-    adessive: 'Lopella',
-    ablative: 'Lopelta',
-    genitive: 'Lopen',
+    strong: 'Loppe',
+    weak: 'Lope',
     partitive: 'Loppea',
-    allative: 'Lopelle'
-  }],
-  ['Kangasala', {
-    localCaseType: 'on',
-    genitive: 'Kangasalan',
-    partitive: 'Kangasalaa',
-    adessive: 'Kangasalla',
-    ablative: 'Kangasalta',
-    allative: 'Kangasalle'
+    illative: 'Loppeen'
   }],
   ['Pihtipudas', {
-    localCaseType: 'on',
-    genitive: 'Pihtiputaan',
+    strong: 'Pihtiputaa',
+    weak: 'Pihtiputaa',
     partitive: 'Pihtipudasta',
-    adessive: 'Pihtiputaalla',
-    ablative: 'Pihtiputaalta',
-    allative: 'Pihtiputaalle'
+    illative: 'Pihtiputaaseen'
   }],
   ['Punkalaidun', {
-    localCaseType: 'on',
-    genitive: 'Punkalaitumen',
+    strong: 'Punkalaitume',
+    weak: 'Punkalaitume',
     partitive: 'Punkalaidunta',
-    adessive: 'Punkalaitumella',
-    ablative: 'Punkalaitumelta',
-    allative: 'Punkalaitumelle'
+    illative: 'Punkalaitumeen'
+  }],
+  ['Suomi', {
+    strong: 'Suome',
+    weak: 'Suome',
+    partitive: 'Suomea',
+    illative: 'Suomeen'
   }],
   ['Virrat', {
-    localCaseType: 'on',
-    genitive: 'Virtojen',
+    strong: 'Virtoi',
+    weak: 'Virroi',
     partitive: 'Virtoja',
-    inessive: 'Virroissa',
-    adessive: 'Virroilla',
-    ablative: 'Virroilta',
-    allative: 'Virroille',
-    elative: 'Virroista',
-    illative: 'Virtoihin'
+    illative: 'Virtoihin',
+    genitive: 'Virtojen',
+    isPlural: true
   }]
 ]);
 
@@ -266,7 +247,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
  * Checks whether a place name belongs to a known irregular or specialized morphological class.
  *
  * @param name - Normalized place name token.
- * @returns True if the place belongs to an irregular override or specialized place set.
+ * @returns True if the place belongs to an irregular paradigm or specialized place set.
  *
  * @example
  * ```ts
@@ -276,7 +257,7 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
  */
 export function isKnownSpecialPlace(name: string): boolean {
   return (
-    IRREGULAR_PLACES.has(name) ||
+    IRREGULAR_PLACE_PARADIGMS.has(name) ||
     PLURAL_INEN_PLACES.has(name) ||
     TYPE_48_E_PLACES.has(name) ||
     TYPE_39_S_PLACES.has(name) ||
