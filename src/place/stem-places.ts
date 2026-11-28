@@ -12,7 +12,24 @@ import { fallbackString, sanitizeInput } from '../morphology/guards.ts';
 import { harmonize } from '../morphology/vowels.ts';
 import { weakenConsonants } from '../morphology/gradation.ts';
 import { createStemParadigm, type StemParadigm } from '../morphology/paradigm.ts';
-import { GRADATION_RESISTANT_PLACES } from './municipalities.data.ts';
+import { GRADATION_RESISTANT_PLACES, PLURAL_INEN_PLACES } from './municipalities.data.ts';
+
+function buildPluralInenParadigm(
+  place: string,
+  defaultSpatialCase: LocalCaseType
+): StemParadigm {
+  // Pluralia tantum -inen municipalities use the plural -isi- stem and -isten genitive
+  // (e.g. Kauniainen -> Kauniaisten, Kauniaisia, Kauniaisissa).
+  const base = place.slice(0, -3);
+  const stem = `${base}si`;
+  return createStemParadigm(place, {
+    strong: stem,
+    weak: stem,
+    genitive: `${base}sten`,
+    partitive: `${stem}${harmonize('a', place)}`,
+    illative: `${stem}in`
+  }, { defaultSpatialCase, isPlural: true });
+}
 
 function resolveStandardPartitive(place: string): string {
   if (/(?:([aeiouyäö])\1|io|iö)$/i.test(place)) {
@@ -53,6 +70,10 @@ function resolveSpecialPlaceParadigm(
       illative: `${stem}in`,
       genitive: `${base}ten`
     }, { defaultSpatialCase, isPlural: true });
+  }
+
+  if (PLURAL_INEN_PLACES.has(place)) {
+    return buildPluralInenParadigm(place, defaultSpatialCase);
   }
 
   if (place.endsWith('nen')) {

@@ -107,6 +107,7 @@ export const ISLAND_INTERNAL_EXCEPTIONS: ReadonlySet<string> = new Set([
 export const GRADATION_RESISTANT_PLACES: ReadonlySet<string> = new Set([
   'Asikkala',
   'Djibouti',
+  'Geta',
   'Haiti',
   'Humppila',
   'Kiribati',
@@ -125,17 +126,30 @@ export const GRADATION_RESISTANT_PLACES: ReadonlySet<string> = new Set([
 ]);
 
 /**
+ * Finnish municipalities ending in -inen that inflect as pluralia tantum
+ * using the plural -isi- stem and -isten genitive (unlike singular -inen
+ * municipalities such as Kaustinen).
+ */
+export const PLURAL_INEN_PLACES: ReadonlySet<string> = new Set([
+  'Huittinen',
+  'Ikaalinen',
+  'Jokioinen',
+  'Joroinen',
+  'Kaskinen',
+  'Kauniainen',
+  'Kuhmoinen',
+  'Nousiainen',
+  'Oulainen',
+  'Parainen',
+  'Pornainen',
+  'Siikainen',
+  'Uurainen'
+]);
+
+/**
  * Explicit stem overrides for irregular places, compounds, and administrative entries.
  */
 export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<string, PlaceOverride>([
-  ['Ahvenanmaa', {
-    localCaseType: 'on',
-    adessive: 'Ahvenanmaalla',
-    ablative: 'Ahvenanmaalta',
-    allative: 'Ahvenanmaalle',
-    genitive: 'Ahvenanmaan',
-    partitive: 'Ahvenanmaata'
-  }],
   ['Suomi', {
     localCaseType: 'in',
     genitive: 'Suomen',
@@ -161,73 +175,11 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     allative: 'Mauritiukselle',
     illative: 'Mauritiukseen'
   }],
-  ['Koski Tl', {
-    localCaseType: 'on',
-    genitive: 'Koski Tl:n',
-    partitive: 'Koski Tl:ää',
-    adessive: 'Koski Tl:llä',
-    ablative: 'Koski Tl:ltä',
-    allative: 'Koski Tl:lle',
-    illative: 'Koski Tl:ään'
-  }],
-  ['Pedersören kunta', {
-    localCaseType: 'in',
-    genitive: 'Pedersören kunnan',
-    partitive: 'Pedersören kuntaa',
-    inessive: 'Pedersören kunnassa',
-    illative: 'Pedersören kuntaan'
-  }],
   ['Brändö', {
     illative: 'Brändöhön'
   }],
   ['Föglö', {
     illative: 'Föglöhön'
-  }],
-  ['Geta', {
-    genitive: 'Getan',
-    partitive: 'Getaa',
-    inessive: 'Getassa',
-    elative: 'Getasta',
-    illative: 'Getaan'
-  }],
-  ['Kumlinge', {
-    genitive: 'Kumlingen',
-    partitive: 'Kumlingea',
-    illative: 'Kumlingeen'
-  }],
-  ['Muurame', {
-    genitive: 'Muuramen',
-    partitive: 'Muuramea',
-    illative: 'Muurameen'
-  }],
-  ['Raahe', {
-    genitive: 'Raahen',
-    partitive: 'Raahea',
-    inessive: 'Raahessa',
-    illative: 'Raaheen'
-  }],
-  ['Kirkkonummi', {
-    localCaseType: 'on',
-    adessive: 'Kirkkonummella',
-    ablative: 'Kirkkonummelta',
-    genitive: 'Kirkkonummen',
-    partitive: 'Kirkkonummea',
-    allative: 'Kirkkonummelle'
-  }],
-  ['Korsnäs', {
-    inessive: 'Korsnäsissä',
-    elative: 'Korsnäsistä',
-    genitive: 'Korsnäsin',
-    partitive: 'Korsnäsiä',
-    illative: 'Korsnäsiin'
-  }],
-  ['Enontekiö', {
-    localCaseType: 'on',
-    adessive: 'Enontekiöllä',
-    ablative: 'Enontekiöltä',
-    genitive: 'Enontekiön',
-    partitive: 'Enontekiötä',
-    allative: 'Enontekiölle'
   }],
   ['Keitele', {
     localCaseType: 'on',
@@ -247,27 +199,6 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     allative: 'Kuortaneelle',
     illative: 'Kuortaneeseen'
   }],
-  ['Lapinlahti', {
-    localCaseType: 'on',
-    adessive: 'Lapinlahdella',
-    genitive: 'Lapinlahden',
-    partitive: 'Lapinlahtea',
-    allative: 'Lapinlahdelle'
-  }],
-  ['Lapua', {
-    localCaseType: 'on',
-    adessive: 'Lapualla',
-    genitive: 'Lapuan',
-    partitive: 'Lapuaa',
-    allative: 'Lapualle'
-  }],
-  ['Leppävirta', {
-    localCaseType: 'on',
-    adessive: 'Leppävirralla',
-    genitive: 'Leppävirran',
-    partitive: 'Leppävirtaa',
-    allative: 'Leppävirralle'
-  }],
   ['Loppi', {
     localCaseType: 'on',
     adessive: 'Lopella',
@@ -284,13 +215,6 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     partitive: 'Muhosta',
     allative: 'Muhokselle'
   }],
-  ['Multia', {
-    localCaseType: 'on',
-    adessive: 'Multialla',
-    genitive: 'Multian',
-    partitive: 'Multiaa',
-    allative: 'Multialle'
-  }],
   ['Pälkäne', {
     localCaseType: 'on',
     adessive: 'Pälkäneellä',
@@ -300,13 +224,6 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     allative: 'Pälkäneelle',
     illative: 'Pälkäneeseen'
   }],
-  ['Ruokolahti', {
-    localCaseType: 'on',
-    adessive: 'Ruokolahdella',
-    genitive: 'Ruokolahden',
-    partitive: 'Ruokolahtea',
-    allative: 'Ruokolahdelle'
-  }],
   ['Savitaipale', {
     localCaseType: 'on',
     adessive: 'Savitaipaleella',
@@ -315,20 +232,6 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     partitive: 'Savitaipaletta',
     allative: 'Savitaipaleelle',
     illative: 'Savitaipaleeseen'
-  }],
-  ['Mänttä-Vilppula', {
-    localCaseType: 'in',
-    genitive: 'Mänttä-Vilppulan',
-    partitive: 'Mänttä-Vilppulaa',
-    inessive: 'Mänttä-Vilppulassa',
-    illative: 'Mänttä-Vilppulaan'
-  }],
-  ['Mäntyharju', {
-    localCaseType: 'on',
-    genitive: 'Mäntyharjun',
-    partitive: 'Mäntyharjua',
-    adessive: 'Mäntyharjulla',
-    allative: 'Mäntyharjulle'
   }],
   ['Uusikaupunki', {
     localCaseType: 'in',
@@ -369,29 +272,6 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     adessive: 'Alavudella',
     ablative: 'Alavudelta',
     allative: 'Alavudelle'
-  }],
-  ['Kaustinen', {
-    localCaseType: 'on',
-    genitive: 'Kaustisen',
-    partitive: 'Kaustista',
-    adessive: 'Kaustisella',
-    allative: 'Kaustiselle'
-  }],
-  ['Parainen', {
-    localCaseType: 'on',
-    genitive: 'Paraisten',
-    partitive: 'Paraisia',
-    adessive: 'Paraisilla',
-    ablative: 'Paraisilta',
-    allative: 'Paraisille'
-  }],
-  ['Uurainen', {
-    localCaseType: 'on',
-    genitive: 'Uuraisten',
-    partitive: 'Uuraisia',
-    adessive: 'Uuraisilla',
-    ablative: 'Uuraisilta',
-    allative: 'Uuraisille'
   }],
   ['Pihtipudas', {
     localCaseType: 'on',
@@ -475,115 +355,21 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     inessive: 'Varkaudessa',
     elative: 'Varkaudesta',
     illative: 'Varkauteen'
-  }],
-  ['Huittinen', {
-    genitive: 'Huittisten',
-    partitive: 'Huittisia',
-    inessive: 'Huittisissa',
-    elative: 'Huittisista',
-    illative: 'Huittisiin',
-    adessive: 'Huittisilla',
-    ablative: 'Huittisilta',
-    allative: 'Huittisille'
-  }],
-  ['Ikaalinen', {
-    genitive: 'Ikaalisten',
-    partitive: 'Ikaalisia',
-    inessive: 'Ikaalisissa',
-    elative: 'Ikaalisista',
-    illative: 'Ikaalisiin',
-    adessive: 'Ikaalisilla',
-    ablative: 'Ikaalisilta',
-    allative: 'Ikaalisille'
-  }],
-  ['Jokioinen', {
-    genitive: 'Jokioisten',
-    partitive: 'Jokioisia',
-    inessive: 'Jokioisissa',
-    elative: 'Jokioisista',
-    illative: 'Jokioisiin',
-    adessive: 'Jokioisilla',
-    ablative: 'Jokioisilta',
-    allative: 'Jokioisille'
-  }],
-  ['Joroinen', {
-    genitive: 'Joroisten',
-    partitive: 'Joroisia',
-    inessive: 'Joroisissa',
-    elative: 'Joroisista',
-    illative: 'Joroisiin',
-    adessive: 'Joroisilla',
-    ablative: 'Joroisilta',
-    allative: 'Joroisille'
-  }],
-  ['Kaskinen', {
-    genitive: 'Kaskisten',
-    partitive: 'Kaskisia',
-    inessive: 'Kaskisissa',
-    elative: 'Kaskisista',
-    illative: 'Kaskisiin',
-    adessive: 'Kaskisilla',
-    ablative: 'Kaskisilta',
-    allative: 'Kaskisille'
-  }],
-  ['Kauniainen', {
-    genitive: 'Kauniaisten',
-    partitive: 'Kauniaisia',
-    inessive: 'Kauniaisissa',
-    elative: 'Kauniaisista',
-    illative: 'Kauniaisiin',
-    adessive: 'Kauniaisilla',
-    ablative: 'Kauniaisilta',
-    allative: 'Kauniaisille'
-  }],
-  ['Kuhmoinen', {
-    genitive: 'Kuhmoisten',
-    partitive: 'Kuhmoisia',
-    inessive: 'Kuhmoisissa',
-    elative: 'Kuhmoisista',
-    illative: 'Kuhmoisiin',
-    adessive: 'Kuhmoisilla',
-    ablative: 'Kuhmoisilta',
-    allative: 'Kuhmoisille'
-  }],
-  ['Nousiainen', {
-    genitive: 'Nousiaisten',
-    partitive: 'Nousiaisia',
-    inessive: 'Nousiaisissa',
-    elative: 'Nousiaisista',
-    illative: 'Nousiaisiin',
-    adessive: 'Nousiaisilla',
-    ablative: 'Nousiaisilta',
-    allative: 'Nousiaisille'
-  }],
-  ['Oulainen', {
-    genitive: 'Oulaisten',
-    partitive: 'Oulaisia',
-    inessive: 'Oulaisissa',
-    elative: 'Oulaisista',
-    illative: 'Oulaisiin',
-    adessive: 'Oulaisilla',
-    ablative: 'Oulaisilta',
-    allative: 'Oulaisille'
-  }],
-  ['Pornainen', {
-    genitive: 'Pornaisten',
-    partitive: 'Pornaisia',
-    inessive: 'Pornaisissa',
-    elative: 'Pornaisista',
-    illative: 'Pornaisiin',
-    adessive: 'Pornaisilla',
-    ablative: 'Pornaisilta',
-    allative: 'Pornaisille'
-  }],
-  ['Siikainen', {
-    genitive: 'Siikaisten',
-    partitive: 'Siikaisia',
-    inessive: 'Siikaisissa',
-    elative: 'Siikaisista',
-    illative: 'Siikaisiin',
-    adessive: 'Siikaisilla',
-    ablative: 'Siikaisilta',
-    allative: 'Siikaisille'
   }]
 ]);
+
+/**
+ * Checks whether a place name belongs to a known irregular or specialized morphological class.
+ *
+ * @param name - Normalized place name token.
+ * @returns True if the place belongs to an irregular override or specialized place set.
+ *
+ * @example
+ * ```ts
+ * isKnownSpecialPlace('Kauniainen'); // true
+ * isKnownSpecialPlace('Helsinki');   // false
+ * ```
+ */
+export function isKnownSpecialPlace(name: string): boolean {
+  return IRREGULAR_PLACES.has(name) || PLURAL_INEN_PLACES.has(name);
+}

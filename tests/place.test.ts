@@ -447,4 +447,50 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflect('Tampere', 'local', { preference: { localCase: 'in' } }), inflectPlace('Tampere', 'local', { localCase: 'in' }));
     assert.equal(inflect('Helsinki', 'localTo', { preference: { localCase: 'on' } }), inflectPlace('Helsinki', 'localTo', { localCase: 'on' }));
   });
+
+  it('generates full 11-case paradigms algorithmically for plural -inen municipalities', () => {
+    assert.equal(inflectPlace('Kauniainen', 'genitive'), 'Kauniaisten');
+    assert.equal(inflectPlace('Kauniainen', 'partitive'), 'Kauniaisia');
+    assert.equal(inflectPlace('Kauniainen', 'inessive'), 'Kauniaisissa');
+    assert.equal(inflectPlace('Kauniainen', 'elative'), 'Kauniaisista');
+    assert.equal(inflectPlace('Kauniainen', 'illative'), 'Kauniaisiin');
+    assert.equal(inflectPlace('Kauniainen', 'essive'), 'Kauniaisina');
+    assert.equal(inflectPlace('Kauniainen', 'translative'), 'Kauniaisiksi');
+    assert.equal(inflect('Kauniainen', 'genitive'), 'Kauniaisten');
+    assert.equal(inflect('Kauniainen', 'essive'), 'Kauniaisina');
+
+    assert.equal(inflectPlace('Parainen', 'genitive'), 'Paraisten');
+    assert.equal(inflectPlace('Parainen', 'essive'), 'Paraisina');
+    assert.equal(inflectPlace('Parainen', 'translative'), 'Paraisiksi');
+    assert.equal(inflect('Parainen', 'essive'), 'Paraisina');
+    assert.equal(inflectPlace('Uurainen', 'essive'), 'Uuraisina');
+    assert.equal(inflectPlace('Uurainen', 'translative'), 'Uuraisiksi');
+  });
+
+  it('resolves gradation-resistant, multi-word, external -lahti, and Kotus type 8 -e municipalities algorithmically', () => {
+    // Gradation-resistant loan/non-native stems (Geta keeps single -t- ungraded)
+    assert.equal(inflectPlace('Geta', 'genitive'), 'Getan');
+    assert.equal(inflectPlace('Geta', 'local'), 'Getassa');
+    assert.equal(inflectPlace('Geta', 'localTo'), 'Getaan');
+    assert.equal(inflectPlace('Geta', 'essive'), 'Getana');
+
+    // Multi-word and hyphenated municipal names where only the head inflects
+    assert.equal(inflectPlace('Pedersören kunta', 'genitive'), 'Pedersören kunnan');
+    assert.equal(inflectPlace('Pedersören kunta', 'local'), 'Pedersören kunnassa');
+    assert.equal(inflectPlace('Pedersören kunta', 'localTo'), 'Pedersören kuntaan');
+    assert.equal(inflectPlace('Mänttä-Vilppula', 'local'), 'Mänttä-Vilppulassa');
+    assert.equal(inflectPlace('Mänttä-Vilppula', 'genitive'), 'Mänttä-Vilppulan');
+
+    // Nature-noun suffixes with external local case conventions and consonant stems
+    assert.equal(inflectPlace('Lapinlahti', 'local'), 'Lapinlahdella');
+    assert.equal(inflectPlace('Lapinlahti', 'localTo'), 'Lapinlahdelle');
+    assert.equal(inflectPlace('Ruokolahti', 'local'), 'Ruokolahdella');
+    assert.equal(inflectPlace('Kirkkonummi', 'local'), 'Kirkkonummella');
+    assert.equal(inflectPlace('Korsnäs', 'local'), 'Korsnäsissä');
+
+    // Kotus type 8 short-e stems (single e preserved in weak grade)
+    assert.equal(inflectPlace('Muurame', 'genitive'), 'Muuramen');
+    assert.equal(inflectPlace('Raahe', 'genitive'), 'Raahen');
+    assert.equal(inflectPlace('Kumlinge', 'genitive'), 'Kumlingen');
+  });
 });

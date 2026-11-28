@@ -12,7 +12,7 @@ import { sanitizeInput } from '../morphology/guards.ts';
 import {
   EXTERNAL_CASE_MUNICIPALITIES,
   ISLAND_INTERNAL_EXCEPTIONS,
-  IRREGULAR_PLACES
+  isKnownSpecialPlace
 } from '../place/municipalities.data.ts';
 import { matchNatureNoun } from '../morphology/nature-nouns.ts';
 
@@ -28,7 +28,7 @@ const PLACE_SUFFIX_REGEX =
 
 function isKnownPlaceDataset(name: string): boolean {
   return (
-    IRREGULAR_PLACES.has(name) ||
+    isKnownSpecialPlace(name) ||
     EXTERNAL_CASE_MUNICIPALITIES.has(name) ||
     ISLAND_INTERNAL_EXCEPTIONS.has(name)
   );
