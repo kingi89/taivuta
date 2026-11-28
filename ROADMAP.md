@@ -7,7 +7,7 @@ This document outlines the strategic milestones, architectural direction, and re
 ## Strategic Vision & Core Principles
 
 - **Zero Runtime Dependencies**: The published package will indefinitely maintain `dependencies: {}`.
-- **Strict Size Budgets**: Root bundle $\le 32$ kB minified (restoring $\le 30$ kB in `v0.4.0` via `[OPT-001]`); subpaths $\le 15$ kB minified.
+- **Strict Size Budgets**: Root bundle $\le 32$ kB minified; subpaths $\le 15$ kB minified.
 - **Linguistic Fidelity**: Kotus (Institute for the Languages of Finland) standards serve as the baseline authority for proper noun inflection.
 - **Name-Holder Authority**: When multiple declensions exist, the name holder's preference is primary. Heuristics supply safe defaults when omitted.
 
@@ -52,7 +52,7 @@ This document outlines the strategic milestones, architectural direction, and re
 - [x] **CI Modernization, Demo Server & Fixture Pipeline**: Upgraded GitHub Actions and Pages workflows to Node 24-native releases, gated demo deployment on `npm run check`, added `scripts/**/*.ts` linting and version parity verification, extracted `scripts/serve-demo.ts`, retired obsolete/redundant fixture scripts, and documented active fixture workflows in `data/README.md`.
 
 ### Milestone 7: Algorithmic Place Paradigms & Finnish Regions (v0.4.0) — 🔄 Active Target
-- [ ] **Algorithmic Place Paradigm Generation (`[REFACTOR-001]`, `[OPT-001]`)**: Replace recurring static entries in `IRREGULAR_PLACES` (Type 78 lengthened *-e* stems, Type 39–41 *-s* stems, plural *-inen* municipalities, and unhyphenated inflecting-prefix compounds) with algorithmic `StemParadigm` resolvers and compact overrides for true exceptions.
+- [x] **Algorithmic Place Paradigm Generation (`[REFACTOR-001]`, `[OPT-001]`)**: Retired `IRREGULAR_PLACES` per-case string lookups in favor of unified `StemParadigm` assembly, replacing recurring static entries (Kotus type 48 *-e* stems, Kotus types 39–40 *-s* stems, plural *-inen* municipalities, solid congruent `Uusi`/`Iso` compounds, and regular *-lampi* stems) with algorithmic resolvers and 7 compact lexical paradigm specs, reducing `taivuta` root from `31.94 kB` to `25.50 kB` and `taivuta/place` from `23.69 kB` to `17.17 kB`.
 - [ ] **State Compound Secondary Cases & 11-Case Paradigm Suite (`[BUG-015]`, `[TEST-003]`)**: Resolve missing secondary cases (`adessive`, `ablative`, `allative`, `essive`, `translative`) for geopolitical state compounds without bundle bloat, and verify all 11 cases across irregular/algorithmic places.
 - [ ] **Finnish Administrative & Historical Regions (`[TASK-004]`)**: Comprehensive spatial and grammatical case support and benchmark coverage for all 19 Finnish regions (e.g. *Uusimaa $\to$ Uudellamaalla*, *Varsinais-Suomi $\to$ Varsinais-Suomessa*, *Pirkanmaa $\to$ Pirkanmaalla*).
 - [ ] **Algorithmic Place Security & Demo Audit (`[SEC-003]`)**: Verify new algorithmic place resolvers against `tests/security.test.ts` invariants and audit `demo/index.html` DOM rendering for safe text insertion.

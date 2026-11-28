@@ -19,8 +19,8 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 
 | ID | Title | Priority | Target Outcome & Constraints |
 | :--- | :--- | :--- | :--- |
-| `[REFACTOR-001]` | Unify Place Paradigm Resolution on `StemParadigm` Model | P1 | Resolve irregular and specialized toponyms into canonical `StemParadigm` models in `src/place/` instead of per-case string lookups. |
-| `[OPT-001]` | Algorithmic Generation for Recurring Irregular Place Classes | P1 | Algorithmically generate paradigms for Type 78 lengthened *-e* stems (*Kuortane*, *Keitele*, *Tampere*), Type 39–41 *-s* stems (*Alavus*, *Kannus*), plural *-inen* municipalities (*Kauniainen*), and unhyphenated inflecting-prefix compounds (*Uusikaupunki*), leaving only true exceptions in `IRREGULAR_PLACES`, and restore the `taivuta` root bundle budget to `< 30 kB`. |
+| `[REFACTOR-001]` | Unify Place Paradigm Resolution on `StemParadigm` Model | P1 | ✅ Completed. |
+| `[OPT-001]` | Algorithmic Generation for Recurring Irregular Place Classes | P1 | ✅ Completed (`taivuta` root `31.94 kB` $\to$ `25.50 kB`, `taivuta/place` `23.69 kB` $\to$ `17.17 kB`). |
 | `[BUG-015]` | Secondary Case Coverage for Geopolitical State Compounds | P2 | Support `adessive`, `ablative`, `allative`, `essive`, and `translative` for plural archipelagos (*Filippiinit*) and state compounds (*Dominikaaninen tasavalta*, *Yhdistynyt kuningaskunta*) in `src/place/state-places.ts` using a bundle-size-neutral mechanism. |
 | `[TEST-003]` | 11-Case Paradigm Verification for Irregular & Algorithmic Places | P2 | Verify all 11 grammatical cases in `tests/place.test.ts` across representative irregular, algorithmic, and state-compound toponyms. |
 | `[TASK-004]` | Finnish Administrative & Historical Regions Support | P1 | Full spatial (`local`, `localFrom`, `localTo`) and grammatical case support and 100% fixture benchmark for all 19 Finnish regions (*Uusimaa $\to$ Uudellamaalla*, *Varsinais-Suomi $\to$ Varsinais-Suomessa*, *Pirkanmaa $\to$ Pirkanmaalla*, *Ahvenanmaa*, *Kainuu*). |
@@ -62,16 +62,6 @@ This backlog tracks prioritized technical, linguistic, and architectural tasks f
 ---
 
 ## 2. Active Milestone Specifications (v0.4.0)
-
-### `[REFACTOR-001]` Unify Place Paradigm Resolution on `StemParadigm` Model
-- **Priority**: P1 | **Affected Components**: `src/place/inflect-place.ts`, `src/place/stem-places.ts`, `src/place/municipalities.data.ts`
-- **Problem**: Irregular toponyms in `IRREGULAR_PLACES` currently bypass `StemParadigm` via per-case string overrides (`safeGet(override, resolvedCase)`), duplicating stem logic across files.
-- **Desired Behavior**: Resolve irregular and specialized toponyms into canonical `StemParadigm` models in `src/place/` so all grammatical and spatial cases assemble through `assembleCase()`.
-
-### `[OPT-001]` Algorithmic Generation for Recurring Irregular Place Classes
-- **Priority**: P1 | **Affected Components**: `src/place/stem-places.ts`, `src/place/municipalities.data.ts`, `scripts/verify-bundle.ts`
-- **Problem**: `IRREGULAR_PLACES` stores repetitive entries for recurring Finnish place classes (Type 78 *-e*, Type 39–41 *-s*, plural *-inen*, unhyphenated `Uusi-`/`Iso-` compounds), pushing `taivuta` root near `32 kB`.
-- **Desired Behavior**: Generate paradigms algorithmically for those recurring classes, keep only true lexical exceptions in `IRREGULAR_PLACES`, and restore the `taivuta` root bundle budget to `< 30 kB` while keeping 100% municipality accuracy.
 
 ### `[BUG-015]` Secondary Case Coverage for Geopolitical State Compounds
 - **Priority**: P2 | **Affected Components**: `src/place/state-places.ts`, `tests/countries.test.ts`
