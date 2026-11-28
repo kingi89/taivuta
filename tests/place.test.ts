@@ -493,4 +493,48 @@ describe('Place Name Suffix Heuristics & Fallbacks', () => {
     assert.equal(inflectPlace('Raahe', 'genitive'), 'Raahen');
     assert.equal(inflectPlace('Kumlinge', 'genitive'), 'Kumlingen');
   });
+
+  it('generates full paradigms for Kotus type 48 (hame) lengthened -e places', () => {
+    assert.equal(inflectPlace('Tampere', 'essive'), 'Tampereena');
+    assert.equal(inflectPlace('Tampere', 'translative'), 'Tampereeksi');
+    assert.equal(inflectPlace('Kempele', 'essive'), 'Kempeleenä');
+    assert.equal(inflectPlace('Kempele', 'translative'), 'Kempeleeksi');
+    assert.equal(inflectPlace('Keitele', 'translative'), 'Keiteleeksi');
+  });
+
+  it('generates full paradigms for Kotus type 39 (vastaus) -s places', () => {
+    assert.equal(inflectPlace('Kannus', 'essive'), 'Kannuksena');
+    assert.equal(inflectPlace('Kannus', 'translative'), 'Kannukseksi');
+    assert.equal(inflectPlace('Kypros', 'essive'), 'Kyproksena');
+    assert.equal(inflect('Kypros', 'inessive'), 'Kyproksessa');
+    assert.equal(inflectPlace('Mauritius', 'translative'), 'Mauritiukseksi');
+    assert.equal(inflect('Mauritius', 'local'), 'Mauritiuksella');
+    assert.equal(inflectPlace('Muhos', 'essive'), 'Muhoksena');
+    assert.equal(inflectPlace('Nurmes', 'translative'), 'Nurmekseksi');
+  });
+
+  it('generates full paradigms for Kotus type 40 (kalleus) -us places', () => {
+    // Strong -te- appears in essive while weak -de- appears in closed-syllable cases
+    assert.equal(inflectPlace('Alavus', 'essive'), 'Alavutena');
+    assert.equal(inflectPlace('Alavus', 'translative'), 'Alavudeksi');
+    assert.equal(inflectPlace('Varkaus', 'essive'), 'Varkautena');
+    assert.equal(inflectPlace('Varkaus', 'translative'), 'Varkaudeksi');
+    assert.equal(inflect('Varkaus', 'genitive'), 'Varkauden');
+  });
+
+  it('inflects solid congruent Uusi/Iso compounds while keeping invariant prefixes intact', () => {
+    assert.equal(inflectPlace('Uusikaupunki', 'essive'), 'Uutenakaupunkina');
+    assert.equal(inflectPlace('Uusikaupunki', 'translative'), 'Uudeksikaupungiksi');
+    assert.equal(inflect('Uusikaupunki', 'local'), 'Uudessakaupungissa');
+    assert.equal(inflectPlace('Uusikaarlepyy', 'essive'), 'Uutenakaarlepyynä');
+    assert.equal(inflectPlace('Isokyrö', 'translative'), 'Isoksikyröksi');
+    assert.equal(inflectPlace('Isojoki', 'local'), 'Isojoella');
+    assert.equal(inflectPlace('Uusilinna', 'local'), 'Uusilinnassa');
+  });
+
+  it('inflects traditional -lampi municipalities with regular i-stem gradation', () => {
+    assert.equal(inflectPlace('Rautalampi', 'essive'), 'Rautalampina');
+    assert.equal(inflectPlace('Rautalampi', 'translative'), 'Rautalammiksi');
+    assert.equal(inflectPlace('Toholampi', 'translative'), 'Toholammiksi');
+  });
 });

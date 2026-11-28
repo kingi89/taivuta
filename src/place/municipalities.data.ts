@@ -147,6 +147,59 @@ export const PLURAL_INEN_PLACES: ReadonlySet<string> = new Set([
 ]);
 
 /**
+ * Toponyms following Kotus type 48 (*hame*) lengthened -e declension,
+ * where the vocalic stem doubles -e- and the partitive takes -tta/-ttä.
+ */
+export const TYPE_48_E_PLACES: ReadonlySet<string> = new Set([
+  'Keitele',
+  'Kempele',
+  'Kuortane',
+  'Pälkäne',
+  'Savitaipale',
+  'Tampere'
+]);
+
+/**
+ * Toponyms following Kotus type 39 (*vastaus*) -s declension,
+ * alternating -s in nominative/partitive with -kse- in vocalic cases.
+ */
+export const TYPE_39_S_PLACES: ReadonlySet<string> = new Set([
+  'Kannus',
+  'Kypros',
+  'Mauritius',
+  'Muhos',
+  'Nurmes'
+]);
+
+/**
+ * Toponyms following Kotus type 40 (*kalleus*) -us declension,
+ * alternating -ute- (strong), -ude- (weak), and -utta/-yttä (partitive).
+ */
+export const TYPE_40_US_PLACES: ReadonlySet<string> = new Set([
+  'Alavus',
+  'Varkaus'
+]);
+
+/**
+ * Solid (unhyphenated) compound toponyms whose leading adjective (Uusi or Iso)
+ * inflects congruently with the head element.
+ */
+export const UNHYPHENATED_INFLECTING_PREFIX_PLACES: ReadonlySet<string> = new Set([
+  'Isokyrö',
+  'Uusikaarlepyy',
+  'Uusikaupunki'
+]);
+
+/**
+ * Toponyms ending in -lampi that follow regular i-stem consonant gradation (-lammin, -lampia)
+ * rather than the dialectal -lampi -> -lammen nature-noun alternation.
+ */
+export const NATURE_NOUN_BYPASS_PLACES: ReadonlySet<string> = new Set([
+  'Rautalampi',
+  'Toholampi'
+]);
+
+/**
  * Explicit stem overrides for irregular places, compounds, and administrative entries.
  */
 export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<string, PlaceOverride>([
@@ -158,46 +211,11 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     elative: 'Suomesta',
     illative: 'Suomeen'
   }],
-  ['Kypros', {
-    localCaseType: 'in',
-    genitive: 'Kyproksen',
-    partitive: 'Kyprosta',
-    inessive: 'Kyproksessa',
-    elative: 'Kyproksesta',
-    illative: 'Kyprokseen'
-  }],
-  ['Mauritius', {
-    localCaseType: 'on',
-    genitive: 'Mauritiuksen',
-    partitive: 'Mauritiusta',
-    adessive: 'Mauritiuksella',
-    ablative: 'Mauritiukselta',
-    allative: 'Mauritiukselle',
-    illative: 'Mauritiukseen'
-  }],
   ['Brändö', {
     illative: 'Brändöhön'
   }],
   ['Föglö', {
     illative: 'Föglöhön'
-  }],
-  ['Keitele', {
-    localCaseType: 'on',
-    adessive: 'Keiteleellä',
-    ablative: 'Keiteleeltä',
-    genitive: 'Keiteleen',
-    partitive: 'Keitelettä',
-    allative: 'Keiteleelle',
-    illative: 'Keiteleeseen'
-  }],
-  ['Kuortane', {
-    localCaseType: 'on',
-    adessive: 'Kuortaneella',
-    ablative: 'Kuortaneelta',
-    genitive: 'Kuortaneen',
-    partitive: 'Kuortanetta',
-    allative: 'Kuortaneelle',
-    illative: 'Kuortaneeseen'
   }],
   ['Loppi', {
     localCaseType: 'on',
@@ -207,56 +225,6 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     partitive: 'Loppea',
     allative: 'Lopelle'
   }],
-  ['Muhos', {
-    localCaseType: 'on',
-    adessive: 'Muhoksella',
-    ablative: 'Muhokselta',
-    genitive: 'Muhoksen',
-    partitive: 'Muhosta',
-    allative: 'Muhokselle'
-  }],
-  ['Pälkäne', {
-    localCaseType: 'on',
-    adessive: 'Pälkäneellä',
-    ablative: 'Pälkäneeltä',
-    genitive: 'Pälkäneen',
-    partitive: 'Pälkänettä',
-    allative: 'Pälkäneelle',
-    illative: 'Pälkäneeseen'
-  }],
-  ['Savitaipale', {
-    localCaseType: 'on',
-    adessive: 'Savitaipaleella',
-    ablative: 'Savitaipaleelta',
-    genitive: 'Savitaipaleen',
-    partitive: 'Savitaipaletta',
-    allative: 'Savitaipaleelle',
-    illative: 'Savitaipaleeseen'
-  }],
-  ['Uusikaupunki', {
-    localCaseType: 'in',
-    genitive: 'Uudenkaupungin',
-    partitive: 'Uuttakaupunkia',
-    inessive: 'Uudessakaupungissa',
-    elative: 'Uudestakaupungista',
-    illative: 'Uuteenkaupunkiin'
-  }],
-  ['Uusikaarlepyy', {
-    localCaseType: 'in',
-    genitive: 'Uudenkaarlepyyn',
-    partitive: 'Uuttakaarlepyytä',
-    inessive: 'Uudessakaarlepyyssä',
-    elative: 'Uudestakaarlepyystä',
-    illative: 'Uuteenkaarlepyyhyn'
-  }],
-  ['Isokyrö', {
-    localCaseType: 'in',
-    genitive: 'Isonkyrön',
-    partitive: 'Isoakyröä',
-    inessive: 'Isossakyrössä',
-    elative: 'Isostakyröstä',
-    illative: 'Isoonkyröön'
-  }],
   ['Kangasala', {
     localCaseType: 'on',
     genitive: 'Kangasalan',
@@ -264,14 +232,6 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     adessive: 'Kangasalla',
     ablative: 'Kangasalta',
     allative: 'Kangasalle'
-  }],
-  ['Alavus', {
-    localCaseType: 'on',
-    genitive: 'Alavuden',
-    partitive: 'Alavutta',
-    adessive: 'Alavudella',
-    ablative: 'Alavudelta',
-    allative: 'Alavudelle'
   }],
   ['Pihtipudas', {
     localCaseType: 'on',
@@ -299,62 +259,6 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
     allative: 'Virroille',
     elative: 'Virroista',
     illative: 'Virtoihin'
-  }],
-  ['Rautalampi', {
-    localCaseType: 'on',
-    genitive: 'Rautalammin',
-    partitive: 'Rautalampia',
-    adessive: 'Rautalammilla',
-    ablative: 'Rautalammilta',
-    allative: 'Rautalammille'
-  }],
-  ['Toholampi', {
-    localCaseType: 'on',
-    genitive: 'Toholammin',
-    partitive: 'Toholampia',
-    adessive: 'Toholammilla',
-    ablative: 'Toholammilta',
-    allative: 'Toholammille'
-  }],
-  ['Tampere', {
-    localCaseType: 'on',
-    genitive: 'Tampereen',
-    partitive: 'Tamperetta',
-    inessive: 'Tampereessa',
-    elative: 'Tampereesta',
-    illative: 'Tampereeseen',
-    adessive: 'Tampereella',
-    ablative: 'Tampereelta',
-    allative: 'Tampereelle',
-    essive: 'Tampereena'
-  }],
-  ['Kempele', {
-    genitive: 'Kempeleen',
-    partitive: 'Kempelettä',
-    inessive: 'Kempeleessä',
-    elative: 'Kempeleestä',
-    illative: 'Kempeleeseen'
-  }],
-  ['Kannus', {
-    genitive: 'Kannuksen',
-    partitive: 'Kannusta',
-    inessive: 'Kannuksessa',
-    elative: 'Kannuksesta',
-    illative: 'Kannukseen'
-  }],
-  ['Nurmes', {
-    genitive: 'Nurmeksen',
-    partitive: 'Nurmesta',
-    inessive: 'Nurmeksessa',
-    elative: 'Nurmeksesta',
-    illative: 'Nurmekseen'
-  }],
-  ['Varkaus', {
-    genitive: 'Varkauden',
-    partitive: 'Varkautta',
-    inessive: 'Varkaudessa',
-    elative: 'Varkaudesta',
-    illative: 'Varkauteen'
   }]
 ]);
 
@@ -371,5 +275,12 @@ export const IRREGULAR_PLACES: ReadonlyMap<string, PlaceOverride> = new Map<stri
  * ```
  */
 export function isKnownSpecialPlace(name: string): boolean {
-  return IRREGULAR_PLACES.has(name) || PLURAL_INEN_PLACES.has(name);
+  return (
+    IRREGULAR_PLACES.has(name) ||
+    PLURAL_INEN_PLACES.has(name) ||
+    TYPE_48_E_PLACES.has(name) ||
+    TYPE_39_S_PLACES.has(name) ||
+    TYPE_40_US_PLACES.has(name) ||
+    UNHYPHENATED_INFLECTING_PREFIX_PLACES.has(name)
+  );
 }

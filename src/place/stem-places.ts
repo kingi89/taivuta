@@ -12,7 +12,15 @@ import { fallbackString, sanitizeInput } from '../morphology/guards.ts';
 import { harmonize } from '../morphology/vowels.ts';
 import { weakenConsonants } from '../morphology/gradation.ts';
 import { createStemParadigm, type StemParadigm } from '../morphology/paradigm.ts';
-import { GRADATION_RESISTANT_PLACES, PLURAL_INEN_PLACES } from './municipalities.data.ts';
+import { matchNatureNoun } from '../morphology/nature-nouns.ts';
+import {
+  GRADATION_RESISTANT_PLACES,
+  NATURE_NOUN_BYPASS_PLACES,
+  PLURAL_INEN_PLACES,
+  TYPE_39_S_PLACES,
+  TYPE_40_US_PLACES,
+  TYPE_48_E_PLACES
+} from './municipalities.data.ts';
 
 function buildPluralInenParadigm(
   place: string,
@@ -29,6 +37,81 @@ function buildPluralInenParadigm(
     partitive: `${stem}${harmonize('a', place)}`,
     illative: `${stem}in`
   }, { defaultSpatialCase, isPlural: true });
+}
+
+function buildType48EParadigm(
+  place: string,
+  defaultSpatialCase: LocalCaseType
+): StemParadigm {
+  // Kotus type 48 (*hame*) lengthens final -e to -ee- in vocalic stems and takes -tta/-ttä in partitive
+  // (e.g. Tampere -> Tampereen, Tamperetta, Tampereeseen).
+  const stem = `${place}e`;
+  return createStemParadigm(place, {
+    strong: stem,
+    weak: stem,
+    partitive: `${place}${harmonize('tta', place)}`,
+    illative: `${stem}seen`
+  }, { defaultSpatialCase });
+}
+
+function buildType39SParadigm(
+  place: string,
+  defaultSpatialCase: LocalCaseType
+): StemParadigm {
+  // Kotus type 39 replaces final -s with -kse- in vocalic cases while keeping -s- in partitive
+  // (e.g. Kannus -> Kannuksen, Kannusta, Kannukseen).
+  const stem = `${place.slice(0, -1)}kse`;
+  return createStemParadigm(place, {
+    strong: stem,
+    weak: stem,
+    partitive: `${place}${harmonize('ta', place)}`,
+    illative: `${stem}en`
+  }, { defaultSpatialCase });
+}
+
+function buildType40UsParadigm(
+  place: string,
+  defaultSpatialCase: LocalCaseType
+): StemParadigm {
+  // Kotus type 40 alternates -us with strong -te-, weak -de-, and partitive -tta/-ttä
+  // (e.g. Varkaus -> Varkauden, Varkautta, Varkauteen, Varkautena).
+  const base = place.slice(0, -1);
+  return createStemParadigm(place, {
+    strong: `${base}te`,
+    weak: `${base}de`,
+    partitive: `${base}${harmonize('tta', place)}`,
+    illative: `${base}teen`
+  }, { defaultSpatialCase });
+}
+
+function resolveNamedClassParadigm(
+  place: string,
+  defaultSpatialCase: LocalCaseType
+): StemParadigm | null {
+  if (PLURAL_INEN_PLACES.has(place)) {
+    return buildPluralInenParadigm(place, defaultSpatialCase);
+  }
+  if (TYPE_48_E_PLACES.has(place)) {
+    return buildType48EParadigm(place, defaultSpatialCase);
+  }
+  if (TYPE_39_S_PLACES.has(place)) {
+    return buildType39SParadigm(place, defaultSpatialCase);
+  }
+  if (TYPE_40_US_PLACES.has(place)) {
+    return buildType40UsParadigm(place, defaultSpatialCase);
+  }
+  return null;
+}
+
+function resolveNaturePlaceParadigm(
+  place: string,
+  defaultSpatialCase: LocalCaseType
+): StemParadigm | null {
+  if (NATURE_NOUN_BYPASS_PLACES.has(place)) {
+    return null;
+  }
+  const nature = matchNatureNoun(place);
+  return nature ? { ...nature, defaultSpatialCase } : null;
 }
 
 function resolveStandardPartitive(place: string): string {
@@ -70,10 +153,6 @@ function resolveSpecialPlaceParadigm(
       illative: `${stem}in`,
       genitive: `${base}ten`
     }, { defaultSpatialCase, isPlural: true });
-  }
-
-  if (PLURAL_INEN_PLACES.has(place)) {
-    return buildPluralInenParadigm(place, defaultSpatialCase);
   }
 
   if (place.endsWith('nen')) {
@@ -150,6 +229,8 @@ export function getPlaceParadigm(
   }
   const safeSpatial: LocalCaseType = defaultSpatialCase === 'on' ? 'on' : 'in';
   return (
+    resolveNamedClassParadigm(trimmed, safeSpatial) ??
+    resolveNaturePlaceParadigm(trimmed, safeSpatial) ??
     resolveSpecialPlaceParadigm(trimmed, safeSpatial) ??
     resolveVocalicPlaceParadigm(trimmed, safeSpatial)
   );

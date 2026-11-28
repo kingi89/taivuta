@@ -11,7 +11,8 @@ import type { CaseName, GrammaticalCase, LocalCaseType } from '../cases/types.ts
 import {
   EXTERNAL_CASE_MUNICIPALITIES,
   ISLAND_INTERNAL_EXCEPTIONS,
-  IRREGULAR_PLACES
+  IRREGULAR_PLACES,
+  UNHYPHENATED_INFLECTING_PREFIX_PLACES
 } from './municipalities.data.ts';
 import {
   fallbackString,
@@ -61,6 +62,7 @@ const EXTERNAL_CASE_COUNTRIES: ReadonlySet<string> = new Set([
   'kap verde',
   'kiribati',
   'malta',
+  'mauritius',
   'nauru',
   'palau',
   'saint lucia',
@@ -210,12 +212,20 @@ function resolveSpecialOrStatePlace(
 }
 
 function resolveStandardPlace(place: string, resolvedCase: GrammaticalCase): string {
-  const nature = matchNatureNoun(place);
-  if (nature) {
-    return assembleCase(nature, resolvedCase);
+  return assembleCase(getPlaceParadigm(place, detectLocalCase(place)), resolvedCase);
+}
+
+function inflectUnhyphenatedPrefixCompound(
+  place: string,
+  resolvedCase: GrammaticalCase
+): string | null {
+  if (!UNHYPHENATED_INFLECTING_PREFIX_PLACES.has(place)) {
+    return null;
   }
-  const paradigm = getPlaceParadigm(place, detectLocalCase(place));
-  return assembleCase(paradigm, resolvedCase);
+  const rawPrefix = place.startsWith('Uusi') ? 'Uusi' : 'Iso';
+  const head = place.slice(rawPrefix.length);
+  const inflectedPrefix = inflectCompoundPrefix(`${rawPrefix}-`, resolvedCase).slice(0, -1);
+  return `${inflectedPrefix}${resolveStandardPlace(head, resolvedCase)}`;
 }
 
 function inflectCompoundPrefixes(place: string, resolvedCase: GrammaticalCase): string | null {
@@ -290,6 +300,7 @@ export function inflectPlace(
 
   return (
     resolveSpecialOrStatePlace(trimmed, resolvedCase) ??
+    inflectUnhyphenatedPrefixCompound(trimmed, resolvedCase) ??
     inflectCompoundPrefixes(trimmed, resolvedCase) ??
     resolveStandardPlace(trimmed, resolvedCase)
   );
